@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "mocha --watch & node src/app.js"
+    "start": "mocha --watch"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/ProjectSunday/prismapi#readme",
   "devDependencies": {
-    "chai": "^3.5.0"
+    "chai": "^3.5.0",
+    "supertest": "^1.2.0"
   },
   "dependencies": {
     "express": "^4.13.4"

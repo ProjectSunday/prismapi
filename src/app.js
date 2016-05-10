@@ -16,15 +16,28 @@ var server = http.createServer(app);
 
 // require('./routes/main.route')(app);
 
+
+app.get('/test', function (req, res) {
+	res.send('test')
+})
 // app.use('/', express.static(__dirname + '/../dist'));
 // app.use('*', express.static(__dirname + '/../dist/index.html'));
 
 
 // server.listen(PRISM_PORT, function () {
-server.listen(9000, function () {
-	console.log('\n')
-	console.log('=============================================================')
-    console.log('Prism API server online. Port:', 9000, ' Environment:', 'BLAH')
-	console.log('=============================================================')
-	console.log('\n')
-});
+
+if(!module.parent){ server.listen(9000); }  //require for mocha to work, DO NOT DELETE!
+
+
+
+module.exports = server
+
+// module.exports = server.listen(9000, function () {
+// 	console.log('\n')
+// 	console.log('=============================================================')
+//     console.log('Prism API server online. Port:', 9000, ' Environment:', 'BLAH')
+// 	console.log('=============================================================')
+// 	console.log('\n')
+// });
+
+// module.exports = server
