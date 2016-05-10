@@ -5,6 +5,8 @@ var http            = require('http');
 var app = express();
 var server = http.createServer(app);
 
+var port = process.env.PORT || 9000
+
 // require('./globals.js');  //must be first
 // require('./debug.js');
 // require('./core.js');
@@ -20,24 +22,24 @@ var server = http.createServer(app);
 app.get('/test', function (req, res) {
 	res.send('test')
 })
+
+app.get('/testjson', function (req, res) {
+	res.json({ test: 'testvalue' })
+})
 // app.use('/', express.static(__dirname + '/../dist'));
 // app.use('*', express.static(__dirname + '/../dist/index.html'));
 
 
-// server.listen(PRISM_PORT, function () {
-
-if(!module.parent){ server.listen(9000); }  //require for mocha to work, DO NOT DELETE!
-
+if (!module.parent) {   //require for mocha to work, DO NOT DELETE!
+	server.listen(port, function () {
+		console.log('\n')
+		console.log('=============================================================')
+	    console.log('Prism API server online. Port:', port, ' Environment:', 'BLAH')
+		console.log('=============================================================')
+		console.log('\n')
+	})
+}
 
 
 module.exports = server
 
-// module.exports = server.listen(9000, function () {
-// 	console.log('\n')
-// 	console.log('=============================================================')
-//     console.log('Prism API server online. Port:', 9000, ' Environment:', 'BLAH')
-// 	console.log('=============================================================')
-// 	console.log('\n')
-// });
-
-// module.exports = server

@@ -21,3 +21,12 @@ describe('GET /test', function () {
 	})
 })
 
+
+describe('GET /testjson', function () {
+	it('should return test json', function (done) {
+		request.get('/testjson')
+			.expect({ test: 'testvalue' }, done)
+	})
+})
+
+
