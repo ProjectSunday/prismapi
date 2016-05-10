@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/ProjectSunday/prismapi/issues"
   },
-  "homepage": "https://github.com/ProjectSunday/prismapi#readme"
+  "homepage": "https://github.com/ProjectSunday/prismapi#readme",
+  "devDependencies": {
+    "chai": "^3.5.0"
+  },
+  "dependencies": {
+    "express": "^4.13.4"
+  }
 }
