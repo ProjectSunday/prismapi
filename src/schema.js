@@ -1,0 +1,19 @@
+import { GraphQLObjectType, GraphQLSchema, GraphQLInt } from 'graphql/type'
+
+let count = 0
+
+let Schema = new GraphQLSchema({
+	query: new GraphQLObjectType({
+		name: 'RootQueryType',
+		fields: {
+			count: {
+				type: GraphQLInt,
+				resolve: () => {
+					return 99
+				}
+			}
+		}
+	})
+})
+
+export default Schema
