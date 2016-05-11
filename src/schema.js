@@ -4,8 +4,12 @@ let count = 0
 
 let Schema = new GraphQLSchema({
 	query: new GraphQLObjectType({
-		name: 'RootQueryType',
+		name: 'Query',
 		fields: {
+
+			categories: {
+				type: 
+			},
 			count: {
 				type: GraphQLInt,
 				resolve: () => {

@@ -6,6 +6,8 @@ so it begins...
 
 fuck relay
 
+working on categories
+
 ### Installation
 
 node v5.10.0
