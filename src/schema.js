@@ -9,7 +9,7 @@ let Schema = new GraphQLSchema({
 			count: {
 				type: GraphQLInt,
 				resolve: () => {
-					return 99
+					return count
 				}
 			}
 		}

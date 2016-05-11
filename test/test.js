@@ -1,6 +1,9 @@
+global.MOCHA_TESTING = true
+require('babel-register')
+
 var app = require('../src/app')
 
-var assert = require('chai').assert
+// var assert = require('chai').assert
 var request = require('supertest').agent(app.listen())
 
 
