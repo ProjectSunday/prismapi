@@ -13,12 +13,10 @@ app.use('/graphql', graphqlHTTP((req, res) => ({
 
 if (!MOCHA_TESTING) {   //require for mocha to not fuck up, DO NOT DELETE!
 
-	app = app.listen(port, function () {
-		console.log('\n')
+	app.listen(port, function () {
 		console.log('=============================================================')
 	    console.log(`Prism API server online.  Port: ${port}. Environment: BLAH`)
 		console.log('=============================================================')
-		console.log('\n')
 	})
 
 }

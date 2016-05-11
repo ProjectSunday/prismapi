@@ -4,7 +4,17 @@ require('babel-register')
 var app = require('../src/app')
 
 // var assert = require('chai').assert
-var request = require('supertest').agent(app.listen())
+
+var headers = { 'Content-Type': 'application/graphql' }
+
+
+var request = require('supertest').agent(app.listen(function () {
+	console.log('=============================================================')
+	console.log('Mocha Testing in progress')
+    console.log('Prism API server online.')
+	console.log('=============================================================')
+}))
+
 
 
 // describe('Array', function () {
@@ -27,9 +37,10 @@ var request = require('supertest').agent(app.listen())
 describe('POST /graphql', function () {
 	it('should return data', function (done) {
 		request.post('/graphql')
-			.set('Content-Type', 'application/graphql')
+			.set(headers)
 			.send('query RootQueryType { count }')
 			.expect({ data: { count: 0 } }, done)
 	})
 })
+
 
