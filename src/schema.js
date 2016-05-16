@@ -21,11 +21,11 @@ const schema = new GraphQLSchema({
 			categories: {
 				type: new GraphQLList(Category),
 				resolve: (obj, a, b) => {
-					console.log('obj', obj, a, b)
+					// console.log('obj', obj, a, b)
 
-					var newcat = { id: 4, name: 'qwerwerwerwer', imageName: 'imageName4444'};
+					// var newcat = { id: 4, name: 'qwerwerwerwer', imageName: 'imageName4444'};
 
-					db.write({ categories: [ newcat ]})
+					// db.write({ categories: [ newcat ]})
 
 					return db.read().categories
 				}

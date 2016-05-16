@@ -1,6 +1,10 @@
 import express from 'express'
 import graphqlHTTP from 'express-graphql'
 
+
+import mongo from './mongo'
+
+
 import schema from './schema'
 
 let app = express()
@@ -11,28 +15,37 @@ app.use('/graphql', graphqlHTTP((req, res) => ({
 	graphiql: true
 })))
 
+if (!MOCHA_TESTING) {   //require for mocha to not fuck up, DO NOT DELETE!
 
-// if (!MOCHA_TESTING) {   //require for mocha to not fuck up, DO NOT DELETE!
+	app.listen(port, function () {
+		console.log('=============================================================')
+	    console.log(`Prism API server online.  Port: ${port}. Environment: BLAH`)
+		console.log('=============================================================')
+	})
+
+}
 
 
-// }
+export default (testing) => {
 
-var server
+	return new Promise((resolve, reject) => {
 
-module.exports = {
-	start: () => {
-		console.log('starting')
-		server = app.listen(port, function () {
-			console.log('=============================================================')
-		    console.log(`Prism API server online.  Port: ${port}. Environment: BLAH`)
-			console.log('=============================================================')
+		Database.connect().then(() => {
+
 		})
 
-		return server
-	},
-	stop: () => {
-		console.log('stopping')
-		server.close()
-	}
+	})
+
 }
+
+
+module.exports = app
+
+
+var upArrow = $('lskjdflskjdfsdf')
+
+upArrow.on('click', function () {
+
+})
+
 
