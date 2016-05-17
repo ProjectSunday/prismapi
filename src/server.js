@@ -35,33 +35,48 @@ const port = process.env.PORT || 9000
 
 console.log('app invoked===========================================')
 
+var server
 
-export default new Promise((resolve, reject) => {
+const start => () = {
+	return new Promise((resolve, reject) => {
 
-	db.then(() => {
+		db.then(() => {
 
-		var exp = express()
+			var app = express()
 
-		exp.use('/graphql', graphqlHTTP((req, res) => ({
-			schema,
-			graphiql: true
-		})))
+			exp.use('/graphql', graphqlHTTP((req, res) => ({
+				schema,
+				graphiql: true
+			})))
 
-		var app = exp.listen(port, () => {
-			console.log('=============================================================')
-		    console.log(`Prism API server online.  Port: ${port}. Environment: BLAH`)
-			console.log('=============================================================')
+			server = exp.listen(port, () => {
+				console.log('=============================================================')
+			    console.log(`Prism API server online.  Port: ${port}. Environment: BLAH`)
+				console.log('=============================================================')
 
-			resolve(app)
+				resolve(server)
+			})
+
+
+		}, () => {
+			console.error('Prism API server cannot connect to database.  Aborting...')
+			reject()
 		})
 
-
-	}, () => {
-		console.error('Prism API server cannot connect to database.  Aborting...')
-		reject()
-	})
-
 })
+
+const stop = () => {
+
+	return new Promise((resolve, reject) => {
+		server.close(() => {
+			resolve()
+		}
+	})
+	return 
+}
+
+
+export default { start, stop }
 
 
 

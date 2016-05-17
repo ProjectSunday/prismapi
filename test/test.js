@@ -1,21 +1,45 @@
 require('babel-register')
 
-global.MOCHA_TESTING = true
-var app = require('../src/app')
+// import db from '../db'
+
+// global.MOCHA_TESTING = true
+
+import supertest from 'supertest'
+
+import app from '../src/app'
+
+server.start().
+
+
 
 // var assert = require('chai').assert
+const headers = { 'Content-Type': 'application/graphql' }
 
-var headers = { 'Content-Type': 'application/graphql' }
 
-var server = app.listen(() => {
-	var port = server.address().port
-	console.log('=============================================================')
-	console.log('Mocha Testing in progress')
-    console.log(`Prism API server online. Port: ${port}`)
-	console.log('=============================================================')
-})
 
-var request = require('supertest').agent(server)
+// console.info('blah22222')
+// app.then((running_app) => {
+// 	let request = supertest.agent(running_app)
+
+// 	console.info('111111')
+// 	startTests(request)
+// })
+
+
+
+
+// console.log('33333', db)
+
+// var server = app.listen(() => {
+// 	var port = server.address().port
+// 	console.log('=============================================================')
+// 	console.log('Mocha Testing in progress')
+//     console.log(`Prism API server online. Port: ${port}`)
+// 	console.log('=============================================================')
+// })
+
+
+
 
 
 
@@ -36,51 +60,74 @@ var request = require('supertest').agent(server)
 // })
 
 
+
+	// console.log('333333', request)
+
+
+var request;
+
+
 describe('POST /graphql', function () {
+
+	before(done => {
+		server.start().then(running_server => {
+			request = supertest.agent(running_app)
+			done()
+		})
+
+	})
+
+
 	it('should return data', function (done) {
 		request.post('/graphql')
 			.set(headers)
-			.send('query RootQueryType { count }')
+			.send('queasdasdfdsfray RootQueryType { count }')
 			.expect({ data: { count: 0 } }, done)
 	})
-})
 
-describe('query categories', () => {
-	it('it should return all categories', (done) => {
-		var expected = {
-			data: {
-				categories: [
-					{ id: 1 },
-					{ id: 2 },
-					{ id: 3 }
-				]
-			}
-		}
 
-		request.post('/graphql')
-			.set(headers)
-			.send('query { categories { id } }')
-			.expect(expected, done)
+	after(done => {
+		console.log('done========')
+		done()
 	})
 })
 
-describe('query categories with name', () => {
-	it('it should return all categories with name only', (done) => {
-		var expected = {
-			data: {
-				categories: [
-					{ name: 'cat1' },
-					{ name: 'cat2' },
-					{ name: 'cat3' }
-				]
-			}
-		}
+	// describe('query categories', () => {
+	// 	it('it should return all categories', (done) => {
+	// 		var expected = {
+	// 			data: {
+	// 				categories: [
+	// 					{ id: 1 },
+	// 					{ id: 2 },
+	// 					{ id: 3 }
+	// 				]
+	// 			}
+	// 		}
 
-		request.post('/graphql')
-			.set(headers)
-			.send('query { categories { name }	}')
-			.expect(expected, done)
-	})
-})
+	// 		request.post('/graphql')
+	// 			.set(headers)
+	// 			.send('query { categories { id } }')
+	// 			.expect(expected, done)
+	// 	})
+	// })
+
+	// describe('query categories with name', () => {
+	// 	it('it should return all categories with name only', (done) => {
+	// 		var expected = {
+	// 			data: {
+	// 				categories: [
+	// 					{ name: 'cat1' },
+	// 					{ name: 'cat2' },
+	// 					{ name: 'cat3' }
+	// 				]
+	// 			}
+	// 		}
+
+	// 		request.post('/graphql')
+	// 			.set(headers)
+	// 			.send('query { categories { name }	}')
+	// 			.expect(expected, done)
+	// 	})
+	// })
 
 

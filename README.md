@@ -2,9 +2,9 @@
 
 ### Dev Notes
 
-so it begins...
+working on server.js, start and close
 
-fuck relay
+
 
 working on categories
 
