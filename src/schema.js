@@ -25,7 +25,7 @@ const schema = new GraphQLSchema({
 
 					// var newcat = { id: 4, name: 'qwerwerwerwer', imageName: 'imageName4444'};
 
-					// db.write({ categories: [ newcat ]})
+					// db.write({ categories: [ newcat ]})sdfsdf
 
 					return db.read().categories
 				}
