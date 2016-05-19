@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID } from 'graphql/type'
 
-import db from './data/database'
+import db from './db'
 
 let count = 0
 
@@ -27,7 +27,10 @@ const schema = new GraphQLSchema({
 
 					// db.write({ categories: [ newcat ]})sdfsdf
 
-					return db.read().categories
+					db.collection('categories').find().toArray().then((categories) => {
+						console.log('categories', categories)
+						return categories
+					})
 				}
 			},
 
