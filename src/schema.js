@@ -1,47 +1,93 @@
-import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID } from 'graphql/type'
+import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import db from './db'
+import { categories } from './db'
 
 let count = 0
 
-const Category = new GraphQLObjectType({
+const CategoryType = new GraphQLObjectType({
 	name: 'Category',
 	fields: () => ({
+		// _id: { type: GraphQLString },
 		id: { type: GraphQLID },
 		name: { type: GraphQLString },
 		imageName: { type: GraphQLString }
 	})
 })
 
-const schema = new GraphQLSchema({
-	query: new GraphQLObjectType({
-		name: 'Query',
-		fields: {
 
+const QueryType = new GraphQLObjectType({
+	name: 'Query',
+	fields: () => {
+		return {
 			categories: {
-				type: new GraphQLList(Category),
-				resolve: (obj, a, b) => {
-					// console.log('obj', obj, a, b)
-
-					// var newcat = { id: 4, name: 'qwerwerwerwer', imageName: 'imageName4444'};
-
-					// db.write({ categories: [ newcat ]})sdfsdf
-
-					db.collection('categories').find().toArray().then((categories) => {
-						console.log('categories', categories)
-						return categories
-					})
+				type: new GraphQLList(CategoryType),
+				resolve: () => {
+					return categories().find().toArray()
 				}
 			},
-
 			count: {
 				type: GraphQLInt,
 				resolve: () => {
 					return count
 				}
 			}
+
 		}
-	})
+	}
+})
+
+
+const MutationAdd = {
+	type: CategoryType,
+	args: {
+		name: {
+			type: new GraphQLNonNull(GraphQLString)
+		}
+	},
+	resolve: (root, args) => {
+		return new Promise((resolve, reject) => {
+			categories().insertOne({ name: args.name }).then(r => {
+				categories().find({ _id: r.insertedId }).toArray().then(docs => {
+					var cat = docs[0]
+					cat.id = docs[0]._id
+					resolve(cat)
+				})
+			})
+		})
+	}
+}
+
+const RemoveCategory = {
+	type: GraphQLObjectType,
+	args: {
+		name: {
+			type: new GraphQLNonNull(GraphQLString)
+		}
+	},
+	resolve: (root, args) => {
+		return new Promise((resolve, reject) => {
+			categories().deleteOne({ name: args.name }).then((r,a,b,c) => {
+
+				// console.log('44444', r,a,b,c)
+
+				resolve(r.deletedCount)
+			})
+		})
+	}
+}
+
+
+const MutationType = new GraphQLObjectType({
+	name: 'Mutation',
+	fields: {
+		add: MutationAdd,
+		removeCategory: RemoveCategory
+	}
+})
+
+const schema = new GraphQLSchema({
+	query: QueryType,
+	mutation: MutationType
 })
 
 export default schema

@@ -2,11 +2,8 @@
 
 ### Dev Notes
 
-working on server.js, start and close
+working on delete mutation
 
-
-
-working on categories
 
 ### Installation
 

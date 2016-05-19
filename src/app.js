@@ -2,12 +2,12 @@ import express 		from 'express'
 import graphqlHTTP 	from 'express-graphql'
 
 import schema from './schema'
-import db from './db'
+import { connect } from './db'
 
 const port = process.env.PORT || 9000
 
 export default new Promise((resolve, reject) => {
-	db.then(() => {
+	connect().then(() => {
 		var app = express()
 
 		app.use('/graphql', graphqlHTTP((req, res) => ({

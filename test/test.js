@@ -1,4 +1,4 @@
-// import { assert } from 'chai'
+import { assert, expect } from 'chai'
 import supertest from 'supertest'
 
 import app from '../src/app'
@@ -11,6 +11,7 @@ var request, listener
 describe('Prism API Mocha Testing', () => {
 
 	before(done => {
+		console.log('====================================================================================')
 		app.then(runningServer => {
 			listener = runningServer
 			request = supertest.agent(listener)
@@ -28,13 +29,13 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 
-	it('it should return all categories', (done) => {
+	it('it should return all categories', done => {
 		var expected = {
 			data: {
 				categories: [
+					{ id: 0 },
 					{ id: 1 },
-					{ id: 2 },
-					{ id: 3 }
+					{ id: 2 }
 				]
 			}
 		}
@@ -42,8 +43,33 @@ describe('Prism API Mocha Testing', () => {
 		request.post('/graphql')
 			.set(headers)
 			.send('query { categories { id } }')
-			.expect(expected, done)
+			.end((err, res) => {
+				assert.isArray(res.body.data.categories)
+				done()
+			})
 	})
+
+	it('it should add a category', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send('mutation { add(name: "test3") { id, name } }')
+			.end((err, res) => {
+				expect(res.body.data.add.id).to.be.a('string')
+				done()
+			})
+	})
+
+	it('it should remove a category', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send('mutation { removeCategory(name: "test3") { id, name } }')
+			.end((err, res) => {
+				expect(res.body.data.add.id).to.be.a('string')
+				done()
+			})
+	})
+
+
 
 
 
