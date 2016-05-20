@@ -7,9 +7,9 @@ change readme to include mongo
 
 ### Installation
 
-node v5.10.0
-npm 3.8.3
-mongo v3.0.7
+node v5.10.0<br />
+npm 3.8.3<br />
+mongo v3.0.7<br />
 
 ```
 npm install
