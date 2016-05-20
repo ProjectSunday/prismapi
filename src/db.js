@@ -5,9 +5,12 @@ var PRISM_DB_CONNECTION_STRING = 'mongodb://localhost:27017/prism'
 var _db
 
 
-
 export const categories = () => {
 	return _db.collection('categories')
+}
+
+export const requestedClasses = () => {
+	return _db.collection('requestedclasses')
 }
 
 

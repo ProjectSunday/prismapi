@@ -1,37 +1,39 @@
-import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
+import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull, GraphQLOutputType } from 'graphql/type'
 
 import { categories } from './db'
-
-let count = 0
+import { RequestedClassesQuery } from './requestedclasses'
 
 const CategoryType = new GraphQLObjectType({
-	name: 'Category',
+	name: 'CategoryType',
 	fields: () => ({
-		// _id: { type: GraphQLString },
 		id: { type: GraphQLID },
 		name: { type: GraphQLString },
-		imageName: { type: GraphQLString }
+		imageName: { type: GraphQLString },
+		status: { type: GraphQLString }
 	})
 })
 
 
 const QueryType = new GraphQLObjectType({
-	name: 'Query',
+	name: 'QueryType',
 	fields: () => {
 		return {
 			categories: {
 				type: new GraphQLList(CategoryType),
 				resolve: () => {
-					return categories().find().toArray()
+					return new Promise((resolve, reject) => {
+						categories().find().toArray().then(result => {
+							var categories = result.map(r => {
+								r.id = r._id
+								delete r._id
+								return r
+							})
+							resolve(categories)
+						})
+					})
 				}
 			},
-			count: {
-				type: GraphQLInt,
-				resolve: () => {
-					return count
-				}
-			}
-
+			requestedClasses: RequestedClassesQuery
 		}
 	}
 })
@@ -58,19 +60,16 @@ const MutationAdd = {
 }
 
 const RemoveCategory = {
-	type: GraphQLObjectType,
+	type: CategoryType,
 	args: {
-		name: {
-			type: new GraphQLNonNull(GraphQLString)
+		id: {
+			type: new GraphQLNonNull(GraphQLID)
 		}
 	},
 	resolve: (root, args) => {
 		return new Promise((resolve, reject) => {
-			categories().deleteOne({ name: args.name }).then((r,a,b,c) => {
-
-				// console.log('44444', r,a,b,c)
-
-				resolve(r.deletedCount)
+			categories().deleteOne({ _id: args.id }).then((r) => {
+				resolve({ id: args.id, status: 'DELETE_SUCCESS' })
 			})
 		})
 	}
@@ -78,7 +77,7 @@ const RemoveCategory = {
 
 
 const MutationType = new GraphQLObjectType({
-	name: 'Mutation',
+	name: 'MutationType',
 	fields: {
 		add: MutationAdd,
 		removeCategory: RemoveCategory

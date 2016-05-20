@@ -21,14 +21,6 @@ describe('Prism API Mocha Testing', () => {
 
 	///////////////////////////////////////////////////////////////////////////////////
 
-	it('should return data', done => {
-		request.post('/graphql')
-			.set(headers)
-			.send('query RootQueryType { count }')
-			.expect({ data: { count: 0 } }, done)
-	})
-
-
 	it('it should return all categories', done => {
 		var expected = {
 			data: {
@@ -49,11 +41,15 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
+
+	var addedCategoryId
+
 	it('it should add a category', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send('mutation { add(name: "test3") { id, name } }')
+			.send('mutation { add(name: "testtesttest") { id, name } }')
 			.end((err, res) => {
+				addedCategoryId = res.body.data.add.id
 				expect(res.body.data.add.id).to.be.a('string')
 				done()
 			})
@@ -62,9 +58,19 @@ describe('Prism API Mocha Testing', () => {
 	it('it should remove a category', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send('mutation { removeCategory(name: "test3") { id, name } }')
+			.send(`mutation { removeCategory(id: "${addedCategoryId}") { id, status } }`)
 			.end((err, res) => {
-				expect(res.body.data.add.id).to.be.a('string')
+				assert.equal(res.body.data.removeCategory.status, 'DELETE_SUCCESS')
+				done()
+			})
+	})
+
+	it('it should return all requested classes', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send(`query { requestedClasses { id, name } }`)
+			.end((err, res) => {
+				assert.equal(res.body.data.requestedClasses.length, 2)
 				done()
 			})
 	})
