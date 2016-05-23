@@ -3,7 +3,6 @@
 ### Dev Notes
 
 working on requested, hooking up to front end
-change readme to include mongo
 
 ### Installation
 
