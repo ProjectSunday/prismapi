@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull, GraphQLOutputType } from 'graphql/type'
 
 import { categories } from './db'
-import { RequestedClassesQuery } from './requestedclasses'
+import { RequestedClassQuery, CreateRequestedClassMutation, DeleteRequestedClassMutation } from './requestedclasses'
 
 const CategoryType = new GraphQLObjectType({
 	name: 'CategoryType',
@@ -33,7 +33,7 @@ const QueryType = new GraphQLObjectType({
 					})
 				}
 			},
-			requestedClasses: RequestedClassesQuery
+			requestedClasses: RequestedClassQuery
 		}
 	}
 })
@@ -80,7 +80,9 @@ const MutationType = new GraphQLObjectType({
 	name: 'MutationType',
 	fields: {
 		add: MutationAdd,
-		removeCategory: RemoveCategory
+		removeCategory: RemoveCategory,
+		createRequestedClass: CreateRequestedClassMutation,
+		deleteRequestedClass: DeleteRequestedClassMutation
 	}
 })
 

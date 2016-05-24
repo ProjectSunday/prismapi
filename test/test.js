@@ -11,7 +11,7 @@ var request, listener
 describe('Prism API Mocha Testing', () => {
 
 	before(done => {
-		console.log('====================================================================================')
+		console.log('===================================================================')
 		app.then(runningServer => {
 			listener = runningServer
 			request = supertest.agent(listener)
@@ -70,12 +70,50 @@ describe('Prism API Mocha Testing', () => {
 			.set(headers)
 			.send(`query { requestedClasses { id, name } }`)
 			.end((err, res) => {
-				assert.equal(res.body.data.requestedClasses.length, 2)
+				assert.equal(res.body.data.requestedClasses.length > 0, true)
 				done()
 			})
 	})
 
+	var createRequestedClassId;
 
+	it('it should add a requested class', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send(`
+				mutation {
+					createRequestedClass (name: "testrequestedclass") { 
+						id,
+						name 
+					} 
+				}`
+			)
+			.end((err, res) => {
+				// console.log(res.body)
+				assert.equal(res.body.data.createRequestedClass.name, 'testrequestedclass')
+				createRequestedClassId = res.body.data.createRequestedClass.id
+				done()
+			})
+	})
+
+	it('it should remove a requested class', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send(`
+				mutation {
+					deleteRequestedClass(id: "${createRequestedClassId}") { 
+						id,
+						status 
+					} 
+				}`
+			)
+			.end((err, res) => {
+				// console.log(res.body)
+				assert.equal(res.body.data.deleteRequestedClass.id, createRequestedClassId)
+				assert.equal(res.body.data.deleteRequestedClass.status, 'DELETE_SUCCESS')
+				done()
+			})
+	})
 
 
 
@@ -97,28 +135,5 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 })
-
-	// describe('query categories', () => {
-	// 	
-	// })
-
-	// describe('query categories with name', () => {
-	// 	it('it should return all categories with name only', (done) => {
-	// 		var expected = {
-	// 			data: {
-	// 				categories: [
-	// 					{ name: 'cat1' },
-	// 					{ name: 'cat2' },
-	// 					{ name: 'cat3' }
-	// 				]
-	// 			}
-	// 		}
-
-	// 		request.post('/graphql')
-	// 			.set(headers)
-	// 			.send('query { categories { name }	}')
-	// 			.expect(expected, done)
-	// 	})
-	// })
 
 
