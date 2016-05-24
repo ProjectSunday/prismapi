@@ -11,7 +11,7 @@ const RequestedClassType = new GraphQLObjectType({
 	})
 })
 
-export const RequestedClassQuery = {
+export const RequestedClasses = {
 	type: new GraphQLList(RequestedClassType),
 	resolve: () => {
 		return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ export const RequestedClassQuery = {
 }
 
 
-export const CreateRequestedClassMutation = {
+export const CreateRequestedClass = {
 	type: RequestedClassType,
 	args: {
 		name: { type: new GraphQLNonNull(GraphQLString) }
@@ -47,7 +47,7 @@ export const CreateRequestedClassMutation = {
 }
 
 
-export const DeleteRequestedClassMutation = {
+export const DeleteRequestedClass = {
 	type: RequestedClassType,
 	args: {
 		id: {

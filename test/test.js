@@ -44,13 +44,13 @@ describe('Prism API Mocha Testing', () => {
 
 	var addedCategoryId
 
-	it('it should add a category', done => {
+	it('it should create a category', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send('mutation { add(name: "testtesttest") { id, name } }')
+			.send('mutation { createCategory (name: "testtesttest") { id, name } }')
 			.end((err, res) => {
-				addedCategoryId = res.body.data.add.id
-				expect(res.body.data.add.id).to.be.a('string')
+				addedCategoryId = res.body.data.createCategory.id
+				expect(res.body.data.createCategory.id).to.be.a('string')
 				done()
 			})
 	})
