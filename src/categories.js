@@ -16,16 +16,7 @@ const CategoryType = new GraphQLObjectType({
 export const Categories = {
 	type: new GraphQLList(CategoryType),
 	resolve: () => {
-		return new Promise((resolve, reject) => {
-			categories().find().toArray().then(result => {
-				var categories = result.map(r => {
-					r.id = r._id
-					delete r._id
-					return r
-				})
-				resolve(categories)
-			})
-		})
+		return categories.read()
 	}
 }
 
@@ -37,19 +28,11 @@ export const CreateCategory = {
 		}
 	},
 	resolve: (root, args) => {
-		return new Promise((resolve, reject) => {
-			categories().insertOne({ name: args.name }).then(r => {
-				categories().find({ _id: r.insertedId }).toArray().then(docs => {
-					var cat = docs[0]
-					cat.id = docs[0]._id
-					resolve(cat)
-				})
-			})
-		})
+		return categories.create({ name: args.name })
 	}
 }
 
-export const RemoveCategory = {
+export const DeleteCategory = {
 	type: CategoryType,
 	args: {
 		id: {
@@ -57,10 +40,6 @@ export const RemoveCategory = {
 		}
 	},
 	resolve: (root, args) => {
-		return new Promise((resolve, reject) => {
-			categories().deleteOne({ _id: args.id }).then((r) => {
-				resolve({ id: args.id, status: 'DELETE_SUCCESS' })
-			})
-		})
+		return categories.delete(args.id)
 	}
 }

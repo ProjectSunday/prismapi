@@ -14,19 +14,9 @@ const RequestedClassType = new GraphQLObjectType({
 export const RequestedClasses = {
 	type: new GraphQLList(RequestedClassType),
 	resolve: () => {
-		return new Promise((resolve, reject) => {
-			requestedClasses().find().toArray().then(result => {
-				var requested = result.map(r => {
-					r.id = r._id
-					delete r._id
-					return r
-				})
-				resolve(requested)
-			})
-		})
+		return requestedClasses.read()
 	}
 }
-
 
 export const CreateRequestedClass = {
 	type: RequestedClassType,
@@ -34,18 +24,9 @@ export const CreateRequestedClass = {
 		name: { type: new GraphQLNonNull(GraphQLString) }
 	},
 	resolve: (root, args) => {
-		return new Promise((resolve, reject) => {
-			requestedClasses().insertOne({ name: args.name }).then(r => {
-				requestedClasses().find({ _id: r.insertedId }).toArray().then(docs => {
-					var requested = docs[0]
-					requested.id = docs[0]._id
-					resolve(requested)
-				})
-			})
-		})
+		return requestedClasses.create({ name: args.name })
 	}
 }
-
 
 export const DeleteRequestedClass = {
 	type: RequestedClassType,
@@ -55,11 +36,7 @@ export const DeleteRequestedClass = {
 		}
 	},
 	resolve: (root, args) => {
-		return new Promise((resolve, reject) => {
-			requestedClasses().deleteOne({ _id: args.id }).then((r) => {
-				resolve({ id: args.id, status: 'DELETE_SUCCESS' })
-			})
-		})
+		return requestedClasses.delete(args.id)
 	}
 }
 

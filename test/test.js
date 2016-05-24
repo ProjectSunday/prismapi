@@ -22,16 +22,6 @@ describe('Prism API Mocha Testing', () => {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	it('it should return all categories', done => {
-		var expected = {
-			data: {
-				categories: [
-					{ id: 0 },
-					{ id: 1 },
-					{ id: 2 }
-				]
-			}
-		}
-
 		request.post('/graphql')
 			.set(headers)
 			.send('query { categories { id } }')
@@ -58,9 +48,10 @@ describe('Prism API Mocha Testing', () => {
 	it('it should remove a category', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send(`mutation { removeCategory(id: "${addedCategoryId}") { id, status } }`)
+			.send(`mutation { deleteCategory(id: "${addedCategoryId}") { id, status } }`)
 			.end((err, res) => {
-				assert.equal(res.body.data.removeCategory.status, 'DELETE_SUCCESS')
+				// console.log(res.body)
+				assert.equal(res.body.data.deleteCategory.status, 'DELETE_SUCCESS')
 				done()
 			})
 	})
