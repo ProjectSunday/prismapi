@@ -2,10 +2,10 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 
 import { categories } from './db'
 
-const CategoryType = new GraphQLObjectType({
+export const CategoryType = new GraphQLObjectType({
 	name: 'CategoryType',
 	fields: () => ({
-		id: { type: GraphQLID },
+		_id: { type: GraphQLID },
 		name: { type: GraphQLString },
 		imageName: { type: GraphQLString },
 		status: { type: GraphQLString }
@@ -35,11 +35,11 @@ export const CreateCategory = {
 export const DeleteCategory = {
 	type: CategoryType,
 	args: {
-		id: {
+		_id: {
 			type: new GraphQLNonNull(GraphQLID)
 		}
 	},
 	resolve: (root, args) => {
-		return categories.delete(args.id)
+		return categories.delete(args._id)
 	}
 }

@@ -1,12 +1,21 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { requestedClasses } from './db'
+import { CategoryType } from './categories'
+import { requestedClasses, categories } from './db'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',
 	fields: () => ({
-		id: { type: GraphQLID },
+		_id: { type: GraphQLID },
 		name: { type: GraphQLString },
+		category: { 
+			type: CategoryType,
+			resolve: (requestedClass) => {
+				return categories.read(requestedClass.category)
+			}
+		},
+		date: { type: GraphQLString }, //this is wrong
+		location: { type: GraphQLString },
 		status: { type: GraphQLString }
 	})
 })
@@ -21,22 +30,27 @@ export const RequestedClasses = {
 export const CreateRequestedClass = {
 	type: RequestedClassType,
 	args: {
-		name: { type: new GraphQLNonNull(GraphQLString) }
+		name: { type: new GraphQLNonNull(GraphQLString) },
+		category: { type: GraphQLID }
 	},
 	resolve: (root, args) => {
-		return requestedClasses.create({ name: args.name })
+		return new Promise((resolve, reject) => {  //just for testing purpose
+			setTimeout(() => {
+				requestedClasses.create({ name: args.name, category: args.category }).then(resolve, reject)
+			}, 10000)  //delaying for testing purpose
+		})
 	}
 }
 
 export const DeleteRequestedClass = {
 	type: RequestedClassType,
 	args: {
-		id: {
+		_id: {
 			type: new GraphQLNonNull(GraphQLID)
 		}
 	},
 	resolve: (root, args) => {
-		return requestedClasses.delete(args.id)
+		return requestedClasses.delete(args._id)
 	}
 }
 

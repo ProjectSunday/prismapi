@@ -24,8 +24,9 @@ describe('Prism API Mocha Testing', () => {
 	it('it should return all categories', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send('query { categories { id } }')
+			.send('query { categories { _id } }')
 			.end((err, res) => {
+				// console.log(res.body)
 				assert.isArray(res.body.data.categories)
 				done()
 			})
@@ -37,10 +38,11 @@ describe('Prism API Mocha Testing', () => {
 	it('it should create a category', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send('mutation { createCategory (name: "testtesttest") { id, name } }')
+			.send('mutation { createCategory (name: "testtesttest") { _id, name } }')
 			.end((err, res) => {
-				addedCategoryId = res.body.data.createCategory.id
-				expect(res.body.data.createCategory.id).to.be.a('string')
+				// console.log(res.body)
+				addedCategoryId = res.body.data.createCategory._id
+				expect(res.body.data.createCategory._id).to.be.a('string')
 				done()
 			})
 	})
@@ -48,7 +50,7 @@ describe('Prism API Mocha Testing', () => {
 	it('it should remove a category', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send(`mutation { deleteCategory(id: "${addedCategoryId}") { id, status } }`)
+			.send(`mutation { deleteCategory(_id: "${addedCategoryId}") { _id, status } }`)
 			.end((err, res) => {
 				// console.log(res.body)
 				assert.equal(res.body.data.deleteCategory.status, 'DELETE_SUCCESS')
@@ -59,7 +61,7 @@ describe('Prism API Mocha Testing', () => {
 	it('it should return all requested classes', done => {
 		request.post('/graphql')
 			.set(headers)
-			.send(`query { requestedClasses { id, name } }`)
+			.send(`query { requestedClasses { _id, name } }`)
 			.end((err, res) => {
 				assert.equal(res.body.data.requestedClasses.length > 0, true)
 				done()
@@ -74,7 +76,7 @@ describe('Prism API Mocha Testing', () => {
 			.send(`
 				mutation {
 					createRequestedClass (name: "testrequestedclass") { 
-						id,
+						_id,
 						name 
 					} 
 				}`
@@ -82,7 +84,7 @@ describe('Prism API Mocha Testing', () => {
 			.end((err, res) => {
 				// console.log(res.body)
 				assert.equal(res.body.data.createRequestedClass.name, 'testrequestedclass')
-				createRequestedClassId = res.body.data.createRequestedClass.id
+				createRequestedClassId = res.body.data.createRequestedClass._id
 				done()
 			})
 	})
@@ -92,15 +94,15 @@ describe('Prism API Mocha Testing', () => {
 			.set(headers)
 			.send(`
 				mutation {
-					deleteRequestedClass(id: "${createRequestedClassId}") { 
-						id,
+					deleteRequestedClass(_id: "${createRequestedClassId}") { 
+						_id,
 						status 
 					} 
 				}`
 			)
 			.end((err, res) => {
 				// console.log(res.body)
-				assert.equal(res.body.data.deleteRequestedClass.id, createRequestedClassId)
+				assert.equal(res.body.data.deleteRequestedClass._id, createRequestedClassId)
 				assert.equal(res.body.data.deleteRequestedClass.status, 'DELETE_SUCCESS')
 				done()
 			})

@@ -11,39 +11,35 @@ export const requestedClasses = {
 			collection.insertOne(requested).then(r => {
 				return collection.find({ _id: r.insertedId }).toArray()
 			}).then(docs => {
-				var requested = docs[0]
-				requested.id = docs[0]._id
-				resolve(requested)
+				resolve(docs[0])
 			}, reject)
 		})
 	},
-	read () {
+	read (_id) {
 		return new Promise((resolve, reject) => {
+			// if (_id === undefined) {
+			// 	var query = {}
+			// } else {
+			// 	var query = { _id: ObjectID(_id) }
+			// }
+			// console.log('query,', query)
 			var collection = _db.collection('requestedclasses')
-			collection.find().toArray().then(result => {
-				var requested = result.map(r => {
-					r.id = r._id
-					delete r._id
-					return r
-				})
-				resolve(requested)
-			}, reject)
+			collection.find().toArray().then(resolve, reject)
 		})
 	},
-	delete (id) {
+	delete (_id) {
 		return new Promise((resolve, reject) => {
 			var collection = _db.collection('requestedclasses')
-			collection.deleteOne({ _id: ObjectID(id) }).then(r => {
+			collection.deleteOne({ _id: ObjectID(_id) }).then(r => {
 				// console.log('r:', r)
 				if (r.deletedCount === 1) {
-					resolve({ id, status: 'DELETE_SUCCESS' })
+					resolve({ _id, status: 'DELETE_SUCCESS' })
 				} else {
-					resolve({ id, status: 'DELETE_FAIL' })
+					resolve({ _id, status: 'DELETE_FAIL' })
 				}
 			}, reject)
 		})
 	}
-
 }
 
 export const categories = {
@@ -56,34 +52,40 @@ export const categories = {
 				return collection.find({ _id: r.insertedId }).toArray()
 			})
 			.then(docs => {
-				var cat = docs[0]
-				cat.id = docs[0]._id
-				resolve(cat)
+				resolve(docs[0])
 			}, reject)
 		})
 	},
-	read () {
-		return new Promise((resolve, reject) => {
+	read (_id) {
+
+		const readAll = new Promise((resolve, reject) => {
 			var collection = _db.collection('categories')
-			collection.find().toArray().then(result => {
-				var categories = result.map(r => {
-					r.id = r._id
-					delete r._id
-					return r
-				})
-				resolve(categories)
+			collection.find().toArray().then(resolve, reject)
+		})
+
+		const readOne = new Promise((resolve, reject) => {
+			var collection = _db.collection('categories')
+			collection.find({ _id: ObjectID(_id) }).toArray().then(result => {
+				resolve(result[0])
 			}, reject)
 		})
+
+		if (_id === undefined) {
+			return readAll
+		} else {
+			return readOne
+		}
+
 	},
-	delete (id) {
+	delete (_id) {
 		return new Promise((resolve, reject) => {
 			var collection = _db.collection('categories')
 
-			collection.deleteOne({ _id: ObjectID(id) }).then((r) => {
+			collection.deleteOne({ _id: ObjectID(_id) }).then((r) => {
 				if (r.deletedCount === 1) {
-					resolve({ id, status: 'DELETE_SUCCESS' })
+					resolve({ _id, status: 'DELETE_SUCCESS' })
 				} else {
-					resolve({ id, status: 'DELETE_FAIL' })
+					resolve({ _id, status: 'DELETE_FAIL' })
 				}
 			})
 		})
