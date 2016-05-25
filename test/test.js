@@ -9,6 +9,7 @@ const headers = { 'Content-Type': 'application/graphql' }
 var request, listener
 
 describe('Prism API Mocha Testing', () => {
+	// this.timeout(12000)
 
 	before(done => {
 		console.log('===================================================================')
@@ -82,14 +83,14 @@ describe('Prism API Mocha Testing', () => {
 				}`
 			)
 			.end((err, res) => {
-				// console.log(res.body)
+				// console.log('add requested class:', res.body)
 				assert.equal(res.body.data.createRequestedClass.name, 'testrequestedclass')
 				createRequestedClassId = res.body.data.createRequestedClass._id
 				done()
 			})
 	})
 
-	it('it should remove a requested class', done => {
+	it('it should delete a requested class', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`
@@ -101,7 +102,7 @@ describe('Prism API Mocha Testing', () => {
 				}`
 			)
 			.end((err, res) => {
-				// console.log(res.body)
+				// console.log('delete requested class:', res.body)
 				assert.equal(res.body.data.deleteRequestedClass._id, createRequestedClassId)
 				assert.equal(res.body.data.deleteRequestedClass.status, 'DELETE_SUCCESS')
 				done()
