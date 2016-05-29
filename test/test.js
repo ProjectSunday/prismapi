@@ -9,10 +9,8 @@ const headers = { 'Content-Type': 'application/graphql' }
 var request, listener
 
 describe('Prism API Mocha Testing', () => {
-	// this.timeout(12000)
 
 	before(done => {
-		console.log('===================================================================')
 		app.then(runningServer => {
 			listener = runningServer
 			request = supertest.agent(listener)
@@ -130,4 +128,10 @@ describe('Prism API Mocha Testing', () => {
 
 })
 
+describe('Meetup API Mocha Testing', () => {
+	it('it should work', done => {
+		done()
+	})
 
+
+})

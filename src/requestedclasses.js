@@ -37,7 +37,7 @@ export const CreateRequestedClass = {
 		return new Promise((resolve, reject) => {  //just for testing purpose
 			setTimeout(() => {
 				requestedClasses.create({ name: args.name, category: args.category }).then(resolve, reject)
-			}, 10000)  //delaying for testing purpose
+			}, 5000)  //delaying for testing purpose
 		})
 	}
 }
