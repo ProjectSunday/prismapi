@@ -4,6 +4,8 @@
 
 working on requested, hooking up to front end
 
+moving stuff around and putting in import root
+
 ### Installation
 
 node v5.10.0<br />

@@ -2,7 +2,7 @@ import express 		from 'express'
 import graphqlHTTP 	from 'express-graphql'
 import cors			from 'cors'
 
-import schema from './schema'
+import schema from './schema/schema'
 import { connect } from './db'
 
 const port = process.env.PORT || 9000
