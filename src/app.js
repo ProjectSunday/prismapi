@@ -2,8 +2,8 @@ import express 		from 'express'
 import graphqlHTTP 	from 'express-graphql'
 import cors			from 'cors'
 
-import schema from './schema/schema'
-import { connect } from './db'
+import schema from '~/schema/schema'
+import { connect } from '~/data/data'
 
 const port = process.env.PORT || 9000
 
@@ -18,6 +18,7 @@ export default new Promise((resolve, reject) => {
 		// })
 
 
+
 		app.use('/graphql', cors(), graphqlHTTP((req, res) => {
 			// console.log('some reqest', req.query)
 			return {
@@ -25,6 +26,17 @@ export default new Promise((resolve, reject) => {
 				graphiql: true
 			}
 		}))
+
+
+		app.get('/authentication/callback', (req, res, a, b,c) => {
+			console.log('authentication callback')
+			console.log('req:', req)
+			console.log('res:', res)
+			console.log('abc:', a,b,c)
+		})
+
+
+
 
 		var listener = app.listen(port, () => {
 		    console.log(`=====> Prism API server online.  Port: ${port}. Environment: BLAH`)

@@ -1,4 +1,11 @@
 {
-	"plugins": [ "babel-root-import" ],
+	"plugins": [
+		[
+			"babel-root-import",
+			{
+				"rootPathSuffix": "src"
+			}
+		]
+	],
 	"presets": [ "es2015" ]
 }
