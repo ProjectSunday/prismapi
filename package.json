@@ -4,10 +4,8 @@
   "description": "Prism API",
   "main": "index.js",
   "scripts": {
-    "test": "mongod --dbpath db/local | mocha --watch --compilers js:babel-register",
-    "server": "node index.js",
-    "mongo": "mongod --dbpath db/local",
-    "start": "mongod --dbpath db/local | node index.js"
+    "start": "mongod --dbpath db/local | mocha --watch --compilers js:babel-register",
+    "server": "mongod --dbpath db/local | node index.js"
   },
   "repository": {
     "type": "git",

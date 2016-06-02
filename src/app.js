@@ -11,14 +11,6 @@ export default new Promise((resolve, reject) => {
 	connect().then(() => {
 		var app = express()
 
-		// app.use(function(req, res, next) {
-		//   res.header("Access-Control-Allow-Origin", "*")
-		//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-		//   next();
-		// })
-
-
-
 		app.use('/graphql', cors(), graphqlHTTP((req, res) => {
 			// console.log('some reqest', req.query)
 			return {
@@ -26,17 +18,6 @@ export default new Promise((resolve, reject) => {
 				graphiql: true
 			}
 		}))
-
-
-		app.get('/authentication/callback', (req, res, a, b,c) => {
-			console.log('authentication callback')
-			console.log('req:', req)
-			console.log('res:', res)
-			console.log('abc:', a,b,c)
-		})
-
-
-
 
 		var listener = app.listen(port, () => {
 		    console.log(`=====> Prism API server online.  Port: ${port}. Environment: BLAH`)
