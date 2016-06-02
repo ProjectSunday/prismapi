@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 
 import { Categories, CreateCategory, DeleteCategory } from './categories'
 import { RequestedClasses, CreateRequestedClass, DeleteRequestedClass } from './requestedclasses'
-import { User } from './users'
+import { UserQuery } from './users'
 
 const QueryType = new GraphQLObjectType({
 	name: 'QueryType',
@@ -10,7 +10,7 @@ const QueryType = new GraphQLObjectType({
 		return {
 			categories: Categories,
 			requestedClasses: RequestedClasses,
-			user: User
+			user: UserQuery
 		}
 	}
 })

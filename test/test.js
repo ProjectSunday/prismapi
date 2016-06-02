@@ -107,24 +107,47 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('it should return a user', done => {
+	it('it should not return a valid user with a bad token', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`
 				query {
-					user (token: "testtoken") {
+					user (token: "badbadtoken") {
 						_id
 					}
 				}
 			`)
 			.end((err, res) => {
-				console.log('res:', res.body)
-				assert.equal(res.body.data.user._id, 'testuserid')
+				// console.log('res:', res.body)
+				assert.equal(res.body.data.user, null)
 				done()
 			})
 	})
 
+	it('it should get the local learner test user', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send(`
+				query {
+					user (token: "3aa41f4aa21ae45ebe39311b7e8b9758") {
+						_id,
+						meetup {
+							id
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				// console.log('res:', res.body)
 
+				if (res.body.errors) {
+					console.error('errors', res.body.errors)
+				}
+
+				assert.equal(res.body.data.user.meetup.id, '184522987')
+				done()
+			})
+	})
 
 	// describe('#indexOf()', function () {
 	// 	it('should return -1 when the value is not present', function (done) {

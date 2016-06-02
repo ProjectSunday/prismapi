@@ -20,7 +20,7 @@ export default new Promise((resolve, reject) => {
 		}))
 
 		var listener = app.listen(port, () => {
-		    console.log(`=====> Prism API server online.  Port: ${port}. Environment: BLAH`)
+		    console.log(`=====> Prism API Server Online.  Port: ${port}.  Environment: BLAH`)
 			resolve(listener)
 		})
 

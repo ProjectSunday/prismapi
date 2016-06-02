@@ -111,9 +111,34 @@ export const categories = {
 
 export const users = {
 	read (token) {
-		var blah = getMember(token)
-		console.log('member', blah)
-		return { _id: 'testuserid' }
+		return new Promise((resolve, reject) => {
+
+			var meetupProfile
+
+			getMember(token).then(m => {
+				meetupProfile = m
+				// console.log('meetupProfile', m)
+				return _db.collection('users').find({ 'meetup.id': meetupProfile.id }).toArray()
+			}).then(r => {
+				if (r.length) {
+					console.log('old user:', r[0].meetup.name)
+					resolve(r[0])
+				} else {
+					insert(_db.collection('users'), { meetup: meetupProfile }).then(u => {
+						console.log('new user:', u[0].meetup.name)
+						resolve(u[0])
+					})
+				}
+			}).catch(reject)
+		})
+
+		// return { _id: 'testuserid' }
 	}
+}
+
+const insert = (collection, toInsert) => {
+	return collection.insertOne(toInsert).then(r => {
+		return collection.find({ _id: r.insertedId }).toArray()
+	})
 }
 
