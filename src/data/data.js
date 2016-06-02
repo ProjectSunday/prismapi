@@ -1,8 +1,25 @@
 import { MongoClient, ObjectID } from 'mongodb'
 
+import { getMember } from '~/meetup/meetup'
+
+
 var PRISM_DB_CONNECTION_STRING = 'mongodb://localhost:27017/prism'
 
 var _db
+
+export const connect = () => {
+	return new Promise((resolve, reject) => {
+		MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
+		    console.log('=====> Connected to mongo server:', PRISM_DB_CONNECTION_STRING);
+		    _db = db
+		    resolve()
+		}, error => {
+		    console.error('Unable to connect to mongo server.')
+		    console.error(error);
+		    reject()
+		})
+	})
+}
 
 export const requestedClasses = {
 	create (requested) {
@@ -92,16 +109,11 @@ export const categories = {
 	}
 }
 
-export const connect = () => {
-	return new Promise((resolve, reject) => {
-		MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
-		    console.log('=====> Connected to mongo server:', PRISM_DB_CONNECTION_STRING);
-		    _db = db
-		    resolve()
-		}, error => {
-		    console.error('Unable to connect to mongo server.')
-		    console.error(error);
-		    reject()
-		})
-	})
+export const users = {
+	read (token) {
+		var blah = getMember(token)
+		console.log('member', blah)
+		return { _id: 'testuserid' }
+	}
 }
+

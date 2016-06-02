@@ -30,6 +30,7 @@
     "express": "^4.13.4",
     "express-graphql": "^0.5.1",
     "graphql": "^0.6.0",
-    "mongodb": "^2.1.18"
+    "mongodb": "^2.1.18",
+    "superagent": "^2.0.0"
   }
 }

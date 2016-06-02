@@ -2,13 +2,15 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 
 import { Categories, CreateCategory, DeleteCategory } from './categories'
 import { RequestedClasses, CreateRequestedClass, DeleteRequestedClass } from './requestedclasses'
+import { User } from './users'
 
 const QueryType = new GraphQLObjectType({
 	name: 'QueryType',
 	fields: () => {
 		return {
 			categories: Categories,
-			requestedClasses: RequestedClasses
+			requestedClasses: RequestedClasses,
+			user: User
 		}
 	}
 })

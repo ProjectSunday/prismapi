@@ -74,10 +74,10 @@ describe('Prism API Mocha Testing', () => {
 			.set(headers)
 			.send(`
 				mutation {
-					createRequestedClass (name: "testrequestedclass") { 
+					createRequestedClass (name: "testrequestedclass") {
 						_id,
-						name 
-					} 
+						name
+					}
 				}`
 			)
 			.end((err, res) => {
@@ -93,16 +93,33 @@ describe('Prism API Mocha Testing', () => {
 			.set(headers)
 			.send(`
 				mutation {
-					deleteRequestedClass(_id: "${createRequestedClassId}") { 
+					deleteRequestedClass(_id: "${createRequestedClassId}") {
 						_id,
-						status 
-					} 
+						status
+					}
 				}`
 			)
 			.end((err, res) => {
 				// console.log('delete requested class:', res.body)
 				assert.equal(res.body.data.deleteRequestedClass._id, createRequestedClassId)
 				assert.equal(res.body.data.deleteRequestedClass.status, 'DELETE_SUCCESS')
+				done()
+			})
+	})
+
+	it('it should return a user', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send(`
+				query {
+					user (token: "testtoken") {
+						_id
+					}
+				}
+			`)
+			.end((err, res) => {
+				console.log('res:', res.body)
+				assert.equal(res.body.data.user._id, 'testuserid')
 				done()
 			})
 	})
@@ -128,10 +145,12 @@ describe('Prism API Mocha Testing', () => {
 
 })
 
-describe('Meetup API Mocha Testing', () => {
-	it('it should work', done => {
-		done()
-	})
+// describe('Meetup API Mocha Testing', () => {
+// 	it('should return a member', done => {
 
 
-})
+// 		done()
+// 	})
+
+
+// })
