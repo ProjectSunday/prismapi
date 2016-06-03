@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 import { users } from '~/data/data'
+import { getMember } from '~/meetup/meetup'
 
 const MeetupProfileType = new GraphQLObjectType({
 	name: 'MeetupProfile',
@@ -20,6 +21,7 @@ const UserType = new GraphQLObjectType({
 				return user.meetup
 			}
 		},
+		token: { type: GraphQLString },
 		status: { type: GraphQLString }
 	})
 })
@@ -35,3 +37,14 @@ export const UserQuery = {
 	}
 }
 
+export const AuthenticateUserMutation = {
+	type: UserType,
+	args: {
+		token: { type: GraphQLString }
+	},
+	resolve: (root, args) => {
+		return getMember(args.token).then(m => {
+			return users.getFromMeetupProfile(m, args.token)
+		})
+	}
+}

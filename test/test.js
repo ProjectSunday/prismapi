@@ -1,7 +1,9 @@
 import { assert, expect } from 'chai'
 import supertest from 'supertest'
 
-import app from '../src/app'
+import app from '~/app'
+
+import { log } from '~/debug'
 
 
 const headers = { 'Content-Type': 'application/graphql' }
@@ -20,7 +22,7 @@ describe('Prism API Mocha Testing', () => {
 
 	///////////////////////////////////////////////////////////////////////////////////
 
-	it('it should return all categories', done => {
+	it('should return all categories', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send('query { categories { _id } }')
@@ -34,7 +36,7 @@ describe('Prism API Mocha Testing', () => {
 
 	var addedCategoryId
 
-	it('it should create a category', done => {
+	it('should create a category', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send('mutation { createCategory (name: "testtesttest") { _id, name } }')
@@ -46,7 +48,7 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('it should remove a category', done => {
+	it('should remove a category', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`mutation { deleteCategory(_id: "${addedCategoryId}") { _id, status } }`)
@@ -57,7 +59,7 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('it should return all requested classes', done => {
+	it('should return all requested classes', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`query { requestedClasses { _id, name } }`)
@@ -69,7 +71,7 @@ describe('Prism API Mocha Testing', () => {
 
 	var createRequestedClassId;
 
-	it('it should add a requested class', done => {
+	it('should add a requested class', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`
@@ -88,7 +90,7 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('it should delete a requested class', done => {
+	it('should delete a requested class', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`
@@ -107,12 +109,12 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('it should not return a valid user with a bad token', done => {
+	it('should not return a valid user with a bad token', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`
-				query {
-					user (token: "badbadtoken") {
+				mutation {
+					authenticateUser (token: "badbadtoken") {
 						_id
 					}
 				}
@@ -124,13 +126,17 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('it should get the local learner test user', done => {
+	//get this from the front end
+	var localLearnersUserToken = 'cdaeb8daa14baed7eceb6fcacdf3a790'
+
+	it('should authenticate the local learner test user or give unauthorized', done => {
 		request.post('/graphql')
 			.set(headers)
 			.send(`
-				query {
-					user (token: "3aa41f4aa21ae45ebe39311b7e8b9758") {
+				mutation {
+					authenticateUser (token: "${localLearnersUserToken}") {
 						_id,
+						token,
 						meetup {
 							id
 						}
@@ -138,16 +144,67 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				// console.log('res:', res.body)
-
-				if (res.body.errors) {
-					console.error('errors', res.body.errors)
+				// log(res.body)
+				if (res.body.errors.length) {
+					assert.equal(res.body.errors[0].message, 'Unauthorized')
+				} else {
+					assert.equal(res.body.data.authenticateUser.token, localLearnersUserToken)
 				}
-
-				assert.equal(res.body.data.user.meetup.id, '184522987')
 				done()
 			})
 	})
+
+
+	it('should get the fake user with the testtoken', done => {
+		request.post('/graphql')
+			.set(headers)
+			.send(`
+				query {
+					user (token: "testtoken") {
+						_id,
+						token,
+						meetup {
+							id
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
+				assert.equal(res.body.data.user.token, 'testtoken')
+				assert.equal(res.body.data.user.meetup.id, 1111)
+				done()
+			})
+	})
+
+
+	// it('should get the local learner test user', done => {
+	// 	request.post('/graphql')
+	// 		.set(headers)
+	// 		.send(`
+	// 			query {
+	// 				user (token: "faketoken") {
+	// 					_id,
+	// 					meetup {
+	// 						id
+	// 					}
+	// 				}
+	// 			}
+	// 		`)
+	// 		.end((err, res) => {
+	// 			// console.log('res:', res.body)
+
+	// 			if (res.body.errors) {
+	// 				console.error('errors', res.body.errors)
+	// 			}
+
+	// 			assert.equal(res.body.data.user.meetup.id, '1111')
+	// 			assert.equal(res.body.data.user.meetup.name, 'FAKE Local Learners Test User')
+	// 			done()
+	// 		})
+	// })
+
+
 
 	// describe('#indexOf()', function () {
 	// 	it('should return -1 when the value is not present', function (done) {

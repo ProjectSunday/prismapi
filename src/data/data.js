@@ -110,35 +110,39 @@ export const categories = {
 }
 
 export const users = {
+	getFromMeetupProfile (meetup, token) {
+
+		var c = _db.collection('users')
+		var f = { 'meetup.id': meetup.id }
+		var s = { meetup, token }
+
+		return mutate(c, f, s)
+
+	},
+
 	read (token) {
 		return new Promise((resolve, reject) => {
-
-			var meetupProfile
-
-			getMember(token).then(m => {
-				meetupProfile = m
-				// console.log('meetupProfile', m)
-				return _db.collection('users').find({ 'meetup.id': meetupProfile.id }).toArray()
-			}).then(r => {
-				if (r.length) {
-					console.log('old user:', r[0].meetup.name)
-					resolve(r[0])
-				} else {
-					insert(_db.collection('users'), { meetup: meetupProfile }).then(u => {
-						console.log('new user:', u[0].meetup.name)
-						resolve(u[0])
-					})
-				}
+			_db.collection('users').find({ token }).toArray().then(r => {
+				resolve(r[0])
 			}).catch(reject)
 		})
-
-		// return { _id: 'testuserid' }
-	}
+	 }
 }
 
-const insert = (collection, toInsert) => {
-	return collection.insertOne(toInsert).then(r => {
-		return collection.find({ _id: r.insertedId }).toArray()
+const mutate = (col, filter, set) => {
+	return new Promise((resolve, reject) => {
+		col.findOneAndUpdate(filter,
+			{ $set: set },
+			{ upsert: true }
+		).then(r => {
+			if (r.value) {
+				resolve(r.value)
+			} else {
+				col.find({ _id: r.lastErrorObject.upserted }).then(u => {
+					resolve(u[0])
+				}, reject)
+			}
+		})
 	})
 }
 

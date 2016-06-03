@@ -2,21 +2,12 @@ var MongoClient =require('mongodb').MongoClient
 
 var PRISM_DB_CONNECTION_STRING = 'mongodb://localhost:27017/prism'
 
-
-// export const categories = () => {
-// 	return _db.collection('categories')
-// }
-
-// export const requestedClasses = () => {
-// 	return _db.collection('requestedclasses')
-// }
-
 var categories = [
 	{ name: 'Automotive', 		imageName: 'automotive' },
 	{ name: 'Culinary', 		imageName: 'culinary' },
-	{ name: 'DIY', 				imageName: 'diy' },		
+	{ name: 'DIY', 				imageName: 'diy' },
 	{ name: 'Fitness', 			imageName: 'fitness' },
-	{ name: 'Games', 			imageName: 'games' },  
+	{ name: 'Games', 			imageName: 'games' },
 	{ name: 'History',    		imageName: 'history' },
 	{ name: 'Language',    		imageName: 'language' },
 	{ name: 'Literature',   	imageName: 'literature' },
@@ -30,19 +21,51 @@ var categories = [
 ];
 
 
+var fakeMeetupProfile = {
+    birthday: { year: 1916 },
+    country: 'us',
+    city: 'Indianapolis',
+    topics: [],
+    joined: 1424205625000,
+    link: 'http://www.meetup.com/members/184522987',
+    photo: {
+        highres_link: 'http://photos1.meetupstatic.com/photos/member/2/9/0/2/highres_246670498.jpeg',
+        photo_id: 246670498,
+        photo_link: 'http://photos3.meetupstatic.com/photos/member/2/9/0/2/member_246670498.jpeg',
+        thumb_link: 'http://photos1.meetupstatic.com/photos/member/2/9/0/2/thumb_246670498.jpeg'
+    },
+    lon: -86.2699966430664,
+    other_services: {},
+    name: 'FAKE Local Learners Test User',
+    visited: 1464842110000,
+    self: { common: {} },
+    id: 1111,
+    state: 'IN',
+    lang: 'en_US',
+    lat: 39.84000015258789,
+    status: 'active'
+}
 
-// export const connect = () => {
-// 	return new Promise((resolve, reject) => {
+
 MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
-    console.log('=====> Connected to mongo server:', PRISM_DB_CONNECTION_STRING);
+
+    const insertFakeUser = () => {
+        db.collection('users').insert({
+            meetup: fakeMeetupProfile,
+            token: 'testtoken'
+        })
+    }
+
 
     var wipeAll = [
     	db.collection('categories').remove(),
-    	db.collection('requestedclasses').remove()
+    	db.collection('requestedclasses').remove(),
+        db.collection('users').remove()
     ]
 
     Promise.all(wipeAll).then(() => {
-		return db.collection('categories').insert(categories)
+        insertFakeUser()
+        return db.collection('categories').insert(categories)
     }).then(result => {
     	console.log('result', result)
     	var categories = result.ops
@@ -61,9 +84,9 @@ MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
     	console.log('inserted', inserted)
     	db.close()
     })
+
 }, error => {
     console.error('Unable to connect to mongo server.')
     console.error(error);
 })
-	// })
-// }
+

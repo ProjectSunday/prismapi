@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 
 import { Categories, CreateCategory, DeleteCategory } from './categories'
 import { RequestedClasses, CreateRequestedClass, DeleteRequestedClass } from './requestedclasses'
-import { UserQuery } from './users'
+import { UserQuery, AuthenticateUserMutation } from './users'
 
 const QueryType = new GraphQLObjectType({
 	name: 'QueryType',
@@ -21,7 +21,8 @@ const MutationType = new GraphQLObjectType({
 		createCategory: CreateCategory,
 		deleteCategory: DeleteCategory,
 		createRequestedClass: CreateRequestedClass,
-		deleteRequestedClass: DeleteRequestedClass
+		deleteRequestedClass: DeleteRequestedClass,
+		authenticateUser: AuthenticateUserMutation,
 	}
 })
 
