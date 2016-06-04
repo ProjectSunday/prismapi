@@ -164,15 +164,19 @@ describe('Prism API Mocha Testing', () => {
 						_id,
 						token,
 						meetup {
-							id
+							id,
+							photo {
+								thumb_link
+							}
 						}
 					}
 				}
 			`)
 			.end((err, res) => {
 				// log(res.body)
-				assert.equal(res.body.data.user.token, 'testtoken')
-				assert.equal(res.body.data.user.meetup.id, 1111)
+				expect(res.body.data.user.token).to.equal('testtoken')
+				expect(res.body.data.user.meetup.id).to.equal(1111)
+				expect(res.body.data.user.meetup.photo.thumb_link).to.exist
 				done()
 			})
 	})

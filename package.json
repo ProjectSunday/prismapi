@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "mongo": "mongod --dbpath db/local",
-    "start": "mongod --dbpath db/local | mocha --watch --compilers js:babel-register",
-    "server": "mongod --dbpath db/local | node index.js"
+    "test": "mongod --dbpath db/local | mocha --watch --compilers js:babel-register",
+    "start": "mongod --dbpath db/local | node index.js"
   },
   "repository": {
     "type": "git",

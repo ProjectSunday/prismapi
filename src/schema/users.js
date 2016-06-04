@@ -3,11 +3,19 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 import { users } from '~/data/data'
 import { getMember } from '~/meetup/meetup'
 
+const PhotoType = new GraphQLObjectType({
+	name: 'PhotoType',
+	fields: () => ({
+		thumb_link: { type: GraphQLString }
+	})
+})
+
 const MeetupProfileType = new GraphQLObjectType({
 	name: 'MeetupProfile',
 	fields: () => ({
 		id: { type: GraphQLInt },
-		name: { type: GraphQLString }
+		name: { type: GraphQLString },
+		photo: { type: PhotoType }
 	})
 })
 
