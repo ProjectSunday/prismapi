@@ -12,7 +12,6 @@ export default new Promise((resolve, reject) => {
 		var app = express()
 
 		app.use('/graphql', cors(), graphqlHTTP((req, res) => {
-			// console.log('some reqest', req.query)
 			return {
 				schema,
 				graphiql: true

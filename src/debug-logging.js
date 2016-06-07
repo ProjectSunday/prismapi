@@ -5,7 +5,7 @@ var options = {
   keysColor: 'yellow'
 }
 
-export const log = (data, message) => {
+export default (data, message) => {
 	message = message || '\n'
 	console.log(message)
 	console.log(prettyjson.render(data, options))

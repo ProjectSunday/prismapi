@@ -2,11 +2,10 @@ import { assert, expect } from 'chai'
 import supertest from 'supertest'
 
 import app from '~/app'
+import debugLogging from '~/debug-logging'
+global.log = debugLogging
 
-import { log } from '~/debug'
-
-
-const headers = { 'Content-Type': 'application/graphql' }
+const HEADERS = { 'Content-Type': 'application/graphql' }
 
 var request, listener
 
@@ -24,10 +23,9 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should return all categories', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send('query { categories { _id } }')
 			.end((err, res) => {
-				// console.log(res.body)
 				assert.isArray(res.body.data.categories)
 				done()
 			})
@@ -38,10 +36,9 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should create a category', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send('mutation { createCategory (name: "testtesttest") { _id, name } }')
 			.end((err, res) => {
-				// console.log(res.body)
 				addedCategoryId = res.body.data.createCategory._id
 				expect(res.body.data.createCategory._id).to.be.a('string')
 				done()
@@ -50,10 +47,9 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should remove a category', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`mutation { deleteCategory(_id: "${addedCategoryId}") { _id, status } }`)
 			.end((err, res) => {
-				// console.log(res.body)
 				assert.equal(res.body.data.deleteCategory.status, 'DELETE_SUCCESS')
 				done()
 			})
@@ -61,7 +57,7 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should return all requested classes', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`query { requestedClasses { _id, name } }`)
 			.end((err, res) => {
 				assert.equal(res.body.data.requestedClasses.length > 0, true)
@@ -73,7 +69,7 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should add a requested class', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`
 				mutation {
 					createRequestedClass (name: "testrequestedclass") {
@@ -92,7 +88,7 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should delete a requested class', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`
 				mutation {
 					deleteRequestedClass(_id: "${createRequestedClassId}") {
@@ -102,7 +98,6 @@ describe('Prism API Mocha Testing', () => {
 				}`
 			)
 			.end((err, res) => {
-				// console.log('delete requested class:', res.body)
 				assert.equal(res.body.data.deleteRequestedClass._id, createRequestedClassId)
 				assert.equal(res.body.data.deleteRequestedClass.status, 'DELETE_SUCCESS')
 				done()
@@ -111,7 +106,7 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should not return a valid user with a bad token', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`
 				mutation {
 					authenticateUser (token: "badbadtoken") {
@@ -120,18 +115,17 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				// console.log('res:', res.body)
 				assert.equal(res.body.data.user, null)
 				done()
 			})
 	})
 
 	//get this from the front end
-	var localLearnersUserToken = 'cdaeb8daa14baed7eceb6fcacdf3a790'
+	var localLearnersUserToken = '0e724b9da7d69fc5a335bc99f00a964f'
 
 	it('should authenticate the local learner test user or give unauthorized', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`
 				mutation {
 					authenticateUser (token: "${localLearnersUserToken}") {
@@ -145,7 +139,7 @@ describe('Prism API Mocha Testing', () => {
 			`)
 			.end((err, res) => {
 				// log(res.body)
-				if (res.body.errors.length) {
+				if (res.body.errors) {
 					assert.equal(res.body.errors[0].message, 'Unauthorized')
 				} else {
 					assert.equal(res.body.data.authenticateUser.token, localLearnersUserToken)
@@ -157,7 +151,7 @@ describe('Prism API Mocha Testing', () => {
 
 	it('should get the fake user with the testtoken', done => {
 		request.post('/graphql')
-			.set(headers)
+			.set(HEADERS)
 			.send(`
 				query {
 					user (token: "testtoken") {
@@ -184,7 +178,7 @@ describe('Prism API Mocha Testing', () => {
 
 	// it('should get the local learner test user', done => {
 	// 	request.post('/graphql')
-	// 		.set(headers)
+	// 		.set(HEADERS)
 	// 		.send(`
 	// 			query {
 	// 				user (token: "faketoken") {
