@@ -121,7 +121,7 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 	//get this from the front end
-	var localLearnersUserToken = '0e724b9da7d69fc5a335bc99f00a964f'
+	var localLearnersUserToken = 'f36c3134521b55eb20481af66be80430'
 
 	it('should authenticate the local learner test user or give unauthorized', done => {
 		request.post('/graphql')

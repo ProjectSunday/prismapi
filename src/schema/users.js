@@ -34,26 +34,37 @@ const UserType = new GraphQLObjectType({
 	})
 })
 
+/////////////////////////////////////////////////////////////////////////////
 
-export const UserQuery = {
-	type: UserType,
-	args: {
-		token: { type: GraphQLString }
-	},
-	resolve: (root, args) => {
-		return users.read(args.token)
+const queries = {
+	user: {
+		type: UserType,
+		args: {
+			token: { type: GraphQLString }
+		},
+		resolve: (root, args) => {
+			return users.read(args.token)
+		}
 	}
 }
 
-export const AuthenticateUserMutation = {
-	type: UserType,
-	args: {
-		token: { type: GraphQLString }
-	},
-	resolve: authenticateUser
+/////////////////////////////////////////////////////////////////////////////
+
+const mutations = {
+	authenticateUser: {
+		type: UserType,
+		args: {
+			token: { type: GraphQLString }
+		},
+		resolve: authenticateUser
+	}
 }
 
 async function authenticateUser(root, args) {
 	var m = await meetup.getMember(args.token)
 	return await users.getFromMeetupProfile(m, args.token)
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+export default { queries, mutations }

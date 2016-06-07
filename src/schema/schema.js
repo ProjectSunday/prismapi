@@ -2,33 +2,27 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 
 import { Categories, CreateCategory, DeleteCategory } from './categories'
 import { RequestedClasses, CreateRequestedClass, DeleteRequestedClass } from './requestedclasses'
-import { UserQuery, AuthenticateUserMutation } from './users'
 
-const QueryType = new GraphQLObjectType({
-	name: 'QueryType',
-	fields: () => {
-		return {
-			categories: Categories,
-			requestedClasses: RequestedClasses,
-			user: UserQuery
-		}
+import Users from './users'
+
+const query = new GraphQLObjectType({
+	name: 'query',
+	fields: {
+		categories: Categories,
+		requestedClasses: RequestedClasses,
+		...Users.queries
 	}
 })
 
-const MutationType = new GraphQLObjectType({
-	name: 'MutationType',
+const mutation = new GraphQLObjectType({
+	name: 'mutation',
 	fields: {
 		createCategory: CreateCategory,
 		deleteCategory: DeleteCategory,
 		createRequestedClass: CreateRequestedClass,
 		deleteRequestedClass: DeleteRequestedClass,
-		authenticateUser: AuthenticateUserMutation,
+		...Users.mutations
 	}
 })
 
-const schema = new GraphQLSchema({
-	query: QueryType,
-	mutation: MutationType
-})
-
-export default schema
+export default new GraphQLSchema({ query, mutation })
