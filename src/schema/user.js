@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { users } from '~/data/data'
+import db from '~/data/db'
 import meetup from '~/meetup/meetup'
 
 const PhotoType = new GraphQLObjectType({
@@ -19,7 +19,7 @@ const MeetupProfileType = new GraphQLObjectType({
 	})
 })
 
-const UserType = new GraphQLObjectType({
+export const UserType = new GraphQLObjectType({
 	name: 'User',
 	fields: () => ({
 		_id: { type: GraphQLID },
@@ -43,7 +43,7 @@ const queries = {
 			token: { type: GraphQLString }
 		},
 		resolve: (root, args) => {
-			return users.read(args.token)
+			return db.user.read(args.token)
 		}
 	}
 }
@@ -62,7 +62,7 @@ const mutations = {
 
 async function authenticateUser(root, args) {
 	var m = await meetup.getMember(args.token)
-	return await users.getFromMeetupProfile(m, args.token)
+	return await db.user.getFromMeetupProfile(m, args.token)
 }
 
 /////////////////////////////////////////////////////////////////////////////

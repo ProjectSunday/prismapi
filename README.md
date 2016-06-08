@@ -2,6 +2,8 @@
 
 ### Dev Notes
 
+i hate you meetup api
+
 ### Installation
 
 node v5.10.0<br />

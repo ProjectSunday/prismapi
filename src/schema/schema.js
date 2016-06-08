@@ -1,27 +1,26 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull, GraphQLOutputType } from 'graphql/type'
 
-import { Categories, CreateCategory, DeleteCategory } from './categories'
-import { RequestedClasses, CreateRequestedClass, DeleteRequestedClass } from './requestedclasses'
-
-import Users from './users'
+import Category 		from './category'
+import RequestedClass 	from './requestedclass'
+import UpcomingClass 	from './upcomingclass'
+import User 			from './user'
 
 const query = new GraphQLObjectType({
 	name: 'query',
 	fields: {
-		categories: Categories,
-		requestedClasses: RequestedClasses,
-		...Users.queries
+		...Category.queries,
+		...RequestedClass.queries,
+		...User.queries
 	}
 })
 
 const mutation = new GraphQLObjectType({
 	name: 'mutation',
 	fields: {
-		createCategory: CreateCategory,
-		deleteCategory: DeleteCategory,
-		createRequestedClass: CreateRequestedClass,
-		deleteRequestedClass: DeleteRequestedClass,
-		...Users.mutations
+		...Category.mutations,
+		...RequestedClass.mutations,
+		...UpcomingClass.mutations,
+		...User.mutations
 	}
 })
 

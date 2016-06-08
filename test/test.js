@@ -175,6 +175,25 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
+	it('should create an upcoming class', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				mutation {
+					createUpcomingClass (token: "testtoken", name: "testupcomingclass") {
+						_id,
+						name
+					}
+				}
+			`)
+			.end((err, res) => {
+				log(res.body)
+				expect(res.body.data.createUpcomingClass._id).to.exist
+				expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
+				done()
+			})
+	})
+
 
 	// it('should get the local learner test user', done => {
 	// 	request.post('/graphql')
