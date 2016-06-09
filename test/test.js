@@ -195,40 +195,31 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 
-	// it('should get the local learner test user', done => {
-	// 	request.post('/graphql')
-	// 		.set(HEADERS)
-	// 		.send(`
-	// 			query {
-	// 				user (token: "faketoken") {
-	// 					_id,
-	// 					meetup {
-	// 						id
-	// 					}
-	// 				}
-	// 			}
-	// 		`)
-	// 		.end((err, res) => {
-	// 			// console.log('res:', res.body)
+	it('should get the local learner test user', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				query {
+					user (token: "faketoken") {
+						_id,
+						meetup {
+							id
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				// console.log('res:', res.body)
 
-	// 			if (res.body.errors) {
-	// 				console.error('errors', res.body.errors)
-	// 			}
+				if (res.body.errors) {
+					console.error('errors', res.body.errors)
+				}
 
-	// 			assert.equal(res.body.data.user.meetup.id, '1111')
-	// 			assert.equal(res.body.data.user.meetup.name, 'FAKE Local Learners Test User')
-	// 			done()
-	// 		})
-	// })
-
-
-
-	// describe('#indexOf()', function () {
-	// 	it('should return -1 when the value is not present', function (done) {
-	// 		done()
-	// 	})
-	// })
-
+				assert.equal(res.body.data.user.meetup.id, '1111')
+				assert.equal(res.body.data.user.meetup.name, 'FAKE Local Learners Test User')
+				done()
+			})
+	})
 
 
 
@@ -236,11 +227,15 @@ describe('Prism API Mocha Testing', () => {
 
 	after(done => {
 		listener.close(() => {
+			var rand = Math.random()
+			console.log(`${rand}${rand}${rand}${rand}`)
 			done()
 		})
 	})
 
 })
+
+
 
 // describe('Meetup API Mocha Testing', () => {
 // 	it('should return a member', done => {
