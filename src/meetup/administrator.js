@@ -26,13 +26,28 @@ const accessTokenValid = () => {
 	})
 }
 
-const getAccessToken = () => {
+const refreshAccessToken = () => {
+	var url = 'https://secure.meetup.com/oauth2/access' +
+		'?client_id=' + meetup.client_id +
+		'&client_secret=' + meetup.client_secret +
+		'&grant_type=refresh_token' +
+		'&refresh_token=' + meetup.refresh_token
+
+	request
+		.post(url)
+		.set({'Content-Type': 'application/x-www-form-urlencoded'})
+		.end(function (e, r) {
+			meetup.access_token = r.body.access_token
+			meetup.refresh_token = r.body.refresh_token
+			meetup.created = new Date()
+			res.send(getMarkup())
+		})
 
 }
 
 setInterval(async () => {
 	if (!await accessTokenValid()) {
-		getAccessToken()
+		refreshAccessToken()
 	} else {
 		log('token valid')
 	}
