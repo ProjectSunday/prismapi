@@ -18,7 +18,7 @@ const ensureOrganizer = async (user) => {
 		var role = await getRole(user)
 		log(role, 'role')
 
-        if (role !== 'Event Organizer' || roll !== 'Organizer') {
+        if (role !== 'Event Organizer' || role !== 'Organizer') {
     		await promoteMember(user)
         }
 
@@ -58,9 +58,9 @@ const promoteMember = (user) => {
 		var url = `https://api.meetup.com/2/profile/${PRISMGROUPID}/${user.meetup.id}?add_role=event_organizer`
 		request
 			.post(url)
-			.set({'Authorization': `Bearer cb84bc0f462003a79aac325218f76cbc`})
+			.set({'Authorization': `Bearer ${administrator.access_token}`})
 			.end((err, res) => {
-				log(res.body, 'res')
+				// log(res.body, 'res')
 				err ? reject(err) : resolve(res.body)
 			})
 	})

@@ -187,7 +187,7 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				// log(res.body)
 				expect(res.body.data.createUpcomingClass._id).to.exist
 				expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
 				done()
@@ -200,21 +200,16 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				query {
-					user (token: "faketoken") {
+					user (token: "testtoken") {
 						_id,
 						meetup {
-							id
+							id,
+							name
 						}
 					}
 				}
 			`)
 			.end((err, res) => {
-				// console.log('res:', res.body)
-
-				if (res.body.errors) {
-					console.error('errors', res.body.errors)
-				}
-
 				assert.equal(res.body.data.user.meetup.id, '1111')
 				assert.equal(res.body.data.user.meetup.name, 'FAKE Local Learners Test User')
 				done()
@@ -228,7 +223,7 @@ describe('Prism API Mocha Testing', () => {
 	after(done => {
 		listener.close(() => {
 			var rand = Math.random()
-			console.log(`${rand}${rand}${rand}${rand}`)
+			console.log(`\n${rand}${rand}${rand}${rand}`)
 			done()
 		})
 	})
