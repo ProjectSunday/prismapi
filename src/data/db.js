@@ -23,10 +23,31 @@ export const connect = () => {
 
 ////////////////////////////////////////////////////////////////////////////////////
 
+const QUERY = async (collection, filter) => {
+	log('2222')
+	var doc = await collection.find(filter).toArray()
+	return doc[0]
+}
+
+const MUTATE = async (collection, filter, value) => {
+	var doc = await collection.findOneAndUpdate(filter, { $set: value }, { upsert: true })
+
+	if (doc.value) {
+		return doc.value
+	} else {
+		var d = await collection.find({ _id: doc.lastErrorObject.upserted }).toArray()
+		return d[0]
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
 const settings = {
 	getAdministrator () {
-		var collection = _db.collection('settings')
-		return query(collection, filter)
+		return 'yo'
+		// var collection = _db.collection('settings')
+		// log('yo')
+		// return QUERY(collection, { name: 'administrator' })
 	},
 	updateAdministrator (value) {
 		var collection = _db.collection('settings')
@@ -133,7 +154,7 @@ const user = {
 		var f = { 'meetup.id': meetup.id }
 		var s = { meetup, token }
 
-		return mutate(c, f, s)
+		return MUTATE(c, f, s)
 
 	},
 
@@ -147,23 +168,8 @@ const user = {
 }
 
 
-const query = async (collection, filter) => {
-	var doc = await collection.find(filter).toArray()
-	return doc[0]
-}
 
-const mutate = async (collection, filter, value) => {
-	var doc = await collection.findOneAndUpdate(filter, { $set: value }, { upsert: true })
-
-	if (doc.value) {
-		return doc.value
-	} else {
-		var d = await collection.find({ _id: doc.lastErrorObject.upserted }).toArray()
-		return d[0]
-	}
-}
-
-// const mutate = (col, filter, set) => {
+// const MUTATE = (col, filter, set) => {
 // 	return new Promise((resolve, reject) => {
 // 		col.findOneAndUpdate(filter,
 // 			{ $set: set },

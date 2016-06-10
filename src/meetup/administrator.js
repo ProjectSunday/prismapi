@@ -1,6 +1,11 @@
 import request from 'superagent'
 
-import db from '~/data/db'
+import whattheactualfuck from '~/data/db'
+
+
+log(whattheactualfuck, 'whattheactualfuck')
+
+// const DB = db
 
 const URL_SELF = 'https://api.meetup.com/2/member/self'
 
@@ -64,12 +69,17 @@ const refreshAccessToken = () => {
 
 }
 
+
+
+
 const monitorAccessToken = async () => {
 
 	// var blah = await db.settings.updateAdministrator({ blah: 'blah1', 'blah2': 22222})
-	log('1111;')
-	var blah = await db.settings.getAdministrator()
-	log(blah, '33333:')
+	console.log('111')
+
+	log(whattheactualfuck, 'wtf')
+	// var blah = db.settings.getAdministrator()
+	// log(blah, '33333:')
 
 	// var tokenCreated = new Date(administrator.tokenCreated)
 	// var now = new Date()
@@ -81,7 +91,7 @@ const monitorAccessToken = async () => {
 	// 	log('token valid')
 	// }
 
-	setTimeout(monitorAccessToken, 1000)
+	// setTimeout(monitorAccessToken, 5000)
 }
 
 monitorAccessToken()

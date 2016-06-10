@@ -6,6 +6,7 @@ var options = {
 }
 
 export default (data, message) => {
+	data = data || '[NOTHING]'
 	message = message || '\n'
 	console.log(message)
 	console.log(prettyjson.render(data, options))
