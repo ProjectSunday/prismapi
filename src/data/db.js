@@ -21,6 +21,19 @@ export const connect = () => {
 	})
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+
+const settings = {
+	getAdministrator () {
+		var collection = _db.collection('settings')
+		return query(collection, filter)
+	},
+	updateAdministrator (value) {
+		var collection = _db.collection('settings')
+		return update(collection, { name: 'administrator'}, value)
+	}
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 const category = {
@@ -133,24 +146,41 @@ const user = {
 	}
 }
 
-const mutate = (col, filter, set) => {
-	return new Promise((resolve, reject) => {
-		col.findOneAndUpdate(filter,
-			{ $set: set },
-			{ upsert: true }
-		).then(r => {
-			if (r.value) {
-				resolve(r.value)
-			} else {
-				col.find({ _id: r.lastErrorObject.upserted }).then(u => {
-					resolve(u[0])
-				}, reject)
-			}
-		})
-	})
+
+const query = async (collection, filter) => {
+	var doc = await collection.find(filter).toArray()
+	return doc[0]
 }
 
+const mutate = async (collection, filter, value) => {
+	var doc = await collection.findOneAndUpdate(filter, { $set: value }, { upsert: true })
+
+	if (doc.value) {
+		return doc.value
+	} else {
+		var d = await collection.find({ _id: doc.lastErrorObject.upserted }).toArray()
+		return d[0]
+	}
+}
+
+// const mutate = (col, filter, set) => {
+// 	return new Promise((resolve, reject) => {
+// 		col.findOneAndUpdate(filter,
+// 			{ $set: set },
+// 			{ upsert: true }
+// 		).then(r => {
+// 			if (r.value) {
+// 				resolve(r.value)
+// 			} else {
+// 				col.find({ _id: r.lastErrorObject.upserted }).then(u => {
+// 					resolve(u[0])
+// 				}, reject)
+// 			}
+// 		})
+// 	})
+// }
 
 
-export default { category, requestedClass, user }
+
+export default { category, requestedClass, settings, user }
 

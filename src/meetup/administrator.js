@@ -1,18 +1,24 @@
 import request from 'superagent'
 
+import db from '~/data/db'
+
 const URL_SELF = 'https://api.meetup.com/2/member/self'
 
-var administrator = {
-	access_token: 'eded6ee35f39a62a307e22048fc34a90',
-	refresh_token: 'cc249bba4f4233960e63b3832378521c',
-	created: 'Thu Jun 09 2016 18:53:14 GMT-0400 (EDT)'
-}
+const CLIENT_ID 	= process.env.CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o'
+const CLIENT_SECRET = process.env.CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9'
+const REDIRECT_URI 	= process.env.REDIRECT_URI	|| 'http://localhost:7000/authentication'
 
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN || 'cc249bba4f4233960e63b3832378521c'
+
+var administrator = {
+	access_token: null,
+	tokenCreated: null
+}
 
 const accessTokenValid = () => {
 
 	log(administrator.access_token, 'access_token:')
-	log(administrator.refresh_token, 'refresh_token:')
+	log(REFRESH_TOKEN, 'REFRESH_TOKEN:')
 
 	if (!administrator.access_token) { return false }
 
@@ -26,32 +32,58 @@ const accessTokenValid = () => {
 	})
 }
 
+const accessTokenIsOld = () => {
+
+	var tokenCreated = new Date(administrator.tokenCreated)
+	var now = new Date()
+	var tokenAge = now.getTime() - tokenCreated.getTime()
+
+	log(tokenAge, 'tokenAge')
+	return (tokenAge > 162000)
+}
+
 const refreshAccessToken = () => {
 	var url = 'https://secure.meetup.com/oauth2/access' +
-		'?client_id=' + meetup.client_id +
-		'&client_secret=' + meetup.client_secret +
+		'?client_id=' + CLIENT_ID +
+		'&client_secret=' + CLIENT_SECRET +
 		'&grant_type=refresh_token' +
-		'&refresh_token=' + meetup.refresh_token
+		'&refresh_token=' + REFRESH_TOKEN
 
 	request
 		.post(url)
 		.set({'Content-Type': 'application/x-www-form-urlencoded'})
-		.end(function (e, r) {
-			meetup.access_token = r.body.access_token
-			meetup.refresh_token = r.body.refresh_token
-			meetup.created = new Date()
-			res.send(getMarkup())
+		.end(function (err, result) {
+			if (err) {
+				console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
+			} else {
+				administrator.access_token = result.body.access_token
+				administrator.tokenCreated = new Date()
+				log(administrator, 'Administrator token refreshed ->')
+			}
 		})
 
 }
 
-setInterval(async () => {
-	if (!await accessTokenValid()) {
-		refreshAccessToken()
-	} else {
-		log('token valid')
-	}
-}, 20000)
+const monitorAccessToken = async () => {
 
+	// var blah = await db.settings.updateAdministrator({ blah: 'blah1', 'blah2': 22222})
+	log('1111;')
+	var blah = await db.settings.getAdministrator()
+	log(blah, '33333:')
+
+	// var tokenCreated = new Date(administrator.tokenCreated)
+	// var now = new Date()
+	// var tokenAge = now.getTime() - tokenCreated.getTime()
+
+	// if (!await accessTokenValid() || accessTokenIsOld()) {  //45 minutes
+	// 	refreshAccessToken()
+	// } else {
+	// 	log('token valid')
+	// }
+
+	setTimeout(monitorAccessToken, 1000)
+}
+
+monitorAccessToken()
 
 export default administrator
