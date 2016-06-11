@@ -4,6 +4,7 @@ import cors			from 'cors'
 
 import schema from '~/schema/schema'
 import { connect } from '~/data/db'
+import administrator from '~/meetup/administrator'
 
 const port = process.env.PORT || 9000
 
@@ -22,6 +23,8 @@ export default new Promise((resolve, reject) => {
 		    console.log(`=====> Prism API Server Online.  Port: ${port}.  Environment: BLAH`)
 			resolve(listener)
 		})
+
+		administrator.startTokenMonitoring()
 
 	}, error => {
 		console.error('Prism API server cannot connect to database.  Aborting...')

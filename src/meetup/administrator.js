@@ -1,9 +1,6 @@
 import request from 'superagent'
 
-import whattheactualfuck from '~/data/db'
-
-
-log(whattheactualfuck, 'whattheactualfuck')
+import db from '~/data/db'
 
 // const DB = db
 
@@ -15,10 +12,6 @@ const REDIRECT_URI 	= process.env.REDIRECT_URI	|| 'http://localhost:7000/authent
 
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN || 'cc249bba4f4233960e63b3832378521c'
 
-var administrator = {
-	access_token: null,
-	tokenCreated: null
-}
 
 const accessTokenValid = () => {
 
@@ -69,9 +62,6 @@ const refreshAccessToken = () => {
 
 }
 
-
-
-
 const monitorAccessToken = async () => {
 
 	// var blah = await db.settings.updateAdministrator({ blah: 'blah1', 'blah2': 22222})
@@ -94,6 +84,23 @@ const monitorAccessToken = async () => {
 	// setTimeout(monitorAccessToken, 5000)
 }
 
-monitorAccessToken()
+// monitorAccessToken()
+
+
+
+
+const startTokenMonitoring = () => {
+	// log('token monitoring started')
+
+	var blah = db.settings.getAdministrator()
+	log(blah, '33333:')
+
+}
+
+var administrator = {
+	startTokenMonitoring,
+	access_token: null,
+	tokenCreated: null
+}
 
 export default administrator

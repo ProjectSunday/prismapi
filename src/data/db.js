@@ -44,10 +44,8 @@ const MUTATE = async (collection, filter, value) => {
 
 const settings = {
 	getAdministrator () {
-		return 'yo'
-		// var collection = _db.collection('settings')
-		// log('yo')
-		// return QUERY(collection, { name: 'administrator' })
+		var collection = _db.collection('settings')
+		return QUERY(collection, { name: 'administrator' })
 	},
 	updateAdministrator (value) {
 		var collection = _db.collection('settings')
