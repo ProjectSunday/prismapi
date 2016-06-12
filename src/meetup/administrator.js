@@ -15,15 +15,15 @@ const REFRESH_TOKEN = process.env.REFRESH_TOKEN || 'cc249bba4f4233960e63b3832378
 
 const accessTokenValid = () => {
 
-	log(administrator.access_token, 'access_token:')
+	log(_administrator.access_token, 'access_token:')
 	log(REFRESH_TOKEN, 'REFRESH_TOKEN:')
 
-	if (!administrator.access_token) { return false }
+	if (!_administrator.access_token) { return false }
 
 	return new Promise((resolve, reject) => {
 		request
 			.get(URL_SELF)
-			.set({'Authorization': `Bearer ${administrator.access_token}` })
+			.set({'Authorization': `Bearer ${_administrator.access_token}` })
 			.end((err, result) => {
 				resolve(!err)
 			})
@@ -32,7 +32,7 @@ const accessTokenValid = () => {
 
 const accessTokenIsOld = () => {
 
-	var tokenCreated = new Date(administrator.tokenCreated)
+	var tokenCreated = new Date(_administrator.tokenCreated)
 	var now = new Date()
 	var tokenAge = now.getTime() - tokenCreated.getTime()
 
@@ -40,7 +40,9 @@ const accessTokenIsOld = () => {
 	return (tokenAge > 162000)
 }
 
-const refreshAccessToken = () => {
+const refreshAccessToken = new Promise((resolve, reject) => {
+
+	t('does this get ran')
 	var url = 'https://secure.meetup.com/oauth2/access' +
 		'?client_id=' + CLIENT_ID +
 		'&client_secret=' + CLIENT_SECRET +
@@ -54,13 +56,14 @@ const refreshAccessToken = () => {
 			if (err) {
 				console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
 			} else {
-				administrator.access_token = result.body.access_token
-				administrator.tokenCreated = new Date()
-				log(administrator, 'Administrator token refreshed ->')
+				resolve({
+					access_token: esult.body.access_token,
+					created: new Date()
+				})
 			}
 		})
 
-}
+})
 
 const monitorAccessToken = async () => {
 
@@ -71,7 +74,7 @@ const monitorAccessToken = async () => {
 	// var blah = db.settings.getAdministrator()
 	// log(blah, '33333:')
 
-	// var tokenCreated = new Date(administrator.tokenCreated)
+	// var tokenCreated = new Date(_administrator.tokenCreated)
 	// var now = new Date()
 	// var tokenAge = now.getTime() - tokenCreated.getTime()
 
@@ -89,18 +92,33 @@ const monitorAccessToken = async () => {
 
 
 
-const startTokenMonitoring = () => {
+const startTokenMonitoring = async () => {
 	// log('token monitoring started')
 
-	var blah = db.settings.getAdministrator()
-	log(blah, '33333:')
+	var administrator = await db.settings.getAdministrator()
+
+	if (!administrator) {
+
+		t()
+		// var token = await 
+		//get access token
+
+
+		//write to database
+
+		//make accessible
+
+	} else {
+		//make accessible
+	}
+
 
 }
 
-var administrator = {
+var _administrator = {
 	startTokenMonitoring,
 	access_token: null,
 	tokenCreated: null
 }
 
-export default administrator
+export default _administrator

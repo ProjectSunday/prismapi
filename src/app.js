@@ -3,33 +3,34 @@ import graphqlHTTP 	from 'express-graphql'
 import cors			from 'cors'
 
 import schema from '~/schema/schema'
-import { connect } from '~/data/db'
+import db from '~/data/db'
 import administrator from '~/meetup/administrator'
 
-const port = process.env.PORT || 9000
+const PORT = process.env.PORT || 9000
 
-export default new Promise((resolve, reject) => {
-	connect().then(() => {
-		var app = express()
+const createApp = () => new Promise((resolve, reject) => {
+	var app = express()
 
-		app.use('/graphql', cors(), graphqlHTTP((req, res) => {
-			return {
-				schema,
-				graphiql: true
-			}
-		}))
+	app.use('/graphql', cors(), graphqlHTTP((req, res) => {
+		return {
+			schema,
+			graphiql: true
+		}
+	}))
 
-		var listener = app.listen(port, () => {
-		    console.log(`=====> Prism API Server Online.  Port: ${port}.  Environment: BLAH`)
-			resolve(listener)
-		})
-
-		administrator.startTokenMonitoring()
-
-	}, error => {
-		console.error('Prism API server cannot connect to database.  Aborting...')
-		console.error(error)
-		reject(error)
+	var listener = app.listen(PORT, () => {
+	    console.log(`=====> Prism API Server Online.  Port: ${PORT}.  Environment: BLAH`)
+		resolve(listener)
 	})
 
 })
+
+
+export default async () => {
+	await db.start()
+
+	var app = await createApp()
+	await administrator.startTokenMonitoring()
+
+	return app
+}

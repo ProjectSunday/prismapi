@@ -7,24 +7,20 @@ var PRISM_DB_CONNECTION_STRING = 'mongodb://localhost:27017/prism'
 
 var _db
 
-export const connect = () => {
-	return new Promise((resolve, reject) => {
-		MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
-		    console.log('=====> Connected to mongo server:', PRISM_DB_CONNECTION_STRING);
-		    _db = db
-		    resolve()
-		}, error => {
-		    console.error('Unable to connect to mongo server.')
-		    console.error(error);
-		    reject()
-		})
-	})
+const start = async () => {
+
+	try {
+		_db = await MongoClient.connect(PRISM_DB_CONNECTION_STRING)
+	    console.log('=====> Connected to mongo server:', PRISM_DB_CONNECTION_STRING);
+	} catch (err) {
+	    console.error('Unable to connect to mongo server.')
+	}
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 
 const QUERY = async (collection, filter) => {
-	log('2222')
 	var doc = await collection.find(filter).toArray()
 	return doc[0]
 }
@@ -128,7 +124,7 @@ const requestedClass = {
 			var collection = _db.collection('requestedclasses')
 			collection.find().toArray().then(resolve, reject)
 		})
-	},
+	},	
 	delete (_id) {
 		return new Promise((resolve, reject) => {
 			var collection = _db.collection('requestedclasses')
@@ -186,5 +182,5 @@ const user = {
 
 
 
-export default { category, requestedClass, settings, user }
+export default { category, requestedClass, settings, start, user }
 

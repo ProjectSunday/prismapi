@@ -22,7 +22,6 @@ const ensureOrganizer = async (user) => {
     		await promoteMember(user)
         }
 
-
 		return 'blah'
 
 }

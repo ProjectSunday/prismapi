@@ -1,9 +1,9 @@
 import { assert, expect } from 'chai'
 import supertest from 'supertest'
 
+import '../debug'
+
 import app from '~/app'
-import debugLogging from '~/debug-logging'
-global.log = debugLogging
 
 const HEADERS = { 'Content-Type': 'application/graphql' }
 
@@ -11,12 +11,10 @@ var request, listener
 
 describe('Prism API Mocha Testing', () => {
 
-	before(done => {
-		app.then(runningServer => {
-			listener = runningServer
-			request = supertest.agent(listener)
-			done()
-		})
+	before(async (done) => {
+		listener = await app()
+		request = supertest.agent(listener)
+		done()
 	})
 
 	///////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +28,6 @@ describe('Prism API Mocha Testing', () => {
 				done()
 			})
 	})
-
 
 	var addedCategoryId
 
