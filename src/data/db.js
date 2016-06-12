@@ -34,6 +34,7 @@ const MUTATE = async (collection, filter, value) => {
 		var d = await collection.find({ _id: doc.lastErrorObject.upserted }).toArray()
 		return d[0]
 	}
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -43,9 +44,9 @@ const settings = {
 		var collection = _db.collection('settings')
 		return QUERY(collection, { name: 'administrator' })
 	},
-	updateAdministrator (value) {
+	setAdministrator (administrator) {
 		var collection = _db.collection('settings')
-		return update(collection, { name: 'administrator'}, value)
+		return MUTATE(collection, { name: 'administrator'}, administrator)
 	}
 }
 
