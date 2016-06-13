@@ -5,8 +5,12 @@ import db from '~/data/db'
 
 // const DB = db
 
+var ADMINISTRATOR_TIMER_ID
+
 const URL_MEETUP_MEMBER_SELF = 'https://api.meetup.com/2/member/self'
 const URL_MEETUP_ACCESSTOKEN = 'https://secure.meetup.com/oauth2/access'
+
+const PRISM_ADMINISTRATOR_ID = 182509367
 
 const CLIENT_ID 	= process.env.CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o'
 const CLIENT_SECRET = process.env.CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9'
@@ -18,26 +22,23 @@ const accessTokenValid = async (administrator) => {
 
 	if (!administrator || !administrator.access_token) { return false }
 
-	var { access_token } = administrator
+	var now = new Date()
+	var ageMinutes = (now - administrator.created) / 1000 / 60
+	if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
 
 	var result = await rest({
 		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${administrator.access_token}`
-			// 'Content-Type': 'application/x-www-form-urlencoded'
-		},
+		headers: { Authorization: `Bearer ${administrator.access_token}` },
 		path: URL_MEETUP_MEMBER_SELF
 	})
 
+	try {
+		var self = JSON.parse(result.entity)
+		return (self.id === PRISM_ADMINISTRATOR_ID)
+	} catch (err) {
+		return false
+	}
 
-	return new Promise((resolve, reject) => {
-		request
-			.get(URL_MEETUP_MEMBER_SELF)
-			.set()
-			.end((err, result) => {
-				resolve(!err)
-			})
-	})
 }
 
 const accessTokenIsOld = () => {
@@ -51,16 +52,6 @@ const accessTokenIsOld = () => {
 }
 
 const refreshAccessToken = async () => {
-
-	// t('does this get ran')
-	// var url =  +
-	// 	'?client_id=' + CLIENT_ID +
-	// 	'&client_secret=' + CLIENT_SECRET +
-	// 	'&grant_type=refresh_token' +
-	// 	'&refresh_token=' + REFRESH_TOKEN
-
-	log(REFRESH_TOKEN, 'REFRESH_TOKEN')
-
 	var result = await rest({
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -73,7 +64,6 @@ const refreshAccessToken = async () => {
 		}
 	})
 
-
 	var administrator
 	try {
 		administrator = JSON.parse(result.entity)
@@ -85,79 +75,45 @@ const refreshAccessToken = async () => {
 		return administrator
 	}
 
-	// request
-	// 	.post(url)
-	// 	.set({'Content-Type': 'application/x-www-form-urlencoded'})
-	// 	.end(function (err, result) {
-	// 		if (err) {
-	// 			console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
-	// 		} else {
-	// 			resolve({
-	// 				access_token: result.body.access_token,
-	// 				created: new Date()
-	// 			})
-	// 		}
-	// 	})
-
 }
-
-const monitorAccessToken = async () => {
-
-	// var blah = await db.settings.updateAdministrator({ blah: 'blah1', 'blah2': 22222})
-	console.log('111')
-
-	log(whattheactualfuck, 'wtf')
-	// var blah = db.settings.getAdministrator()
-	// log(blah, '33333:')
-
-	// var tokenCreated = new Date(_administrator.tokenCreated)
-	// var now = new Date()
-	// var tokenAge = now.getTime() - tokenCreated.getTime()
-
-	// if (!await accessTokenValid() || accessTokenIsOld()) {  //45 minutes
-	// 	refreshAccessToken()
-	// } else {
-	// 	log('token valid')
-	// }
-
-	// setTimeout(monitorAccessToken, 5000)
-}
-
-// monitorAccessToken()
-
-
-
 
 const startTokenMonitoring = async () => {
-	// log('token monitoring started')
 
 	var administrator = await db.settings.getAdministrator()
-	log(administrator)
 
-	if (await accessTokenValid(administrator)) {
+	console.log('Administrator \n\taccess_token: ', administrator.access_token)
+	console.log('\tcreated:      ', administrator.created)
+	console.log('\tage:          ', ((new Date()) - administrator.created) / 1000 / 60, 'minutes')
 
-	// 	var a = await refreshAccessToken()
-	// 	administrator = {
-	// 		access_token: a.access_token,
-	// 		created: new Date()
-	// 	}
+	if (!await accessTokenValid(administrator)) {
 
-	// 	await db.settings.setAdministrator(administrator)
+		console.log('EXPIRE!')
 
-	// }
+		var a = await refreshAccessToken()
+		administrator = {
+			access_token: a.access_token,
+			created: new Date()
+		}
 
-	// //if token is old
-	// 	//refresh token
+		console.log('NEW Administrator \n\taccess_token: ', administrator.access_token)
+		console.log('\tcreated:      ', administrator.created)
+		console.log('\tage:          ', ((new Date()) - administrator.created) / 1000 / 60, 'minutes')
 
-	// _administrator.access_token = administrator.access_token
-	// _administrator.created = administrator.created
+		await db.settings.setAdministrator(administrator)
+	}
+
+	_administrator.access_token = administrator.access_token
+	_administrator.created = administrator.created
+
+	clearTimeout(global.__prism_admin_timer_id)
+	global.__prism_admin_timer_id = setTimeout(startTokenMonitoring, 60000)
 
 }
 
 var _administrator = {
 	startTokenMonitoring,
 	access_token: null,
-	tokenCreated: null
+	created: null
 }
 
 export default _administrator

@@ -125,7 +125,7 @@ const requestedClass = {
 			var collection = _db.collection('requestedclasses')
 			collection.find().toArray().then(resolve, reject)
 		})
-	},	
+	},
 	delete (_id) {
 		return new Promise((resolve, reject) => {
 			var collection = _db.collection('requestedclasses')

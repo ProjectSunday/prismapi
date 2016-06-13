@@ -10,7 +10,7 @@ var options = {
 global.log = (data, message) => {
     data = data || '[NOTHING]'
     message = message || ''
-    if (message) { console.log(message) }
+    if (message) { console.log(message.blue) }
 
     try {
         console.log(prettyjson.render(data, options))
