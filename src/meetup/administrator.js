@@ -3,10 +3,6 @@ import rest from 'rest'
 
 import db from '~/data/db'
 
-// const DB = db
-
-var ADMINISTRATOR_TIMER_ID
-
 const URL_MEETUP_MEMBER_SELF = 'https://api.meetup.com/2/member/self'
 const URL_MEETUP_ACCESSTOKEN = 'https://secure.meetup.com/oauth2/access'
 

@@ -1,5 +1,7 @@
 import request from 'superagent'
 
+import rest from 'rest'
+
 import administrator from './administrator'
 
 const PRISMGROUPID = 18049722
@@ -8,6 +10,7 @@ const PRISMGROUPNAME = 'locallearners'
 const PRISMAPIKEY = '7d156b614b6d5c5e7d357e18151568'
 
 const URL = {
+	EVENT: 'https://api.meetup.com/2/event',
 	MEMBER: 'https://api.meetup.com/2/member/self',
 	MEMBERS: 'https://api.meetup.com/LocalLearners/members/',
     PROFILE: 'https://api.meetup.com/2/profile',
@@ -15,15 +18,10 @@ const URL = {
 }
 
 const ensureOrganizer = async (user) => {
-		var role = await getRole(user)
-		log(role, 'role')
-
-        if (role !== 'Event Organizer' || role !== 'Organizer') {
-    		await promoteMember(user)
-        }
-
-		return 'blah'
-
+	var role = await getRole(user)
+    if (role !== 'Event Organizer' || role !== 'Organizer') {
+		await promoteMember(user)
+    }
 }
 
 const getMember = (token) => {
@@ -63,6 +61,17 @@ const promoteMember = (user) => {
 				err ? reject(err) : resolve(res.body)
 			})
 	})
+}
+
+const postEvent = async (token, event) => {
+	var result = await rest({
+		method: 'POST',
+		headers: {'Authorization': `Bearer ${token}`},
+		path: URL.EVENT,
+		params: event
+	})
+
+	log(result, 'result')
 }
 
 export default {

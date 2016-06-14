@@ -68,10 +68,17 @@ async function createUpcomingClass(root, args) {
 
 	var user = await db.user.read(args.token)
 
-	// log(user)
+	log(user)
 
 	await meetup.ensureOrganizer(user)
 
+	var newEvent = {
+		name: 'test event jn13.1003',
+		time: (new Date()).getTime() + 3600
+	}
+	var event = await meetup.postEvent(user.token, newEvent)
+
+	log(event, 'event')
 	// var m = await meetup.getMember(args.token)
 	// return await users.getFromMeetupProfile(m, args.token)
 	return { _id: 'bah', name: 'testupcomingclass'}
