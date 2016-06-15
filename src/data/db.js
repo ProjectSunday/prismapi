@@ -141,6 +141,18 @@ const requestedClass = {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+const upcomingClass = {
+	query () {
+
+	},
+	mutate (_class) {
+		var collection = _db.collection('upcomingclasses')
+		var filter = _class._id ? { _id: _class._id } : {}
+		return MUTATE(collection, filter, _class)
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////
 
 const user = {
 	getFromMeetupProfile (meetup, token) {
@@ -163,6 +175,20 @@ const user = {
 }
 
 
+export class User {
+	constructor(_id) {
+		this._id = _id
+	}
+	save() {
+		log(this, 'this')
+	}
+	fetch() {
+		if (!this._id) {
+			throw "Unable to fetch.  User has no _id."
+		}
+	}
+}
+
 
 // const MUTATE = (col, filter, set) => {
 // 	return new Promise((resolve, reject) => {
@@ -183,5 +209,5 @@ const user = {
 
 
 
-export default { category, requestedClass, settings, start, user }
+export default { category, requestedClass, settings, start, upcomingClass, user }
 

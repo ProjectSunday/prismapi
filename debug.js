@@ -8,7 +8,9 @@ var options = {
 }
 
 global.log = (data, message) => {
-    data = data || '[NOTHING]'
+    if (data === undefined || data === null) {
+        data = '[undefined/null]'
+    }
     message = message || ''
     if (message) { console.log(message.blue) }
 

@@ -9,18 +9,21 @@ const UpcomingClassType = new GraphQLObjectType({
 	name: 'UpcomingClassType',
 	fields: () => ({
 		_id: { type: GraphQLID },
-		name: { type: GraphQLString }
+		name: { type: GraphQLString },
+		meetupEvent: {
+			type: MeetupEventType,
+			resolve: (upcomingClass) => upcomingClass.meetupEvent
+		}
 	})
 })
 
-// const MeetupProfileType = new GraphQLObjectType({
-// 	name: 'MeetupProfile',
-// 	fields: () => ({
-// 		id: { type: GraphQLInt },
-// 		name: { type: GraphQLString },
-// 		photo: { type: PhotoType }
-// 	})
-// })
+const MeetupEventType = new GraphQLObjectType({
+	name: 'MeetupEventType',
+	fields: () => ({
+		id: { type: GraphQLInt },
+		name: { type: GraphQLString }
+	})
+})
 
 // const UserType = new GraphQLObjectType({
 // 	name: 'User',
@@ -67,21 +70,21 @@ const mutations = {
 async function createUpcomingClass(root, args) {
 
 	var user = await db.user.read(args.token)
-
-	log(user)
-
+	log(user, 'user')
 	await meetup.ensureOrganizer(user)
 
 	var newEvent = {
-		name: 'test event jn13.1003',
-		time: (new Date()).getTime() + 3600
+		name: args.name
 	}
 	var event = await meetup.postEvent(user.token, newEvent)
 
 	log(event, 'event')
-	// var m = await meetup.getMember(args.token)
-	// return await users.getFromMeetupProfile(m, args.token)
-	return { _id: 'bah', name: 'testupcomingclass'}
+
+	var newClass = {
+		teacher: [ user._id ],
+		meetupEvent: event
+	}
+	return await db.upcomingClass.mutate(newClass)
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -10,17 +10,26 @@ const PRISMGROUPNAME = 'locallearners'
 const PRISMAPIKEY = '7d156b614b6d5c5e7d357e18151568'
 
 const URL = {
-	EVENT: 'https://api.meetup.com/2/event',
+	POSTEVENT: 'https://api.meetup.com/locallearners/events',
+	DELETEEVENT: 'https://api.meetup.com/locallearners/events',
+
 	MEMBER: 'https://api.meetup.com/2/member/self',
 	MEMBERS: 'https://api.meetup.com/LocalLearners/members/',
     PROFILE: 'https://api.meetup.com/2/profile',
     TEST: 'https://api.meetup.com/2/events'
 }
 
-const ensureOrganizer = async (user) => {
-	var role = await getRole(user)
+async function ensureOrganizer(user) {
+	var role = await getRole(user.token)
     if (role !== 'Event Organizer' || role !== 'Organizer') {
-		await promoteMember(user)
+		var meetupProfile = await promoteMember(user)
+
+
+		// { meetupProfile: }
+		// await db.user.mutate(
+		// 	{ _id: user._id },
+		// 	{ meetupProfile: meetupProfile }
+		// )
     }
 }
 
@@ -38,7 +47,7 @@ const getMember = (token) => {
 
 const getRole = (user) => {
 	return new Promise((resolve, reject) => {
-		user.meetup.id = 184522987
+		// user.meetup.id = 184522987
 		var url = URL.PROFILE + `/${PRISMGROUPID}/${user.meetup.id}?key=${PRISMAPIKEY}&sign=true`
 		request
 			.get(url)
@@ -51,7 +60,7 @@ const getRole = (user) => {
 
 const promoteMember = (user) => {
 	return new Promise((resolve, reject) => {
-		user.meetup.id = 184522987
+		// user.meetup.id = 184522987
 		var url = `https://api.meetup.com/2/profile/${PRISMGROUPID}/${user.meetup.id}?add_role=event_organizer`
 		request
 			.post(url)
@@ -63,18 +72,41 @@ const promoteMember = (user) => {
 	})
 }
 
-const postEvent = async (token, event) => {
+async function postEvent (token, event) {
+
+	// log(token,'token')
+
 	var result = await rest({
 		method: 'POST',
-		headers: {'Authorization': `Bearer ${token}`},
-		path: URL.EVENT,
+		headers: { 'Authorization': `Bearer ${token}` },
+		path: URL.POSTEVENT,
 		params: event
 	})
 
-	log(result, 'result')
+	result = JSON.parse(result.entity)
+	log(token, 'result')
+
+	if (result.errors) {
+		throw result.errors[0].message
+	} else {
+		return result
+	}
+
+}
+
+async function removeEvent (token, eventId) {
+	var result = await rest({
+		method: 'DELETE',
+		headers: { 'Authorization': `Bearer ${token}` },
+		path: URL.DELETEEVENT + `/${eventId}`
+	})
+
+	log(result.entity, 'result.entity')
 }
 
 export default {
 	ensureOrganizer,
-	getMember
+	getMember,
+	postEvent,
+	removeEvent
 }

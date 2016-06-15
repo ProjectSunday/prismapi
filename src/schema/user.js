@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import db from '~/data/db'
+import { User, default as db } from '~/data/db'
 import meetup from '~/meetup/meetup'
 
 const PhotoType = new GraphQLObjectType({
@@ -41,8 +41,12 @@ const queries = {
 		type: UserType,
 		args: {
 			token: { type: GraphQLString }
+			//id is needed too
 		},
-		resolve: (root, args) => {
+		resolve: async (root, args) => {
+			var requester = new User(args.token)
+			await authorizer.hasRole('')
+
 			return db.user.read(args.token)
 		}
 	}

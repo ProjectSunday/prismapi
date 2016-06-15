@@ -118,7 +118,7 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 	//get this from the front end
-	var localLearnersUserToken = 'f36c3134521b55eb20481af66be80430'
+	var localLearnersUserToken = '8ee15411b7631bbabe9111f7c4786dec'
 
 	it('should authenticate the local learner test user or give unauthorized', done => {
 		request.post('/graphql')
@@ -198,14 +198,17 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				mutation {
-					createUpcomingClass (token: "e872c9042452c259e1d0a205202edc9c", name: "testupcomingclass") {
+					createUpcomingClass (token: "${localLearnersUserToken}", name: "testupcomingclass") {
 						_id,
-						name
+						meetupEvent {
+							id,
+							name
+						}
 					}
 				}
 			`)
 			.end((err, res) => {
-				// log(res.body)
+				log(res.body)
 				expect(res.body.data.createUpcomingClass._id).to.exist
 				expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
 				done()
