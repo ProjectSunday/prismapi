@@ -81,6 +81,7 @@ app.get('/', function (req, res) {
 app.get('/authentication', function (req, res) {
 
 	if (req.query.code) {
+		console.log(req.headers)
 		meetup.code = req.query.code
 		res.send(getMarkup())
 	} else {
@@ -102,12 +103,14 @@ app.get('/access', function (req, res) {
 		'&client_secret=' + meetup.client_secret +
 		'&grant_type=authorization_code' +
 		'&redirect_uri=' + meetup.redirect_uri +
-		'&code=' + meetup.code
+		'&code=' + meetup.code +
+		'&scope=basic+profile_edit+ageless'
 
 	request
 		.post(url)
 		.set({'Content-Type': 'application/x-www-form-urlencoded'})
 		.end(function (e, r) {
+			console.log('r.body:', r.body)
 			meetup.access_token = r.body.access_token
 			meetup.refresh_token = r.body.refresh_token
 			meetup.created = new Date()

@@ -52,6 +52,63 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
+
+
+
+	//get this from the front end
+	var LOCALLEARNERTESTUSERTOKEN = '2d195fd1b223fd877628feff065f363b'
+	var LOCALLEARNERTESTUSERID = '57635561a48f34c10540bc32'
+
+	it('should authenticate the local learners test user', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				mutation {
+					authenticateUser (token: "${LOCALLEARNERTESTUSERTOKEN}") {
+						_id,
+						meetupMember {
+							id,
+							name,
+							token
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
+				assert.equal(res.body.data.authenticateUser.meetupMember.token, LOCALLEARNERTESTUSERTOKEN)
+				assert.equal(res.body.data.authenticateUser.meetupMember.name, 'Local Learners Test User')
+				done()
+			})
+	})
+
+
+	it('should fetch the local learners test user\'s self', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				query {
+					self (_id: "${LOCALLEARNERTESTUSERID}", token: "${LOCALLEARNERTESTUSERTOKEN}") {
+						_id,
+						meetupMember {
+							id,
+							name
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				log(res.body)
+				expect(res.body.data.createUpcomingClass._id).to.exist
+				expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
+				done()
+			})
+
+	})
+
+
+
+
 	it('should return all requested classes', done => {
 		request.post('/graphql')
 			.set(HEADERS)
@@ -101,119 +158,30 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-	it('should not return a valid user with a bad token', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				mutation {
-					authenticateUser (token: "badbadtoken") {
-						_id
-					}
-				}
-			`)
-			.end((err, res) => {
-				assert.equal(res.body.data.user, null)
-				done()
-			})
-	})
 
-	//get this from the front end
-	var localLearnersUserToken = '8ee15411b7631bbabe9111f7c4786dec'
-
-	it('should authenticate the local learner test user or give unauthorized', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				mutation {
-					authenticateUser (token: "${localLearnersUserToken}") {
-						_id,
-						token,
-						meetup {
-							id
-						}
-					}
-				}
-			`)
-			.end((err, res) => {
-				// log(res.body)
-				if (res.body.errors) {
-					assert.equal(res.body.errors[0].message, 'Unauthorized')
-				} else {
-					assert.equal(res.body.data.authenticateUser.token, localLearnersUserToken)
-				}
-				done()
-			})
-	})
+	// it('should create an upcoming class', done => {
+	// 	request.post('/graphql')
+	// 		.set(HEADERS)
+	// 		.send(`
+	// 			mutation {
+	// 				createUpcomingClass (token: "${LOCALLEARNERTESTUSERTOKEN}", name: "testupcomingclass") {
+	// 					_id,
+	// 					meetupEvent {
+	// 						id,
+	// 						name
+	// 					}
+	// 				}
+	// 			}
+	// 		`)
+	// 		.end((err, res) => {
+	// 			log(res.body)
+	// 			expect(res.body.data.createUpcomingClass._id).to.exist
+	// 			expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
+	// 			done()
+	// 		})
+	// })
 
 
-	it('should get the fake user with the testtoken', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				query {
-					user (token: "testtoken") {
-						_id,
-						token,
-						meetup {
-							id,
-							photo {
-								thumb_link
-							}
-						}
-					}
-				}
-			`)
-			.end((err, res) => {
-				// log(res.body)
-				expect(res.body.data.user.token).to.equal('testtoken')
-				expect(res.body.data.user.meetup.id).to.equal(1111)
-				expect(res.body.data.user.meetup.photo.thumb_link).to.exist
-				done()
-			})
-	})
-
-	it('should get the local learner test user', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				query {
-					user (token: "testtoken") {
-						_id,
-						meetup {
-							id,
-							name
-						}
-					}
-				}
-			`)
-			.end((err, res) => {
-				assert.equal(res.body.data.user.meetup.id, '1111')
-				assert.equal(res.body.data.user.meetup.name, 'FAKE Local Learners Test User')
-				done()
-			})
-	})
-
-	it('should create an upcoming class', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				mutation {
-					createUpcomingClass (token: "${localLearnersUserToken}", name: "testupcomingclass") {
-						_id,
-						meetupEvent {
-							id,
-							name
-						}
-					}
-				}
-			`)
-			.end((err, res) => {
-				log(res.body)
-				expect(res.body.data.createUpcomingClass._id).to.exist
-				expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
-				done()
-			})
-	})
 
 
 
@@ -221,8 +189,8 @@ describe('Prism API Mocha Testing', () => {
 
 	after(done => {
 		listener.close(() => {
-			var rand = Math.random()
-			console.log(`\n${rand}${rand}${rand}${rand}`)
+			// var rand = Math.random()
+			// console.log(`\n${rand}${rand}${rand}${rand}`)
 			done()
 		})
 	})

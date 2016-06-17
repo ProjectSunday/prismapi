@@ -1,6 +1,6 @@
 import { MongoClient, ObjectID } from 'mongodb'
 
-import { getMember } from '~/meetup/meetup'
+import { Member, default as meetupApi } from '~/meetup/meetup'
 
 
 var PRISM_DB_CONNECTION_STRING = 'mongodb://localhost:27017/prism'
@@ -158,8 +158,8 @@ const user = {
 	getFromMeetupProfile (meetup, token) {
 
 		var c = _db.collection('users')
-		var f = { 'meetup.id': meetup.id }
-		var s = { meetup, token }
+		var f = { 'meetupProfile.id': meetupProfile.id }
+		var s = { meetupProfile, token }
 
 		return MUTATE(c, f, s)
 
@@ -176,16 +176,35 @@ const user = {
 
 
 export class User {
-	constructor(_id) {
-		this._id = _id
+	constructor(_id, token) {
+		Object.assign(this, { _id, token })
 	}
 	save() {
 		log(this, 'this')
 	}
-	fetch() {
-		if (!this._id) {
-			throw "Unable to fetch.  User has no _id."
-		}
+	async fetch() {
+		if (!this._id) { throw 'Unable to fetch.  User has no _id.' }
+		if (!this.token) { throw 'Not authorized.' }
+
+		var users = await _db.collection('users').find({ _id: this._id }).toArray()
+		if (!users.length) { throw 'User not found.' }
+
+		//also get meetup profile here
+
+		Object.assign(this, users[0])
+	}
+	async authenticate(token) {
+
+		var member = new Member(token)
+		await member.fetch()
+
+		var collection = _db.collection("users")
+		var filter = { 'meetupMember.id': member.id }
+		var value = { meetupMember: member }
+		var user = await MUTATE(collection, filter, value)
+
+		Object.assign(this, user)
+
 	}
 }
 

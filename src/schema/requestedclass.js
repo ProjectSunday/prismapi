@@ -8,7 +8,7 @@ const RequestedClassType = new GraphQLObjectType({
 	fields: () => ({
 		_id: { type: GraphQLID },
 		name: { type: GraphQLString },
-		category: { 
+		category: {
 			type: CategoryType,
 			resolve: (requestedClass) => {
 				return db.category.read(requestedClass.category)

@@ -19,6 +19,8 @@ const URL = {
     TEST: 'https://api.meetup.com/2/events'
 }
 
+const MEETUPAPI_MEMBER_SELF = 'https://api.meetup.com/2/member/self'
+
 async function ensureOrganizer(user) {
 	var role = await getRole(user.token)
     if (role !== 'Event Organizer' || role !== 'Organizer') {
@@ -33,16 +35,27 @@ async function ensureOrganizer(user) {
     }
 }
 
-const getMember = (token) => {
-	return new Promise((resolve, reject) => {
-		request
-			.get(URL.MEMBER)
-			.set({'Authorization': `Bearer ${token}`})
-			.end((err, res) => {
-				if (err) { reject(err) }
-				else { resolve(res.body) }
-			})
+const getMember = async (token) => {
+
+	var result = await rest({
+		method: 'GET',
+		headers: { Authorization: `Bearer ${token}` },
+		path: MEETUPAPI_MEMBER_SELF
 	})
+
+	result = JSON.parse(result.entity)
+
+	// log(result, 'getMember')
+
+	// return new Promise((resolve, reject) => {
+	// 	request
+	// 		.get(URL.MEMBER)
+	// 		.set({'Authorization': `Bearer ${token}`})
+	// 		.end((err, res) => {
+	// 			if (err) { reject(err) }
+	// 			else { resolve(res.body) }
+	// 		})
+	// })
 }
 
 const getRole = (user) => {
@@ -103,6 +116,37 @@ async function removeEvent (token, eventId) {
 
 	log(result.entity, 'result.entity')
 }
+
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+export class Member {
+	constructor(token) {
+		if (!token) throw "An access token is required to create a meetup member"
+		this.token = token
+	}
+	async fetch () {
+
+		var result = await rest({
+			method: 'GET',
+			headers: { Authorization: `Bearer ${this.token}` },
+			path: MEETUPAPI_MEMBER_SELF
+		})
+
+		result = JSON.parse(result.entity)
+		if (!result) throw "Unable to get meetup member"
+		if (result.problem) throw result.problem
+
+		Object.assign(this, result)
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////
+
+
 
 export default {
 	ensureOrganizer,

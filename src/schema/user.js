@@ -10,12 +10,13 @@ const PhotoType = new GraphQLObjectType({
 	})
 })
 
-const MeetupProfileType = new GraphQLObjectType({
+const meetupMemberType = new GraphQLObjectType({
 	name: 'MeetupProfile',
 	fields: () => ({
 		id: { type: GraphQLInt },
 		name: { type: GraphQLString },
-		photo: { type: PhotoType }
+		photo: { type: PhotoType },
+		token: { type: GraphQLString }
 	})
 })
 
@@ -23,13 +24,12 @@ export const UserType = new GraphQLObjectType({
 	name: 'User',
 	fields: () => ({
 		_id: { type: GraphQLID },
-		meetup: {
-			type: MeetupProfileType,
+		meetupMember: {
+			type: meetupMemberType,
 			resolve: (user) => {
-				return user.meetup
+				return user.meetupMember
 			}
 		},
-		token: { type: GraphQLString },
 		status: { type: GraphQLString }
 	})
 })
@@ -40,14 +40,27 @@ const queries = {
 	user: {
 		type: UserType,
 		args: {
+			_id: { type: GraphQLID },
 			token: { type: GraphQLString }
-			//id is needed too
 		},
 		resolve: async (root, args) => {
 			var requester = new User(args.token)
-			await authorizer.hasRole('')
+			// await requester.hasRole('')
 
 			return db.user.read(args.token)
+		}
+	},
+	self: {
+		type: UserType,
+		args: {
+			_id: { type: GraphQLID },
+			token: { type: GraphQLString }
+		},
+		resolve: async (root, args) => {
+			var self = new User(args._id, args.token)
+			var blah = await self.fetch()
+			log(blah, 'blah')
+			return self
 		}
 	}
 }
@@ -65,8 +78,9 @@ const mutations = {
 }
 
 async function authenticateUser(root, args) {
-	var m = await meetup.getMember(args.token)
-	return await db.user.getFromMeetupProfile(m, args.token)
+	var user = new User()
+	await user.authenticate(args.token)
+	return user
 }
 
 /////////////////////////////////////////////////////////////////////////////
