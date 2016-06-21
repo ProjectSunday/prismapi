@@ -11,7 +11,7 @@ global.log = (data, message) => {
     if (data === undefined || data === null) {
         data = '[undefined/null]'
     }
-    message = message || ''
+    message = message || '-----'
     if (message) { console.log(message.blue) }
 
     try {

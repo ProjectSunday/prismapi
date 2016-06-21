@@ -1,6 +1,6 @@
 import { MongoClient, ObjectID } from 'mongodb'
 
-import { Member, default as meetupApi } from '~/meetup/meetup'
+import { Member, default as meetup, ensureOrganizer } from '~/meetup/meetup'
 
 
 var PRISM_DB_CONNECTION_STRING = 'mongodb://localhost:27017/prism'
@@ -28,11 +28,14 @@ const QUERY = async (collection, filter) => {
 const MUTATE = async (collection, filter, value) => {
 	var doc = await collection.findOneAndUpdate(filter, { $set: value }, { upsert: true })
 
+	if (doc.lastErrorObject.updatedExisting) {
+		return (await collection.find({ _id: doc.value._id }).toArray())[0]
+	}
+
 	if (doc.value) {
 		return doc.value
 	} else {
-		var d = await collection.find({ _id: doc.lastErrorObject.upserted }).toArray()
-		return d[0]
+		return (await collection.find({ _id: doc.lastErrorObject.upserted }).toArray())[0]
 	}
 
 }
@@ -174,22 +177,22 @@ const user = {
 	}
 }
 
+//////////////////////////////////////////////////////////////////////
 
 export class User {
-	constructor(_id, token) {
-		Object.assign(this, { _id, token })
+	constructor(token) {
+		this.token = token
 	}
 	save() {
 		log(this, 'this')
 	}
 	async fetch() {
-		if (!this._id) { throw 'Unable to fetch.  User has no _id.' }
 		if (!this.token) { throw 'Not authorized.' }
 
-		var users = await _db.collection('users').find({ _id: this._id }).toArray()
+		var users = await _db.collection('users').find({ 'meetupMember.token': this.token }).toArray()
 		if (!users.length) { throw 'User not found.' }
 
-		//also get meetup profile here
+		//also get meetup profile here, maybe?
 
 		Object.assign(this, users[0])
 	}
@@ -206,25 +209,83 @@ export class User {
 		Object.assign(this, user)
 
 	}
+	async ensureOrganizer() {
+
+		var role = await getRole(user.token)
+	    if (role !== 'Event Organizer' || role !== 'Organizer') {
+			var meetupProfile = await promoteMember(user)
+
+
+			// { meetupProfile: }
+			// await db.user.mutate(
+			// 	{ _id: user._id },
+			// 	{ meetupProfile: meetupProfile }
+			// )
+	    }
+
+	}
 }
 
+//////////////////////////////////////////////////////////////////////
 
-// const MUTATE = (col, filter, set) => {
-// 	return new Promise((resolve, reject) => {
-// 		col.findOneAndUpdate(filter,
-// 			{ $set: set },
-// 			{ upsert: true }
-// 		).then(r => {
-// 			if (r.value) {
-// 				resolve(r.value)
-// 			} else {
-// 				col.find({ _id: r.lastErrorObject.upserted }).then(u => {
-// 					resolve(u[0])
-// 				}, reject)
-// 			}
-// 		})
-// 	})
-// }
+export class UpcomingClass {
+	constructor() {
+		// this.user = user
+	}
+	async create(userToken, upcoming) {
+
+
+		// log(User, 'user')
+
+		var creator = new User(userToken)
+
+		await creator.fetch()
+
+		log(creator, 'creator')
+
+
+
+
+		// var user = await db.user.read(args.token)
+		// log(user, 'user')
+
+
+		await meetup.ensureOrganizer(creator)
+
+		// await meetup.ensureOrganizer(user)
+
+		// var newEvent = {
+		// 	name: args.name
+		// }
+		// var event = await meetup.postEvent(user.token, newEvent)
+
+		// log(event, 'event')
+
+		// var newClass = {
+		// 	teacher: [ user._id ],
+		// 	meetupEvent: event
+		// }
+		// return await db.upcomingClass.mutate(newClass)
+
+		//post event
+
+		return { _id: 'blah' }
+
+	}
+	save() {
+		log(this, 'this')
+	}
+	async fetch() {
+		if (!this.token) { throw 'Not authorized.' }
+
+		var users = await _db.collection('users').find({ 'meetupMember.token': this.token }).toArray()
+		if (!users.length) { throw 'User not found.' }
+
+		//also get meetup profile here
+
+		Object.assign(this, users[0])
+	}
+}
 
 
 

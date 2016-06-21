@@ -4,6 +4,10 @@
 
 i hate you meetup api
 
+### To Do's
+
+- change User.fetch to also sync with meetup
+
 ### Installation
 
 node v5.10.0<br />

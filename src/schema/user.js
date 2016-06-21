@@ -53,13 +53,11 @@ const queries = {
 	self: {
 		type: UserType,
 		args: {
-			_id: { type: GraphQLID },
 			token: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-			var self = new User(args._id, args.token)
-			var blah = await self.fetch()
-			log(blah, 'blah')
+			var self = new User(args.token)
+			await self.fetch()
 			return self
 		}
 	}

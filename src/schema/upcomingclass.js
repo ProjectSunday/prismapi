@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import db from '~/data/db'
+import { UpcomingClass, default as db } from '~/data/db'
 import meetup from '~/meetup/meetup'
 
 import { UserType } from './user'
@@ -56,37 +56,20 @@ const MeetupEventType = new GraphQLObjectType({
 
 /////////////////////////////////////////////////////////////////////////////
 
-const mutations = {
+const Mutations = {
 	createUpcomingClass: {
 		type: UpcomingClassType,
 		args: {
 			token: { type: GraphQLString },
 			name: { type: GraphQLString }
 		},
-		resolve: createUpcomingClass
+		resolve: async (root, args) => {
+			var upcoming = new UpcomingClass()
+			return await upcoming.create(args.token, { name: args.name })
+		}
 	}
-}
-
-async function createUpcomingClass(root, args) {
-
-	var user = await db.user.read(args.token)
-	log(user, 'user')
-	await meetup.ensureOrganizer(user)
-
-	var newEvent = {
-		name: args.name
-	}
-	var event = await meetup.postEvent(user.token, newEvent)
-
-	log(event, 'event')
-
-	var newClass = {
-		teacher: [ user._id ],
-		meetupEvent: event
-	}
-	return await db.upcomingClass.mutate(newClass)
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
-export default { mutations }
+export default { Mutations }

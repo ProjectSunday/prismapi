@@ -20,6 +20,7 @@ const URL = {
 }
 
 const MEETUPAPI_MEMBER_SELF = 'https://api.meetup.com/2/member/self'
+const MEETUPAPI_EVENTS = 'https://api.meetup.com/locallearners/events'
 
 async function ensureOrganizer(user) {
 	var role = await getRole(user.token)
@@ -117,9 +118,6 @@ async function removeEvent (token, eventId) {
 	log(result.entity, 'result.entity')
 }
 
-
-
-
 //////////////////////////////////////////////////////////////////////
 
 export class Member {
@@ -143,9 +141,49 @@ export class Member {
 	}
 }
 
-
 //////////////////////////////////////////////////////////////////////
 
+export class Event {
+	constructor(token) {
+		if (!token) throw "An access token is required to create an Event"
+		this.token = token
+	}
+	async post () {
+
+		var result = await rest({
+			method: 'POST',
+			headers: { 'Authorization': `Bearer ${this.token}` },
+			path: MEETUPAPI_EVENTS,
+			params: event
+		})
+
+		result = JSON.parse(result.entity)
+		log(token, 'result')
+
+		if (result.errors) {
+			throw result.errors[0].message
+		} else {
+			return result
+		}
+
+	}
+	async fetch () {
+
+		var result = await rest({
+			method: 'GET',
+			headers: { Authorization: `Bearer ${this.token}` },
+			path: MEETUPAPI_MEMBER_SELF
+		})
+
+		result = JSON.parse(result.entity)
+		if (!result) throw "Unable to get meetup member"
+		if (result.problem) throw result.problem
+
+		Object.assign(this, result)
+	}
+}
+
+//////////////////////////////////////////////////////////////////////
 
 
 export default {

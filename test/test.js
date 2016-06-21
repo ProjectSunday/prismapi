@@ -5,6 +5,9 @@ import '../debug'
 
 import app from '~/app'
 
+var LOCALLEARNERTESTUSERTOKEN = '9bad3c6873b565b4053b7876fcbbafaf'
+var LOCALLEARNERTESTUSERID = '57635561a48f34c10540bc32'
+
 const HEADERS = { 'Content-Type': 'application/graphql' }
 
 var request, listener
@@ -22,11 +25,18 @@ describe('Prism API Mocha Testing', () => {
 	it('should return all categories', done => {
 		request.post('/graphql')
 			.set(HEADERS)
-			.send('query { categories { _id } }')
+			.send(`
+				query {
+					categories {
+						_id
+					}
+				}
+			`)
 			.end((err, res) => {
 				assert.isArray(res.body.data.categories)
 				done()
 			})
+
 	})
 
 	var addedCategoryId
@@ -56,8 +66,6 @@ describe('Prism API Mocha Testing', () => {
 
 
 	//get this from the front end
-	var LOCALLEARNERTESTUSERTOKEN = '2d195fd1b223fd877628feff065f363b'
-	var LOCALLEARNERTESTUSERID = '57635561a48f34c10540bc32'
 
 	it('should authenticate the local learners test user', done => {
 		request.post('/graphql')
@@ -76,8 +84,12 @@ describe('Prism API Mocha Testing', () => {
 			`)
 			.end((err, res) => {
 				// log(res.body)
+				var { token, name } = res.body.data.authenticateUser.meetupMember
 				assert.equal(res.body.data.authenticateUser.meetupMember.token, LOCALLEARNERTESTUSERTOKEN)
 				assert.equal(res.body.data.authenticateUser.meetupMember.name, 'Local Learners Test User')
+
+				var { _id } = res.body.data.authenticateUser
+				log(_id, "test user id")
 				done()
 			})
 	})
@@ -88,7 +100,7 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				query {
-					self (_id: "${LOCALLEARNERTESTUSERID}", token: "${LOCALLEARNERTESTUSERTOKEN}") {
+					self (token: "${LOCALLEARNERTESTUSERTOKEN}") {
 						_id,
 						meetupMember {
 							id,
@@ -98,9 +110,12 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
-				expect(res.body.data.createUpcomingClass._id).to.exist
-				expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
+				var { _id, meetupMember } = res.body.data.self
+				var { id, name } = meetupMember
+
+				expect(_id).to.exist
+				expect(id).to.exist
+				expect(name).to.exist
 				done()
 			})
 
@@ -159,27 +174,30 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 
-	// it('should create an upcoming class', done => {
-	// 	request.post('/graphql')
-	// 		.set(HEADERS)
-	// 		.send(`
-	// 			mutation {
-	// 				createUpcomingClass (token: "${LOCALLEARNERTESTUSERTOKEN}", name: "testupcomingclass") {
-	// 					_id,
-	// 					meetupEvent {
-	// 						id,
-	// 						name
-	// 					}
-	// 				}
-	// 			}
-	// 		`)
-	// 		.end((err, res) => {
-	// 			log(res.body)
-	// 			expect(res.body.data.createUpcomingClass._id).to.exist
-	// 			expect(res.body.data.createUpcomingClass.name).to.equal('testupcomingclass')
-	// 			done()
-	// 		})
-	// })
+	it('should create an upcoming class', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				mutation {
+					createUpcomingClass (token: "${LOCALLEARNERTESTUSERTOKEN}", name: "testupcomingclass") {
+						_id,
+						meetupEvent {
+							id,
+							name
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				log(res.body)
+
+				var { _id, name } = res.body.data.createUpcomingClass
+
+				expect(_id).to.exist
+				// expect(name).to.equal('testupcomingclass')
+				done()
+			})
+	})
 
 
 

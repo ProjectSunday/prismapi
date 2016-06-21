@@ -19,7 +19,7 @@ const mutation = new GraphQLObjectType({
 	fields: {
 		...Category.mutations,
 		...RequestedClass.mutations,
-		...UpcomingClass.mutations,
+		...UpcomingClass.Mutations,
 		...User.mutations
 	}
 })
