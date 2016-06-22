@@ -59,7 +59,8 @@ const queries = {
 			//security check here
 
 			var self = new User(args.token)
-			return await self.get()
+			await self.fetch()
+			return self.data
 
 			// await self.fetch(args.token)
 			// return self
@@ -75,15 +76,15 @@ const mutations = {
 		args: {
 			token: { type: GraphQLString }
 		},
-		resolve: authenticateUser
+		resolve: async (root, args) => {
+			var user = new User(args.token)
+			await user.authenticate()
+			return user.data
+		}
+
 	}
 }
 
-async function authenticateUser(root, args) {
-	var user = new User(args.token)
-	await user.authenticate()
-	return user
-}
 
 /////////////////////////////////////////////////////////////////////////////
 

@@ -1,8 +1,10 @@
 import * as Common from './db-common'
 
 
-export Category from './db-category'
-export User from './db-user'
+export Category 		from './db-category'
+export RequestedClass 	from './db-requestedclass'
+export Settings 		from './db-settings'
+export User 			from './db-user'
 
 export default { ...Common }
 
@@ -92,43 +94,7 @@ export default { ...Common }
 // }
 
 // ////////////////////////////////////////////////////////////////////////////////////
-// const requestedClass = {
-// 	create (requested) {
-// 		return new Promise((resolve, reject) => {
-// 			var collection = _db.collection('requestedclasses')
-// 			collection.insertOne(requested).then(r => {
-// 				return collection.find({ _id: r.insertedId }).toArray()
-// 			}).then(docs => {
-// 				resolve(docs[0])
-// 			}, reject)
-// 		})
-// 	},
-// 	read (_id) {
-// 		return new Promise((resolve, reject) => {
-// 			// if (_id === undefined) {
-// 			// 	var query = {}
-// 			// } else {
-// 			// 	var query = { _id: ObjectID(_id) }
-// 			// }
-// 			// console.log('query,', query)
-// 			var collection = _db.collection('requestedclasses')
-// 			collection.find().toArray().then(resolve, reject)
-// 		})
-// 	},
-// 	delete (_id) {
-// 		return new Promise((resolve, reject) => {
-// 			var collection = _db.collection('requestedclasses')
-// 			collection.deleteOne({ _id: ObjectID(_id) }).then(r => {
-// 				// console.log('r:', r)
-// 				if (r.deletedCount === 1) {
-// 					resolve({ _id, status: 'DELETE_SUCCESS' })
-// 				} else {
-// 					resolve({ _id, status: 'DELETE_FAIL' })
-// 				}
-// 			}, reject)
-// 		})
-// 	}
-// }
+
 
 // ////////////////////////////////////////////////////////////////////////////////////
 // const upcomingClass = {

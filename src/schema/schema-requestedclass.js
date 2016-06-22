@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 import { CategoryType } from './schema-category'
-import db from '~/data/db'
+import { RequestedClass } from '~/data/db'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',
@@ -21,14 +21,14 @@ const RequestedClassType = new GraphQLObjectType({
 })
 
 const queries = {
-
 	requestedClasses: {
 		type: new GraphQLList(RequestedClassType),
-		resolve: () => {
-			return db.requestedClass.read()
+		resolve: async () => {
+			var requestedClass = new RequestedClass()
+			await requestedClass.getAll()
+			return requestedClass.data
 		}
 	}
-
 }
 
 const mutations = {
@@ -53,8 +53,10 @@ const mutations = {
 		args: {
 			_id: { type: new GraphQLNonNull(GraphQLID) }
 		},
-		resolve: (root, args) => {
-			return db.requestedClass.delete(args._id)
+		resolve: async (root, args) => {
+			var requestedClass = new RequestedClass()
+			await requestedClass.delete(args._id)
+			return requestedClass.data
 		}
 	}
 

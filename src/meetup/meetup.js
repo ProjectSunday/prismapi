@@ -19,7 +19,6 @@ const URL = {
     TEST: 'https://api.meetup.com/2/events'
 }
 
-const MEETUPAPI_MEMBER_SELF = 'https://api.meetup.com/2/member/self'
 const MEETUPAPI_EVENTS = 'https://api.meetup.com/locallearners/events'
 
 async function ensureOrganizer(user) {
@@ -120,26 +119,7 @@ async function removeEvent (token, eventId) {
 
 //////////////////////////////////////////////////////////////////////
 
-export class Member {
-	constructor(token) {
-		if (!token) throw "An access token is required to create a meetup member"
-		this.token = token
-	}
-	async fetch () {
-
-		var result = await rest({
-			method: 'GET',
-			headers: { Authorization: `Bearer ${this.token}` },
-			path: MEETUPAPI_MEMBER_SELF
-		})
-
-		result = JSON.parse(result.entity)
-		if (!result) throw "Unable to get meetup member"
-		if (result.problem) throw result.problem
-
-		Object.assign(this, result)
-	}
-}
+export Member from './meetup-member'
 
 //////////////////////////////////////////////////////////////////////
 

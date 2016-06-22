@@ -1,45 +1,39 @@
-import { db, Query, Mutate } from '~/data/db-common'
+import { db, Query, Read, Update} from '~/data/db-common'
+
 import { Member } from '~/meetup/meetup'
 
 export default class User {
 	constructor(token) {
 		if (!token) { throw 'Not authorized.' }
-		this._token = token
+		this.token = token
 		this._data = {}
 	}
-	save() {
-		log(this, 'this')
-	}
-	async get() {
-		var users = await _db.collection('users').find({ 'meetupMember.token': this._token }).toArray()
-		if (!users.length) { throw 'User not found.' }
+
+	get data() { return this._data }
+	set data(d) { this._data = d }
+
+	async fetch() {
+
+		var user = await Read('users', { token: this.token })
+		if (!user) { throw 'User not found.' }
 
 		//also get meetup profile here, maybe?
+		this.data = user
 
-		Object.assign(this._data, users[0])
-		return this._data
-	}
-	async fetch(token) {
-		if (!token) { throw 'Not authorized.' }
-
-		var users = await _db.collection('users').find({ 'meetupMember.token': token }).toArray()
-		if (!users.length) { throw 'User not found.' }
-
-		//also get meetup profile here, maybe?
-
-		Object.assign(this, users[0])
 	}
 	async authenticate() {
 
-		var member = new Member(this._token)
+		var member = new Member(this.token)
 		await member.fetch()
 
-		var collection = _db.collection("users")
-		var filter = { 'meetupMember.id': member.id }
-		var value = { meetupMember: member }
-		var user = await MUTATE(collection, filter, value)
+		var filter = { 'meetupMember.id': member.data.id }
+		var value = {
+			token: this.token,
+			meetupMember: member.data
+		}
+		var user = await Update("users", filter, value)
 
-		Object.assign(this, user)
+		this.data = user
 
 	}
 	async ensureOrganizer() {

@@ -5,10 +5,13 @@ import '../debug'
 
 import app from '~/app'
 
-var LOCALLEARNERTESTUSERTOKEN = 'b0c27bdbd6f079e9c9e5441ff8e22d2b'
+var LOCALLEARNERTESTUSERTOKEN = 'e5fd5073f250506d770c272d7fdb2f3d'
 var LOCALLEARNERTESTUSERID = '5769d3a7ac06af8f0457c10f'
 
+var CREATED_REQUEST_CLASS_ID
+
 const HEADERS = { 'Content-Type': 'application/graphql' }
+
 
 var request, listener
 
@@ -37,7 +40,6 @@ describe('Prism API Mocha Testing', () => {
 				assert.isArray(res.body.data.categories)
 				done()
 			})
-
 	})
 
 	var addedCategoryId
@@ -80,9 +82,6 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
-
-
-
 	it('should authenticate the local learners test user', done => {
 		request.post('/graphql')
 			.set(HEADERS)
@@ -99,7 +98,6 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
 				var { token, name } = res.body.data.authenticateUser.meetupMember
 				assert.equal(res.body.data.authenticateUser.meetupMember.name, 'Local Learners Test User')
 
@@ -108,8 +106,6 @@ describe('Prism API Mocha Testing', () => {
 				done()
 			})
 	})
-
-/*
 
 	it('should fetch the local learners test user\'s self', done => {
 		request.post('/graphql')
@@ -126,6 +122,7 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
+				// log(res.body)
 				var { _id, meetupMember } = res.body.data.self
 				var { id, name } = meetupMember
 
@@ -134,23 +131,25 @@ describe('Prism API Mocha Testing', () => {
 				expect(name).to.exist
 				done()
 			})
-
 	})
-
-
-
 
 	it('should return all requested classes', done => {
 		request.post('/graphql')
 			.set(HEADERS)
-			.send(`query { requestedClasses { _id, name } }`)
+			.send(`
+				query {
+					requestedClasses {
+						_id,
+						name
+					}
+				}
+			`)
 			.end((err, res) => {
-				assert.equal(res.body.data.requestedClasses.length > 0, true)
+				// log(res.body)
+				assert.isArray(res.body.data.requestedClasses)
 				done()
 			})
 	})
-
-	var createRequestedClassId;
 
 	it('should add a requested class', done => {
 		request.post('/graphql')
@@ -161,34 +160,40 @@ describe('Prism API Mocha Testing', () => {
 						_id,
 						name
 					}
-				}`
-			)
+				}
+			`)
 			.end((err, res) => {
-				// console.log('add requested class:', res.body)
-				assert.equal(res.body.data.createRequestedClass.name, 'testrequestedclass')
-				createRequestedClassId = res.body.data.createRequestedClass._id
+				t()
+				console.log(err)
+				var { _id, name } = res.body.data.createRequestedClass
+				expect(_id).to.exist
+				// expect(name).to.equal('testrequestedclass')
+				// CREATED_REQUEST_CLASS_ID = _id
 				done()
 			})
 	})
 
-	it('should delete a requested class', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				mutation {
-					deleteRequestedClass(_id: "${createRequestedClassId}") {
-						_id,
-						status
-					}
-				}`
-			)
-			.end((err, res) => {
-				assert.equal(res.body.data.deleteRequestedClass._id, createRequestedClassId)
-				assert.equal(res.body.data.deleteRequestedClass.status, 'DELETE_SUCCESS')
-				done()
-			})
-	})
+	// it('should delete a requested class', done => {
+	// 	request.post('/graphql')
+	// 		.set(HEADERS)
+	// 		.send(`
+	// 			mutation {
+	// 				deleteRequestedClass(_id: "${CREATED_REQUEST_CLASS_ID}") {
+	// 					_id,
+	// 					status
+	// 				}
+	// 			}`
+	// 		)
+	// 		.end((err, res) => {
+	// 			log(res.body)
+	// 			var { _id, status } = res.body.data.deleteRequestedClass
+	// 			expect(_id).to.equal(CREATED_REQUEST_CLASS_ID)
+	// 			expect(status).to.equal('DELETE_SUCCESS')
+	// 			done()
+	// 		})
+	// })
 
+/*
 
 	it('should create an upcoming class', done => {
 		request.post('/graphql')

@@ -15,11 +15,11 @@ const REDIRECT_URI 	= process.env.REDIRECT_URI	|| 'http://localhost:7000/authent
 const REFRESH_TOKEN 		= process.env.REFRESH_TOKEN 		|| '1f17e403279d3cd9d55ba29ada1f8cad'
 // const AUTHORIZATION_CODE 	= process.env.AUTHORIZATION_CODE 	|| '4bd8c6e0f6e27675a380b552e99baeb0'
 
-var _administrator = {
-	startTokenMonitoring,
-	access_token: null,
-	created: null
-}
+// var _administrator = {
+// 	startTokenMonitoring,
+// 	access_token: null,
+// 	created: null
+// }
 
 
 
@@ -27,104 +27,109 @@ var _instance
 
 export default class Administrator {
 	constructor() {
-		if (!_instance) {
-			_instance = this
+		if (_instance) {
+			return _instance
 		}
-		return _instance
+		_instance = this
 	}
 
 	async startTokenMonitoring () {
 
-		var settings = new Settings()
-		var administrator = await settings.getAdministrator() || {}
+		await this.readFromDatabase()
 
-		logOutTokens('Administrator')
+		this.logOutTokens('Administrator')
 
-		if (!await accessTokenValid(administrator)) {
+		if (!await this.accessTokenValid()) {
 
 			console.log('NOT VALID!')
 
-			var a = await refreshAccessToken()
-			administrator = {
-				access_token: a.access_token,
-				refresh_token: a.refresh_token,
-				created: new Date()
-			}
+			await this.refreshAccessToken()
 
-			logOutTokens('NEW Administrator')
+			this.logOutTokens('NEW Administrator')
 
-			await db.settings.setAdministrator(administrator)
+			await this.updateDatabase(this)
 		}
 
-		_administrator.access_token = administrator.access_token
-		_administrator.created = administrator.created
 
 		clearTimeout(global.__prism_admin_timer_id)
-		global.__prism_admin_timer_id = setTimeout(startTokenMonitoring, 60000)
+		global.__prism_admin_timer_id = setTimeout(this.startTokenMonitoring, 60000)
 
 
-		function logOutTokens(message) {
-			console.log(`\n${message}`)
-			console.log('\taccess_token:  ', administrator.access_token)
-			console.log('\trefresh_token: ', administrator.refresh_token)
-			console.log('\tcreated:       ', administrator.created)
-			console.log('\tage:           ', ((new Date()) - administrator.created) / 1000 / 60, 'minutes\n')
+	}
+
+
+	async accessTokenValid () {
+
+		if (!this.access_token) { return false }
+
+		var now = new Date()
+		var ageMinutes = (now - this.created) / 1000 / 60
+		if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
+
+		var result = await rest({
+			method: 'GET',
+			headers: { Authorization: `Bearer ${this.access_token}` },
+			path: URL_MEETUP_MEMBER_SELF
+		})
+
+		try {
+			var self = JSON.parse(result.entity)
+			return (self.id === ADMINISTRATOR_ID)
+		} catch (err) {
+			return false
 		}
 
 	}
 
-}
+	async refreshAccessToken () {
 
+		var result = await rest({
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			path: URL_MEETUP_ACCESSTOKEN,
+			params: {
+				client_id: CLIENT_ID,
+				client_secret: CLIENT_SECRET,
+				grant_type: 'refresh_token',
+				refresh_token: REFRESH_TOKEN
+			}
+		})
 
-async function accessTokenValid (administrator) {
+		var administrator = JSON.parse(result.entity)
 
-	if (!administrator || !administrator.access_token) { return false }
-
-	var now = new Date()
-	var ageMinutes = (now - administrator.created) / 1000 / 60
-	if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
-
-	var result = await rest({
-		method: 'GET',
-		headers: { Authorization: `Bearer ${administrator.access_token}` },
-		path: URL_MEETUP_MEMBER_SELF
-	})
-
-	try {
-		var self = JSON.parse(result.entity)
-		return (self.id === ADMINISTRATOR_ID)
-	} catch (err) {
-		return false
-	}
-
-}
-
-
-async function refreshAccessToken () {
-
-	var result = await rest({
-		method: 'POST',
-		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		path: URL_MEETUP_ACCESSTOKEN,
-		params: {
-			client_id: CLIENT_ID,
-			client_secret: CLIENT_SECRET,
-			grant_type: 'refresh_token',
-			refresh_token: REFRESH_TOKEN
+		if (!administrator || !administrator.access_token) {
+			console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
+			console.log('result:', administrator.error_description)
+		} else {
+			Object.assign(this, administrator, { created: new Date() })
 		}
-	})
 
-	var administrator = JSON.parse(result.entity)
-
-	if (!administrator || !administrator.access_token) {
-		console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
-		console.log('result:', administrator.error_description)
-	} else {
-		return administrator
 	}
+
+	async readFromDatabase() {
+		var a = await Settings.getAdministrator()
+		Object.assign(this, a)
+	}
+
+	async updateDatabase() {
+		await Settings.setAdministrator(this)
+	}
+
+	logOutTokens(message) {
+		console.log(`\n${message}`)
+		console.log('\taccess_token:  ', this.access_token)
+		console.log('\trefresh_token: ', this.refresh_token)
+		console.log('\tcreated:       ', this.created)
+		console.log('\tage:           ', ((new Date()) - this.created) / 1000 / 60, 'minutes\n')
+	}
+
+
 
 }
 
 
 
-export default _administrator
+
+
+
+
