@@ -152,6 +152,7 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 	it('should add a requested class', done => {
+		t()
 		request.post('/graphql')
 			.set(HEADERS)
 			.send(`
