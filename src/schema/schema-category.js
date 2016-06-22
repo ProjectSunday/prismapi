@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import db from '../data/db'
+import { Category } from '~/data/db'
 
 export const CategoryType = new GraphQLObjectType({
 	name: 'CategoryType',
@@ -15,8 +15,9 @@ export const CategoryType = new GraphQLObjectType({
 const queries = {
 	categories: {
 		type: new GraphQLList(CategoryType),
-		resolve: () => {
-			return db.category.read()
+		resolve: async () => {
+			var category = new Category()
+			return await category.getAll()
 		}
 	}
 }
@@ -28,8 +29,9 @@ const mutations = {
 		args: {
 			name: { type: new GraphQLNonNull(GraphQLString) }
 		},
-		resolve: (root, args) => {
-			return db.category.create({ name: args.name })
+		resolve: async (root, args) => {
+			var category = new Category()
+			return await category.save({ name: args.name })
 		}
 	},
 
@@ -38,8 +40,11 @@ const mutations = {
 		args: {
 			_id: { type: new GraphQLNonNull(GraphQLID) }
 		},
-		resolve: (root, args) => {
-			return db.category.delete(args._id)
+		resolve: async (root, args) => {
+			var category = new Category()
+			return await category.delete(args._id)
+			// return 'balh'
+			// return db.category.delete(args._id)
 		}
 	}
 

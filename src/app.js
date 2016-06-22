@@ -27,10 +27,10 @@ const createApp = () => new Promise((resolve, reject) => {
 
 
 export default async () => {
-	await db.start()
+	await db.connect()
 
 	var app = await createApp()
-	await administrator.startTokenMonitoring()
+	// await administrator.startTokenMonitoring()
 
 	return app
 }

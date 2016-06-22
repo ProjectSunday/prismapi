@@ -5,8 +5,8 @@ import '../debug'
 
 import app from '~/app'
 
-var LOCALLEARNERTESTUSERTOKEN = '9bad3c6873b565b4053b7876fcbbafaf'
-var LOCALLEARNERTESTUSERID = '57635561a48f34c10540bc32'
+var LOCALLEARNERTESTUSERTOKEN = 'b0c27bdbd6f079e9c9e5441ff8e22d2b'
+var LOCALLEARNERTESTUSERID = '5769d3a7ac06af8f0457c10f'
 
 const HEADERS = { 'Content-Type': 'application/graphql' }
 
@@ -33,6 +33,7 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
+				// log(res.body)
 				assert.isArray(res.body.data.categories)
 				done()
 			})
@@ -44,28 +45,43 @@ describe('Prism API Mocha Testing', () => {
 	it('should create a category', done => {
 		request.post('/graphql')
 			.set(HEADERS)
-			.send('mutation { createCategory (name: "testtesttest") { _id, name } }')
+			.send(`
+				mutation {
+					createCategory (name: "testtesttest") {
+						_id,
+						name
+					}
+				}
+			`)
 			.end((err, res) => {
-				addedCategoryId = res.body.data.createCategory._id
-				expect(res.body.data.createCategory._id).to.be.a('string')
+				var { _id } = res.body.data.createCategory
+				addedCategoryId = _id
+				expect(_id).to.exist
 				done()
 			})
 	})
+
 
 	it('should remove a category', done => {
 		request.post('/graphql')
 			.set(HEADERS)
-			.send(`mutation { deleteCategory(_id: "${addedCategoryId}") { _id, status } }`)
+			.send(`
+				mutation {
+					deleteCategory(_id: "${addedCategoryId}") {
+						_id,
+						status
+					}
+				}
+			`)
 			.end((err, res) => {
-				assert.equal(res.body.data.deleteCategory.status, 'DELETE_SUCCESS')
+				var { status } = res.body.data.deleteCategory
+				expect(status).to.equal('DELETE_SUCCESS')
 				done()
 			})
 	})
 
 
 
-
-	//get this from the front end
 
 	it('should authenticate the local learners test user', done => {
 		request.post('/graphql')
@@ -83,9 +99,8 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				// log(res.body)
+				log(res.body)
 				var { token, name } = res.body.data.authenticateUser.meetupMember
-				assert.equal(res.body.data.authenticateUser.meetupMember.token, LOCALLEARNERTESTUSERTOKEN)
 				assert.equal(res.body.data.authenticateUser.meetupMember.name, 'Local Learners Test User')
 
 				var { _id } = res.body.data.authenticateUser
@@ -94,6 +109,7 @@ describe('Prism API Mocha Testing', () => {
 			})
 	})
 
+/*
 
 	it('should fetch the local learners test user\'s self', done => {
 		request.post('/graphql')
@@ -201,7 +217,7 @@ describe('Prism API Mocha Testing', () => {
 
 
 
-
+*/
 
 	///////////////////////////////////////////////////////////////////////////////////
 

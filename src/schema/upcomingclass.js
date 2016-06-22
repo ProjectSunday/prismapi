@@ -3,7 +3,7 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 import { UpcomingClass, default as db } from '~/data/db'
 import meetup from '~/meetup/meetup'
 
-import { UserType } from './user'
+import { UserType } from './schema-user'
 
 const UpcomingClassType = new GraphQLObjectType({
 	name: 'UpcomingClassType',

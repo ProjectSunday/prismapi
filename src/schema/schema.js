@@ -1,9 +1,9 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull, GraphQLOutputType } from 'graphql/type'
 
-import Category 		from './category'
+import Category 		from './schema-category'
 import RequestedClass 	from './requestedclass'
 import UpcomingClass 	from './upcomingclass'
-import User 			from './user'
+import User 			from './schema-user'
 
 const query = new GraphQLObjectType({
 	name: 'query',
