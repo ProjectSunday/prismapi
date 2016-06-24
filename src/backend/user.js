@@ -13,9 +13,7 @@ export class User {
 	set data(d) { this._data = d }
 
 	async fetch() {
-		t(2)
 		var user = await Read('users', { token: this.token })
-		t(3)
 		if (!user) { throw 'User not found.' }
 
 		//also get meetup profile here, maybe?

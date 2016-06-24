@@ -193,30 +193,30 @@ describe('Prism API Mocha Testing', () => {
 
 
 
-	it('should create an upcoming class', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
-				mutation {
-					createUpcomingClass (token: "${LOCALLEARNERTESTUSERTOKEN}", name: "testupcomingclass") {
-						_id,
-						meetupEvent {
-							id,
-							name
-						}
-					}
-				}
-			`)
-			.end((err, res) => {
-				log(res.body)
+	// it('should create an upcoming class', done => {
+	// 	request.post('/graphql')
+	// 		.set(HEADERS)
+	// 		.send(`
+	// 			mutation {
+	// 				createUpcomingClass (token: "${LOCALLEARNERTESTUSERTOKEN}", name: "testupcomingclass") {
+	// 					_id,
+	// 					meetupEvent {
+	// 						id,
+	// 						name
+	// 					}
+	// 				}
+	// 			}
+	// 		`)
+	// 		.end((err, res) => {
+	// 			log(res.body)
 
-				var { _id, name } = res.body.data.createUpcomingClass
+	// 			var { _id, name } = res.body.data.createUpcomingClass
 
-				expect(_id).to.exist
-				// expect(name).to.equal('testupcomingclass')
-				done()
-			})
-	})
+	// 			expect(_id).to.exist
+	// 			// expect(name).to.equal('testupcomingclass')
+	// 			done()
+	// 		})
+	// })
 
 
 

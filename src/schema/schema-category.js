@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { Category } from '~/backend/db'
+import { Category } from '~/backend/backend'
 
 export const CategoryType = new GraphQLObjectType({
 	name: 'CategoryType',

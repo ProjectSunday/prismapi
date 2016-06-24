@@ -1,6 +1,6 @@
 import rest from 'rest'
 
-import { Settings } from './db'
+import { Settings } from './backend'
 import { ADMINISTRATOR_ID, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, URL } from './meetup'
 
 

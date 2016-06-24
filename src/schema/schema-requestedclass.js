@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 import { CategoryType } from './schema-category'
-import { RequestedClass } from '~/backend/db'
+import { RequestedClass } from '~/backend/backend'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',

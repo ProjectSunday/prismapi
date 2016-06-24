@@ -1,5 +1,6 @@
-import { Create, User } 	from './db'
-import { Event } 			from './meetup'
+import { Create } 	from './db'
+import { User }		from './backend'
+import { Event } 	from './meetup'
 
 export class UpcomingClass {
 	constructor(token) {
@@ -11,7 +12,6 @@ export class UpcomingClass {
 	async create() {
 		var user = new User(this.token)
 		await user.fetch()
-		t(1)
 		await user.ensureOrganizer()
 		this.data.teacher = user.data._id
 

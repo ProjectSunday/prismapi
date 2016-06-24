@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { UpcomingClass } 	from '~/backend/db'
-import meetup 				from '~/backend/meetup'
+import { UpcomingClass } 	from '~/backend/backend'
 
 import { UserType } from './schema-user'
 

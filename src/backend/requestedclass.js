@@ -1,5 +1,5 @@
 import { ObjectID } from 'mongodb'
-import { Create, Delete, Query, QueryAll, ReadMany, Mutate } from './db-common'
+import { Create, Delete, Query, QueryAll, ReadMany, Mutate } from './db'
 
 export class RequestedClass {
 	constructor() {

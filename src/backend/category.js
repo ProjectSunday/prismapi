@@ -1,6 +1,6 @@
 import { ObjectID } from 'mongodb'
 
-import { Delete, Query, QueryAll, Mutate } from './db-common'
+import { Delete, Query, QueryAll, Mutate } from './db'
 
 export class Category {
 	constructor() {

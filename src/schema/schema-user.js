@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { User } from '~/backend/db'
+import { User } from '~/backend/backend'
 
 const PhotoType = new GraphQLObjectType({
 	name: 'PhotoType',
