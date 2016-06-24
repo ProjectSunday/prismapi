@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 import { CategoryType } from './schema-category'
-import { RequestedClass } from '~/data/db'
+import { RequestedClass } from '~/backend/db'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',
@@ -39,12 +39,10 @@ const mutations = {
 			name: { type: new GraphQLNonNull(GraphQLString) },
 			category: { type: GraphQLID }
 		},
-		resolve: (root, args) => {
-			return new Promise((resolve, reject) => {  //just for testing purpose
-				setTimeout(() => {
-					db.requestedClass.create({ name: args.name, category: args.category }).then(resolve, reject)
-				}, 5)  //delaying for testing purpose
-			})
+		resolve: async (root, args) => {
+			var requestedClass = new RequestedClass()
+			await requestedClass.create({ name: args.name, category: args.category })
+			return requestedClass.data
 		}
 	},
 

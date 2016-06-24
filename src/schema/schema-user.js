@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { User, default as db } from '~/data/db'
-import meetup from '~/meetup/meetup'
+import { User } from '~/backend/db'
 
 const PhotoType = new GraphQLObjectType({
 	name: 'PhotoType',

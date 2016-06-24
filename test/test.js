@@ -5,13 +5,12 @@ import '../debug'
 
 import app from '~/app'
 
-var LOCALLEARNERTESTUSERTOKEN = 'e5fd5073f250506d770c272d7fdb2f3d'
-var LOCALLEARNERTESTUSERID = '5769d3a7ac06af8f0457c10f'
+const HEADERS 					= { 'Content-Type': 'application/graphql' }
+
+var LOCALLEARNERTESTUSERTOKEN 	= '1cdf89f59c0bc93e9becfb92e3353260'
+var LOCALLEARNERTESTUSERID 		= '5769d3a7ac06af8f0457c10f'
 
 var CREATED_REQUEST_CLASS_ID
-
-const HEADERS = { 'Content-Type': 'application/graphql' }
-
 
 var request, listener
 
@@ -152,7 +151,6 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 	it('should add a requested class', done => {
-		t()
 		request.post('/graphql')
 			.set(HEADERS)
 			.send(`
@@ -164,37 +162,36 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				t()
-				console.log(err)
+				// log(res.body)
 				var { _id, name } = res.body.data.createRequestedClass
 				expect(_id).to.exist
-				// expect(name).to.equal('testrequestedclass')
-				// CREATED_REQUEST_CLASS_ID = _id
+				expect(name).to.equal('testrequestedclass')
+				CREATED_REQUEST_CLASS_ID = _id
 				done()
 			})
 	})
 
-	// it('should delete a requested class', done => {
-	// 	request.post('/graphql')
-	// 		.set(HEADERS)
-	// 		.send(`
-	// 			mutation {
-	// 				deleteRequestedClass(_id: "${CREATED_REQUEST_CLASS_ID}") {
-	// 					_id,
-	// 					status
-	// 				}
-	// 			}`
-	// 		)
-	// 		.end((err, res) => {
-	// 			log(res.body)
-	// 			var { _id, status } = res.body.data.deleteRequestedClass
-	// 			expect(_id).to.equal(CREATED_REQUEST_CLASS_ID)
-	// 			expect(status).to.equal('DELETE_SUCCESS')
-	// 			done()
-	// 		})
-	// })
+	it('should delete a requested class', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				mutation {
+					deleteRequestedClass(_id: "${CREATED_REQUEST_CLASS_ID}") {
+						_id,
+						status
+					}
+				}`
+			)
+			.end((err, res) => {
+				// log(res.body)
+				var { _id, status } = res.body.data.deleteRequestedClass
+				expect(_id).to.equal(CREATED_REQUEST_CLASS_ID)
+				expect(status).to.equal('DELETE_SUCCESS')
+				done()
+			})
+	})
 
-/*
+
 
 	it('should create an upcoming class', done => {
 		request.post('/graphql')
@@ -223,7 +220,7 @@ describe('Prism API Mocha Testing', () => {
 
 
 
-*/
+
 
 	///////////////////////////////////////////////////////////////////////////////////
 

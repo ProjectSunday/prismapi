@@ -1,25 +1,29 @@
-import { db, Query, Read, Update} from '~/data/db-common'
+import { ObjectID } from 'mongodb'
 
-import { Member } from '~/meetup/meetup'
+import { Read, Update }	from './db'
+import { Member }		from './meetup'
 
-export default class User {
+export class User {
 	constructor(token) {
 		if (!token) { throw 'Not authorized.' }
 		this.token = token
-		this._data = {}
 	}
 
-	get data() { return this._data }
+	get data() { return this._data || {} }
 	set data(d) { this._data = d }
 
 	async fetch() {
-
+		t(2)
 		var user = await Read('users', { token: this.token })
+		t(3)
 		if (!user) { throw 'User not found.' }
 
 		//also get meetup profile here, maybe?
 		this.data = user
 
+	}
+	async save() {
+		await Update('users', { _id: ObjectID(this.data._id ) }, this.data)
 	}
 	async authenticate() {
 
@@ -38,16 +42,14 @@ export default class User {
 	}
 	async ensureOrganizer() {
 
-		var role = await getRole(user.token)
-	    if (role !== 'Event Organizer' || role !== 'Organizer') {
-			var meetupProfile = await promoteMember(user)
+		var member = new Member(this.token)
+		member.data = this.data.meetupMember
+		await member.fetchRole()
 
-
-			// { meetupProfile: }
-			// await db.user.mutate(
-			// 	{ _id: user._id },
-			// 	{ meetupProfile: meetupProfile }
-			// )
+	    if (true || member.data.role !== 'Event Organizer' || member.data.role !== 'Organizer') {
+	    	await member.promoteToEventOrganizer()
+	    	this.data.meetupMember = member.data
+	    	await this.save()
 	    }
 
 	}

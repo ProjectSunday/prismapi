@@ -2,7 +2,7 @@ import { ObjectID } from 'mongodb'
 
 import { Delete, Query, QueryAll, Mutate } from './db-common'
 
-export default class Category {
+export class Category {
 	constructor() {
 		this._data = {}
 	}

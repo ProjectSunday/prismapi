@@ -1,37 +1,21 @@
 import rest from 'rest'
 
-import { Settings } from '~/data/db'
-
-const URL_MEETUP_MEMBER_SELF = 'https://api.meetup.com/2/member/self'
-const URL_MEETUP_ACCESSTOKEN = 'https://secure.meetup.com/oauth2/access'
-
-const ADMINISTRATOR_ID = 182509367
-
-
-const CLIENT_ID 	= process.env.CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o'
-const CLIENT_SECRET = process.env.CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9'
-const REDIRECT_URI 	= process.env.REDIRECT_URI	|| 'http://localhost:7000/authentication'
-
-const REFRESH_TOKEN 		= process.env.REFRESH_TOKEN 		|| '1f17e403279d3cd9d55ba29ada1f8cad'
-// const AUTHORIZATION_CODE 	= process.env.AUTHORIZATION_CODE 	|| '4bd8c6e0f6e27675a380b552e99baeb0'
-
-// var _administrator = {
-// 	startTokenMonitoring,
-// 	access_token: null,
-// 	created: null
-// }
-
+import { Settings } from './db'
+import { ADMINISTRATOR_ID, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, URL } from './meetup'
 
 
 var _instance
 
-export default class Administrator {
+export class Administrator {
 	constructor() {
 		if (_instance) {
 			return _instance
 		}
 		_instance = this
 	}
+
+	get data() { return this._data || {} }
+	set data(d) { this._data = d }
 
 	async startTokenMonitoring () {
 
@@ -60,16 +44,16 @@ export default class Administrator {
 
 	async accessTokenValid () {
 
-		if (!this.access_token) { return false }
+		if (!this.data.access_token) { return false }
 
 		var now = new Date()
-		var ageMinutes = (now - this.created) / 1000 / 60
+		var ageMinutes = (now - this.data.created) / 1000 / 60
 		if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
 
 		var result = await rest({
 			method: 'GET',
-			headers: { Authorization: `Bearer ${this.access_token}` },
-			path: URL_MEETUP_MEMBER_SELF
+			headers: { Authorization: `Bearer ${this.data.access_token}` },
+			path: URL.MEMBER_SELF
 		})
 
 		try {
@@ -86,7 +70,7 @@ export default class Administrator {
 		var result = await rest({
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			path: URL_MEETUP_ACCESSTOKEN,
+			path: URL.OAUTH2_ACCESS,
 			params: {
 				client_id: CLIENT_ID,
 				client_secret: CLIENT_SECRET,
@@ -101,29 +85,26 @@ export default class Administrator {
 			console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
 			console.log('result:', administrator.error_description)
 		} else {
-			Object.assign(this, administrator, { created: new Date() })
+			this.data = Object.assign({}, administrator, { created: new Date() })
 		}
 
 	}
 
 	async readFromDatabase() {
-		var a = await Settings.getAdministrator()
-		Object.assign(this, a)
+		this.data = await Settings.getAdministrator()
 	}
 
 	async updateDatabase() {
-		await Settings.setAdministrator(this)
+		await Settings.setAdministrator(this.data)
 	}
 
 	logOutTokens(message) {
 		console.log(`\n${message}`)
-		console.log('\taccess_token:  ', this.access_token)
-		console.log('\trefresh_token: ', this.refresh_token)
-		console.log('\tcreated:       ', this.created)
-		console.log('\tage:           ', ((new Date()) - this.created) / 1000 / 60, 'minutes\n')
+		console.log('\taccess_token:  ', this.data.access_token)
+		console.log('\trefresh_token: ', this.data.refresh_token)
+		console.log('\tcreated:       ', this.data.created)
+		console.log('\tage:           ', ((new Date()) - this.data.created) / 1000 / 60, 'minutes\n')
 	}
-
-
 
 }
 

@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 
 import Category 		from './schema-category'
 import RequestedClass 	from './schema-requestedclass'
-import UpcomingClass 	from './upcomingclass'
+import UpcomingClass 	from './schema-upcomingclass'
 import User 			from './schema-user'
 
 const query = new GraphQLObjectType({

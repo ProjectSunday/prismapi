@@ -2,9 +2,9 @@ import express 		from 'express'
 import graphqlHTTP 	from 'express-graphql'
 import cors			from 'cors'
 
-import schema from '~/schema/schema'
-import db from '~/data/db'
-import Administrator from '~/backend/administrator'
+import schema 				from '~/schema/schema'
+import { connect }			from '~/backend/db'
+import { Administrator } 	from '~/backend/meetup'
 
 const PORT = process.env.PORT || 9000
 
@@ -27,7 +27,7 @@ const createApp = () => new Promise((resolve, reject) => {
 
 
 export default async () => {
-	await db.connect()
+	await connect()
 
 	var app = await createApp()
 

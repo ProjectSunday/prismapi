@@ -5,7 +5,7 @@ import { Delete, Query, QueryAll, Mutate, Read, Update } from './db-common'
 
 var _instance
 
-export default class Settings {
+export class Settings {
 	// constructor() {
 	// 	t()
 	// 	if (_instance) return _instance

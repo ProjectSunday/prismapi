@@ -1,7 +1,7 @@
 import { ObjectID } from 'mongodb'
-import { Delete, Query, QueryAll, ReadMany, Mutate } from './db-common'
+import { Create, Delete, Query, QueryAll, ReadMany, Mutate } from './db-common'
 
-export default class RequestedClass {
+export class RequestedClass {
 	constructor() {
 	}
 
@@ -12,19 +12,17 @@ export default class RequestedClass {
 		var all = await ReadMany('requestedclasses')
 		this.data = all
 	}
-	create (requested) {
-		return new Promise((resolve, reject) => {
-			var collection = _db.collection('requestedclasses')
-			collection.insertOne(requested).then(r => {
-				return collection.find({ _id: r.insertedId }).toArray()
-			}).then(docs => {
-				resolve(docs[0])
-			}, reject)
-		})
+	async create (requested) {
+
+		//verify category here
+
+		var r = await Create('requestedclasses', requested)
+		this.data = r
+
 	}
 
 	async delete(_id) {
-		var r = await Delete({ _id: ObjectID(_id) })
+		var r = await Delete('requestedclasses', { _id: ObjectID(_id) })
 		this.data = {
 			_id,
 			status: r.status

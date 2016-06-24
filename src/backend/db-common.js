@@ -15,6 +15,11 @@ export const connect = async () => {
 
 }
 
+export const Create = async (collection, value) => {
+	var r = await _db.collection(collection).insertOne(value)
+	var i = await _db.collection(collection).find({ _id: r.insertedId }).toArray()
+	return i[0]
+}
 export const Delete = async (collection, filter) => {
 	var r = await _db.collection(collection).deleteOne(filter)
 
@@ -70,6 +75,8 @@ export const ReadMany = async (collection, filter) => {
 }
 
 export const Update = async (collection, filter, value) => {
+	if (typeof collection !== 'string') throw 'DB.Update error: collection name must be a string'
+
 	var doc = await _db.collection(collection).findOneAndUpdate(filter, { $set: value }, { upsert: true })
 
 	if (doc.lastErrorObject.updatedExisting) {
