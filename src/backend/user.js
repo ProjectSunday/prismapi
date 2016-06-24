@@ -8,7 +8,6 @@ export class User {
 		if (!token) { throw 'Not authorized.' }
 		this.token = token
 	}
-
 	get data() { return this._data || {} }
 	set data(d) { this._data = d }
 
@@ -18,11 +17,12 @@ export class User {
 
 		//also get meetup profile here, maybe?
 		this.data = user
-
 	}
+
 	async save() {
 		await Update('users', { _id: ObjectID(this.data._id ) }, this.data)
 	}
+
 	async authenticate() {
 
 		var member = new Member(this.token)
@@ -44,7 +44,7 @@ export class User {
 		member.data = this.data.meetupMember
 		await member.fetchRole()
 
-	    if (true || member.data.role !== 'Event Organizer' || member.data.role !== 'Organizer') {
+	    if (member.data.role !== 'Event Organizer' || member.data.role !== 'Organizer') {
 	    	await member.promoteToEventOrganizer()
 	    	this.data.meetupMember = member.data
 	    	await this.save()

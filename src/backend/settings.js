@@ -3,7 +3,7 @@ import { ObjectID } from 'mongodb'
 import { Delete, Query, QueryAll, Mutate, Read, Update } from './db'
 
 
-var _instance
+// var _instance
 
 export class Settings {
 	// constructor() {
