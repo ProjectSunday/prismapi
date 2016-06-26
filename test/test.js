@@ -7,10 +7,10 @@ import app from '~/app'
 
 const HEADERS 					= { 'Content-Type': 'application/graphql' }
 
-var LOCALLEARNERTESTUSERTOKEN 	= '9bfb131b829afe763a8377777897fd05'
-var LOCALLEARNERTESTUSERID 		= '5769d3a7ac06af8f0457c10f'
+var LOCAL_LEARNER_TEST_USER_TOKEN 	= 'e160277e4003c4bc6ed01b7dad90db97'
+var LOCALLEARNERTESTUSERID 			= '5769d3a7ac06af8f0457c10f'
 
-var UPCOMING_CLASS_TEST_CLASS_ID = '576c73f2e4027a37333a2bda'
+var UPCOMING_CLASS_TEST_CLASS_ID = '576ffd3916937b0e2b72d6e1'
 
 var CREATED_REQUEST_CLASS_ID
 
@@ -88,7 +88,7 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				mutation {
-					authenticateUser (token: "${LOCALLEARNERTESTUSERTOKEN}") {
+					authenticateUser (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}") {
 						_id,
 						meetupMember {
 							id,
@@ -113,7 +113,7 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				query {
-					self (token: "${LOCALLEARNERTESTUSERTOKEN}") {
+					self (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}") {
 						_id,
 						meetupMember {
 							id,
@@ -194,15 +194,14 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 
-
 	// it('should create an upcoming class', done => {
 	// 	request.post('/graphql')
 	// 		.set(HEADERS)
 	// 		.send(`
 	// 			mutation {
-	// 				createUpcomingClass (token: "${LOCALLEARNERTESTUSERTOKEN}", name: "testupcomingclass") {
+	// 				createUpcomingClass (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}", name: "testupcomingclass") {
 	// 					_id,
-	// 					meetupEvent {
+	// 					event {
 	// 						id,
 	// 						name
 	// 					}
@@ -221,12 +220,38 @@ describe('Prism API Mocha Testing', () => {
 	// })
 
 
+	it('should retrieve all upcoming classes', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				query {
+					upcomingClasses {
+						_id
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
+
+				// var { _id, event } = res.body.data.upcomingClass
+				// var { _id, event } = res.body.data.upcomingClass
+				// var { name } = event
+
+				// expect(_id).to.exist
+				// expect(name).to.equal('testupcomingclass')
+
+				assert.isArray(res.body.data.upcomingClasses)
+
+				done()
+			})
+	})
+
 	it('should retrieve an upcoming class', done => {
 		request.post('/graphql')
 			.set(HEADERS)
 			.send(`
 				query {
-					upcomingClass (_id: "${UPCOMING_CLASS_TEST_CLASS_ID}") {
+					upcomingClass ( _id: "${UPCOMING_CLASS_TEST_CLASS_ID}") {
 						_id,
 						event {
 							id,
@@ -236,17 +261,42 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				// log(res.body)
 
+				var { _id, event } = res.body.data.upcomingClass
 				var { _id, event } = res.body.data.upcomingClass
 				var { name } = event
 
 				expect(_id).to.exist
 				expect(name).to.equal('testupcomingclass')
+
 				done()
 			})
 	})
 
+
+	it('should delete an upcoming class and its event', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				mutation {
+					deleteUpcomingClass ( token: "${LOCAL_LEARNER_TEST_USER_TOKEN}", _id: "${UPCOMING_CLASS_TEST_CLASS_ID}") {
+						_id,
+						status
+					}
+				}
+			`)
+			.end((err, res) => {
+				log(res.body)
+
+				var { _id, status } = res.body.data.deleteUpcomingClass
+
+				expect(_id).to.equal(UPCOMING_CLASS_TEST_CLASS_ID)
+				expect(status).to.equal('DELETE_SUCCESS')
+
+				done()
+			})
+	})
 
 
 

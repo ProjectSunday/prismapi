@@ -17,6 +17,8 @@ export class User {
 
 		//also get meetup profile here, maybe?
 		this.data = user
+
+		return this
 	}
 
 	async save() {

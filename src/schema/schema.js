@@ -10,6 +10,7 @@ const query = new GraphQLObjectType({
 	fields: {
 		...Category.queries,
 		...RequestedClass.queries,
+		...UpcomingClass.Queries,
 		...User.queries
 	}
 })

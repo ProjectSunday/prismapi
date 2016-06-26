@@ -67,7 +67,7 @@ function getMarkup() {
 		'created: ' + meetup.created + '<br />' +
 		'age: ' + days + 'days ' + hours + 'h ' + mins + 'm ' + seconds + 's' + '<br />' +
 	'</div>' +
-	'<a href="https://secure.meetup.com/oauth2/authorize?client_id=sgeirri963sprv1a1vh3r8cp3o&response_type=code&scope=basic+profile_edit+ageless&redirect_uri=http://localhost:7000/authentication">authorize</a><br />' +
+	'<a href="https://secure.meetup.com/oauth2/authorize?client_id=sgeirri963sprv1a1vh3r8cp3o&response_type=code&scope=basic+event_management+profile_edit+ageless&redirect_uri=http://localhost:7000/authentication">authorize</a><br />' +
 	'<a href="/access">access</a><br />' +
 	'<a href="/refresh">refresh</a><br />' +
 	'<a href="/self">self</a><br /><br /><br />' +

@@ -1,7 +1,7 @@
 import rest from 'rest'
 
 import { Settings } from './backend'
-import { ADMINISTRATOR_ID, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, URL } from './meetup'
+import { ADMINISTRATOR_ID, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, ADMIN_REFRESH_TOKEN, URL } from './meetup'
 
 
 var _instance
@@ -75,14 +75,14 @@ export class Administrator {
 				client_id: CLIENT_ID,
 				client_secret: CLIENT_SECRET,
 				grant_type: 'refresh_token',
-				refresh_token: REFRESH_TOKEN
+				refresh_token: ADMIN_REFRESH_TOKEN
 			}
 		})
 
 		var administrator = JSON.parse(result.entity)
 
 		if (!administrator || !administrator.access_token) {
-			console.error('THE REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
+			console.error('THE ADMIN_REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
 			console.log('result:', administrator.error_description)
 		} else {
 			this.data = Object.assign({}, administrator, { created: new Date() })

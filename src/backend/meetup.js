@@ -9,7 +9,7 @@ export const CLIENT_ID 		= process.env.CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o
 export const CLIENT_SECRET 	= process.env.CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9'
 export const REDIRECT_URI 	= process.env.REDIRECT_URI	|| 'http://localhost:7000/authentication'
 
-export const REFRESH_TOKEN 	= process.env.REFRESH_TOKEN || '1f17e403279d3cd9d55ba29ada1f8cad'
+export const ADMIN_REFRESH_TOKEN 	= process.env.ADMIN_REFRESH_TOKEN || 'a7675c6ac80992dc48eb22fc4cee6cf7'
 
 
 //local learner
