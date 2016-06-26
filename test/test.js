@@ -7,8 +7,10 @@ import app from '~/app'
 
 const HEADERS 					= { 'Content-Type': 'application/graphql' }
 
-var LOCALLEARNERTESTUSERTOKEN 	= '1cdf89f59c0bc93e9becfb92e3353260'
+var LOCALLEARNERTESTUSERTOKEN 	= '9bfb131b829afe763a8377777897fd05'
 var LOCALLEARNERTESTUSERID 		= '5769d3a7ac06af8f0457c10f'
+
+var UPCOMING_CLASS_TEST_CLASS_ID = '576c73f2e4027a37333a2bda'
 
 var CREATED_REQUEST_CLASS_ID
 
@@ -217,6 +219,33 @@ describe('Prism API Mocha Testing', () => {
 	// 			done()
 	// 		})
 	// })
+
+
+	it('should retrieve an upcoming class', done => {
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				query {
+					upcomingClass (_id: "${UPCOMING_CLASS_TEST_CLASS_ID}") {
+						_id,
+						event {
+							id,
+							name
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				log(res.body)
+
+				var { _id, event } = res.body.data.upcomingClass
+				var { name } = event
+
+				expect(_id).to.exist
+				expect(name).to.equal('testupcomingclass')
+				done()
+			})
+	})
 
 
 
