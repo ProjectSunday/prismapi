@@ -4,10 +4,12 @@ import { Create, Read, ReadMany } 	from './db'
 import { User, secure }						from './backend'
 import { Event } 					from './meetup'
 
-@secure('blah')
+@secure()
 export class UpcomingClass {
 	constructor(token) {
 		// this._data = initialData
+		// log(this.token, 'constructor')
+
 	}
 	get data() { return this._data || {} }
 	set data(d) { this._data = d }
@@ -69,5 +71,4 @@ export class UpcomingClass {
 		return this
 	}
 }
-
 

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "mongo": "mongod --dbpath db/local",
-    "test": "mongod --dbpath db/local | mocha --watch --require babel-core/register --require babel-polyfill",
+    "test": "mongod --dbpath db/local | mocha --watch test/index.js",
     "start": "mongod --dbpath db/local | node index.js"
   },
   "repository": {
