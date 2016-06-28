@@ -1,35 +1,46 @@
 import rest from 'rest'
 
-import { URL } from './meetup'
+import { request, URL } from './meetup'
 
 export class Event {
-
-	constructor(token) {
-		if (!token) throw "An access token is required to create an Event"
-		this.token = token
+	constructor(context) {
+		this.context = context
 	}
 
 	get data() { return this._data || {} }
 	set data(d) { this._data = d }
 
-	//data must be set before posting
-	async post() {
+	async post(event = this.data) {
 
-		var result = await rest({
+		var result = await request({
 			method: 'POST',
-			headers: { 'Authorization': `Bearer ${this.token}` },
-			path: URL.LOCALLEARNERS_EVENTS,
-			params: this.data
+			headers: { 'Authorization': `Bearer ${this.context.token}` },
+			path: URL.EVENTS,
+			params: event
 		})
 
-		result = JSON.parse(result.entity)
+		if (result.errors) throw result.errors[0].message
 
-		if (result.errors) {
-			throw result.errors[0].message
-		} else {
-			this.data = result
+		this.data = result
+		return this
+	}
+
+	async delete(id) {
+
+		var result = await request({
+			method: 'DELETE',
+			headers: { 'Authorization': `Bearer ${this.context.token}` },
+			token: this.context.token,
+			path: URL.EVENTS + `/${id}`
+		})
+
+		if (result.errors && result.errors[0].message === 'event was deleted'){
+			this.data = {
+				status: 'DELETE_SUCCESS'
+			}
 		}
 
+		return this
 	}
 
 

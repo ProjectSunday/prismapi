@@ -63,13 +63,9 @@ const Mutations = {
 			name: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-			var upcoming = new UpcomingClass()
-			upcoming.data = {
-				event: {
-					name: args.name
-				}
-			}
-			await upcoming.create(args.token)
+			var context = { token: args.token }
+			var event = { name: args.name }
+			var upcoming = await new UpcomingClass(context).create(event)
 			return upcoming.data
 		}
 	},
@@ -80,9 +76,8 @@ const Mutations = {
 			_id: { type: GraphQLID }
 		},
 		resolve: async (root, args) => {
-			var upcoming = new UpcomingClass()
-			// log(upcoming.token, 'upcoming')
-			await upcoming.delete()
+			var context = { token: args.token }
+			var upcoming = await new UpcomingClass(context).delete(args._id)
 			return upcoming.data
 		}
 	}

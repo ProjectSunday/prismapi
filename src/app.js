@@ -4,7 +4,7 @@ import cors			from 'cors'
 
 import schema 				from '~/schema/schema'
 import { connect }			from '~/backend/db'
-import { Administrator } 	from '~/backend/meetup'
+import { Administrator } 	from '~/backend/backend'
 
 const PORT = process.env.PORT || 9000
 
@@ -31,8 +31,7 @@ export default async () => {
 
 	var app = await createApp()
 
-	var administrator = new Administrator()
-	await administrator.startTokenMonitoring()
+	await Administrator.startTokenMonitoring()
 
 	return app
 }

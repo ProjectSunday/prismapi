@@ -1,24 +1,22 @@
 import rest from 'rest'
 
 import { PRISMAPIKEY, PRISMGROUPID, URL } from './meetup'
-import { Administrator } from './meetup'
+import { Administrator, request } from './meetup'
 
 export class Member {
-	constructor(token) {
-		if (!token) throw "An access token is required to create a meetup member"
-		this.token = token
-		this._data = {}
+	constructor(context) {
+		this.context = context
 	}
 
-	get data() { return this._data }
+	get data() { return this._data || {} }
 	set data(d) { this._data = d }
 
 	async fetch() {
 
 		var result = await rest({
 			method: 'GET',
-			headers: { Authorization: `Bearer ${this.token}` },
-			path: URL.MEMBER_SELF
+			headers: { Authorization: `Bearer ${this.context.token}` },
+			path: URL.MEMBERS + '/self'
 		})
 
 		result = JSON.parse(result.entity)
@@ -26,36 +24,42 @@ export class Member {
 		if (result.problem) throw result.problem
 
 		this.data = result
+
+		return this
 	}
 
-	async fetchRole() {
-		//data.id must exist
+	async fetchRole(id = this.data.id) {
+		console.assert(id !== undefined, 'Member.fetchRole() - id is undefined')
 
-		var result = await rest({
+		var result = await request({
 			method: 'GET',
-			path: `${URL.PROFILE}/${PRISMGROUPID}/${this.data.id}?key=${PRISMAPIKEY}&sign=true`
+			path: `${URL.PROFILE}/${PRISMGROUPID}/${id}?key=${PRISMAPIKEY}&sign=true`
 		})
 
-		result = JSON.parse(result.entity)
+		this.data.role = result.role
 
-		if (result.role) {
-			this.data.role = result.role
-		} else {
-			console.log('Unable to fetchRole()')
-			console.log(result)
-		}
+		return this
 	}
 
-	async promoteToEventOrganizer() {
+	async promoteToEventOrganizer(id = this.data.id) {
 		var administrator = new Administrator()
 
-		var result = await rest({
-			method: 'POST',
+
+		log(administrator.data.access_token, 'admin')
+		// log(URL.PROFILE)
+
+		log(id, 'id')
+		log(this.data, 'data')
+		var result = await request({
+			method: 'PATCH',
 			headers: { Authorization: `Bearer ${administrator.data.access_token}` },
-			path: `${URL.PROFILE}/${PRISMGROUPID}/${this.data.id}?add_role=event_organizer`
+			path: `${URL.MEMBERS}/${id}`,
+			params: {
+				add_role: 'event_organizer'
+			}
 		})
 
-		result = JSON.parse(result.entity)
+		log(result, 'result')
 
 		if (result.role) {
 			this.data.role = result.role

@@ -4,15 +4,14 @@ import { Read, Update }	from './db'
 import { Member }		from './meetup'
 
 export class User {
-	constructor(token) {
-		if (!token) { throw 'Not authorized.' }
-		this.token = token
+	constructor(context) {
+		this.context = context
 	}
 	get data() { return this._data || {} }
 	set data(d) { this._data = d }
 
 	async fetch() {
-		var user = await Read('users', { token: this.token })
+		var user = await Read('users', { token: this.context.token })
 		if (!user) { throw 'User not found.' }
 
 		//also get meetup profile here, maybe?
@@ -27,22 +26,24 @@ export class User {
 
 	async authenticate() {
 
-		var member = new Member(this.token)
+		var member = new Member(this.context)
 		await member.fetch()
 
 		var filter = { 'meetupMember.id': member.data.id }
 		var value = {
-			token: this.token,
+			token: this.context.token,
 			meetupMember: member.data
 		}
 		var user = await Update("users", filter, value)
 
 		this.data = user
 
+		return this
 	}
+
 	async ensureOrganizer() {
 
-		var member = new Member(this.token)
+		var member = new Member(this.context)
 		member.data = this.data.meetupMember
 		await member.fetchRole()
 

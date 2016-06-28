@@ -7,8 +7,8 @@ import app from '~/app'
 
 const HEADERS 					= { 'Content-Type': 'application/graphql' }
 
-var LOCAL_LEARNER_TEST_USER_TOKEN 	= '70a6d8a8647118ab2dc4bf4036a07c8b'
-var LOCALLEARNERTESTUSERID 			= '5769d3a7ac06af8f0457c10f'
+var LOCAL_LEARNER_TEST_USER_TOKEN 	= '41062de08c6fee101e0b1e0e72f56aed'
+// var LOCALLEARNERTESTUSERID 			= '5769d3a7ac06af8f0457c10f'
 
 var UPCOMING_CLASS_TEST_CLASS_ID = '576ffd3916937b0e2b72d6e1'
 
@@ -99,11 +99,12 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
+				// log(res.body, 'authenticateUser')
 				var { token, name } = res.body.data.authenticateUser.meetupMember
 				assert.equal(res.body.data.authenticateUser.meetupMember.name, 'Local Learners Test User')
 
 				var { _id } = res.body.data.authenticateUser
-				log(_id, "test user id")
+				// log(_id, "test user id")
 				done()
 			})
 	})
@@ -194,30 +195,31 @@ describe('Prism API Mocha Testing', () => {
 	})
 
 
-	// it('should create an upcoming class', done => {
-	// 	request.post('/graphql')
-	// 		.set(HEADERS)
-	// 		.send(`
-	// 			mutation {
-	// 				createUpcomingClass (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}", name: "testupcomingclass") {
-	// 					_id,
-	// 					event {
-	// 						id,
-	// 						name
-	// 					}
-	// 				}
-	// 			}
-	// 		`)
-	// 		.end((err, res) => {
-	// 			log(res.body)
+	it('should create an upcoming class', done => {
+		var name = `testupcomingclass ${new Date().toString()}`
+		request.post('/graphql')
+			.set(HEADERS)
+			.send(`
+				mutation {
+					createUpcomingClass (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}", name: "${name}") {
+						_id,
+						event {
+							id,
+							name
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				log(res.body)
 
-	// 			var { _id, name } = res.body.data.createUpcomingClass
+				var { _id, name } = res.body.data.createUpcomingClass
 
-	// 			expect(_id).to.exist
-	// 			// expect(name).to.equal('testupcomingclass')
-	// 			done()
-	// 		})
-	// })
+				expect(_id).to.exist
+				expect(name).to.equal(name)
+				done()
+			})
+	})
 
 
 	it('should retrieve all upcoming classes', done => {

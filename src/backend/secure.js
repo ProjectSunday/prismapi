@@ -6,10 +6,10 @@
 
 
 export function secure(token) {
-	log(token, 'secure token')
+	// log(token, 'secure token')
    return function decorator(target) {
 
       target.prototype.token = token;
-      console.log('target', target)
+      // console.log('target', target)
    }
 }

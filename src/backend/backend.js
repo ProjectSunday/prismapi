@@ -12,6 +12,7 @@
 
 // Testing.data = { blah: 'blah' }
 
+export * from './administrator'
 export * from './category'
 export * from './requestedclass'
 export * from './secure'
