@@ -80,8 +80,7 @@ const Mutations = {
 			_id: { type: GraphQLID }
 		},
 		resolve: async (root, args) => {
-			var upcoming = new UpcomingClass(args._id).delete()
-			await upcoming.delete(args.token, args._id)
+			var upcoming = await new UpcomingClass().delete(args._id, args.token)
 			return upcoming.data
 		}
 	}

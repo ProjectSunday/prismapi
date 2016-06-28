@@ -7,7 +7,7 @@ import app from '~/app'
 
 const HEADERS 					= { 'Content-Type': 'application/graphql' }
 
-var LOCAL_LEARNER_TEST_USER_TOKEN 	= 'e160277e4003c4bc6ed01b7dad90db97'
+var LOCAL_LEARNER_TEST_USER_TOKEN 	= '70a6d8a8647118ab2dc4bf4036a07c8b'
 var LOCALLEARNERTESTUSERID 			= '5769d3a7ac06af8f0457c10f'
 
 var UPCOMING_CLASS_TEST_CLASS_ID = '576ffd3916937b0e2b72d6e1'

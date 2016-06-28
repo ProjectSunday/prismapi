@@ -1,12 +1,13 @@
 import { ObjectID } from 'mongodb'
 
 import { Create, Read, ReadMany } 	from './db'
-import { User }						from './backend'
+import { User, secure }						from './backend'
 import { Event } 					from './meetup'
 
+@secure('blah')
 export class UpcomingClass {
-	constructor(_id) {
-		this.data._id = _id
+	constructor(token) {
+		// this._data = initialData
 	}
 	get data() { return this._data || {} }
 	set data(d) { this._data = d }
@@ -25,14 +26,17 @@ export class UpcomingClass {
 		await this.save()
 	}
 
-	async delete(token, _id) {
+	async delete(_id = this._id, token = this.token) {
+		log(this.token, 'token')
+		console.assert(_id !== undefined, 'UpcomingClass.delete: _id undefined')
+		console.assert(token !== undefined, 'UpcomingClass.delete: token undefined')
 
 		//make sure user is allow to delete
 
 		var user = await new User(token).fetch()
 
 
-		this.fetch(_id)
+		// this.fetch(_id)
 
 		// var blah = await user.fetch()
 
@@ -48,6 +52,7 @@ export class UpcomingClass {
 
 		//if sucess, remove db
 
+		return this
 
 	}
 

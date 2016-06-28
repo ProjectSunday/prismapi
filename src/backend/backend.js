@@ -14,6 +14,7 @@
 
 export * from './category'
 export * from './requestedclass'
+export * from './secure'
 export * from './settings'
 export * from './upcomingclass'
 export * from './user'
