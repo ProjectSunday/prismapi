@@ -2,7 +2,9 @@ import { ObjectID } from 'mongodb'
 import { Create, Delete, Query, QueryAll, ReadMany, Mutate } from './db'
 
 export class RequestedClass {
-	constructor() {
+	constructor(context) {
+		this.context = context
+		this._data = {}
 	}
 
 	get data() { return this._data }

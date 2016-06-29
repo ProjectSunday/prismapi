@@ -3,11 +3,11 @@ import rest from 'rest'
 import { Read, Update } from './db'
 import { ADMIN, Member, OAUTH, request, URL} from './meetup'
 
-var _data
+var _data = {}
 
 export class Administrator {
 
-	static get data() { return _data || {} }
+	static get data() { return _data }
 	static set data(d) { _data = d }
 
 	static async startTokenMonitoring () {

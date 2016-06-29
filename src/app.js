@@ -8,30 +8,46 @@ import { Administrator } 	from '~/backend/backend'
 
 const PORT = process.env.PORT || 9000
 
-const createApp = () => new Promise((resolve, reject) => {
-	var app = express()
+var _listener
 
-	app.use('/graphql', cors(), graphqlHTTP((req, res) => {
-		return {
-			schema,
-			graphiql: true
-		}
-	}))
+export default class App {
 
-	var listener = app.listen(PORT, () => {
-	    console.log(`=====> Prism API Server Online.  Port: ${PORT}.  Environment: BLAH`)
-		resolve(listener)
-	})
+	static get listener() { return _listener }
+	static set listener(l) { _listener = l }
 
-})
+	static async start() {
+		await connect()
 
+		await this.createApp()
 
-export default async () => {
-	await connect()
+		await Administrator.startTokenMonitoring()
 
-	var app = await createApp()
+		return this
+	}
 
-	await Administrator.startTokenMonitoring()
+	static stop() {
+		return new Promise((resolve, reject) => {
+			this.listener.close(resolve)
+		})
+	}
 
-	return app
+	static createApp () {
+		return new Promise((resolve, reject) => {
+			var app = express()
+
+			app.use('/graphql', cors(), graphqlHTTP((req, res) => {
+				return {
+					schema,
+					graphiql: true
+				}
+			}))
+
+			var l = app.listen(PORT, () => {
+			    console.log(`=====> Prism API Server Online.  Port: ${PORT}.  Environment: BLAH`)
+				this.listener = l
+				resolve()
+			})
+		})
+	}
 }
+

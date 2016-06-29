@@ -6,9 +6,10 @@ import { ADMIN, GROUP, request, URL} from './meetup'
 export class Member {
 	constructor(context) {
 		this.context = context
+		this._data = {}
 	}
 
-	get data() { return this._data || {} }
+	get data() { return this._data }
 	set data(d) { this._data = d }
 
 	async fetch() {

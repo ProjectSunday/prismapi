@@ -1,6 +1,5 @@
-require('babel-register')({
-	ignore: false,
-	stage: 0
-})
+require('babel-register')
 require('babel-polyfill')
-var app = require('./src/app')
+
+var App = require('./src/app').default
+App.start()

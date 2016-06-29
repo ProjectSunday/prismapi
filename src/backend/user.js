@@ -6,8 +6,9 @@ import { Member }		from './meetup'
 export class User {
 	constructor(context) {
 		this.context = context
+		this._data = {}
 	}
-	get data() { return this._data || {} }
+	get data() { return this._data }
 	set data(d) { this._data = d }
 
 	async fetch() {
