@@ -30,7 +30,6 @@ export class Event {
 		var result = await request({
 			method: 'DELETE',
 			headers: { 'Authorization': `Bearer ${this.context.token}` },
-			token: this.context.token,
 			path: URL.EVENTS + `/${id}`
 		})
 
@@ -38,6 +37,10 @@ export class Event {
 			this.data = {
 				status: 'DELETE_SUCCESS'
 			}
+		}
+
+		if (result.status.code === 204 ) {
+			this.data = { status: 'DELETE_SUCCESS' }
 		}
 
 		return this
@@ -53,7 +56,7 @@ export class Event {
 
 	// 	log(result.entity, 'result.entity')
 	// }
-	
+
 	// async get() {
 
 	// 	var result = await rest({

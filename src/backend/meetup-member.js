@@ -1,7 +1,7 @@
 import rest from 'rest'
 
-import { PRISMAPIKEY, PRISMGROUPID, URL } from './meetup'
-import { Administrator, request } from './meetup'
+import { Administrator } from './backend'
+import { ADMIN, GROUP, request, URL} from './meetup'
 
 export class Member {
 	constructor(context) {
@@ -33,7 +33,7 @@ export class Member {
 
 		var result = await request({
 			method: 'GET',
-			path: `${URL.PROFILE}/${PRISMGROUPID}/${id}?key=${PRISMAPIKEY}&sign=true`
+			path: `${URL.PROFILE}/${GROUP.ID}/${id}?key=${ADMIN.API_KEY}&sign=true`
 		})
 
 		this.data.role = result.role
@@ -42,27 +42,18 @@ export class Member {
 	}
 
 	async promoteToEventOrganizer(id = this.data.id) {
-		var administrator = new Administrator()
 
-
-		log(administrator.data.access_token, 'admin')
-		// log(URL.PROFILE)
-
-		log(id, 'id')
-		log(this.data, 'data')
 		var result = await request({
 			method: 'PATCH',
-			headers: { Authorization: `Bearer ${administrator.data.access_token}` },
+			headers: { Authorization: `Bearer ${Administrator.data.access_token}` },
 			path: `${URL.MEMBERS}/${id}`,
 			params: {
 				add_role: 'event_organizer'
 			}
 		})
 
-		log(result, 'result')
-
-		if (result.role) {
-			this.data.role = result.role
+		if (result && result.group_profile) {
+			this.data.role = result.group_profile.role
 		} else {
 			console.log('Member.promoteToEventOrganizer() error')
 			console.log(result)

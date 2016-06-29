@@ -7,12 +7,11 @@ import app from '~/app'
 
 const HEADERS 					= { 'Content-Type': 'application/graphql' }
 
-var LOCAL_LEARNER_TEST_USER_TOKEN 	= '41062de08c6fee101e0b1e0e72f56aed'
+var LOCAL_LEARNER_TEST_USER_TOKEN 	= 'ab34ab95b97d1fa0f483d24acff5d882'
 // var LOCALLEARNERTESTUSERID 			= '5769d3a7ac06af8f0457c10f'
 
-var UPCOMING_CLASS_TEST_CLASS_ID = '576ffd3916937b0e2b72d6e1'
-
 var CREATED_REQUEST_CLASS_ID
+var TEST_UPCOMING_CLASS_ID
 
 var request, listener
 
@@ -211,12 +210,15 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				// log(res.body)
 
 				var { _id, name } = res.body.data.createUpcomingClass
 
 				expect(_id).to.exist
 				expect(name).to.equal(name)
+
+				TEST_UPCOMING_CLASS_ID = _id
+
 				done()
 			})
 	})
@@ -253,7 +255,7 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				query {
-					upcomingClass ( _id: "${UPCOMING_CLASS_TEST_CLASS_ID}") {
+					upcomingClass ( _id: "${TEST_UPCOMING_CLASS_ID}") {
 						_id,
 						event {
 							id,
@@ -270,7 +272,7 @@ describe('Prism API Mocha Testing', () => {
 				var { name } = event
 
 				expect(_id).to.exist
-				expect(name).to.equal('testupcomingclass')
+				expect(name).to.exist
 
 				done()
 			})
@@ -282,18 +284,18 @@ describe('Prism API Mocha Testing', () => {
 			.set(HEADERS)
 			.send(`
 				mutation {
-					deleteUpcomingClass ( token: "${LOCAL_LEARNER_TEST_USER_TOKEN}", _id: "${UPCOMING_CLASS_TEST_CLASS_ID}") {
+					deleteUpcomingClass ( token: "${LOCAL_LEARNER_TEST_USER_TOKEN}", _id: "${TEST_UPCOMING_CLASS_ID}") {
 						_id,
 						status
 					}
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				// log(res.body)
 
 				var { _id, status } = res.body.data.deleteUpcomingClass
 
-				expect(_id).to.equal(UPCOMING_CLASS_TEST_CLASS_ID)
+				expect(_id).to.equal(TEST_UPCOMING_CLASS_ID)
 				expect(status).to.equal('DELETE_SUCCESS')
 
 				done()

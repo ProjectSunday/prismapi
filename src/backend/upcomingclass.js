@@ -1,27 +1,28 @@
 import { ObjectID } from 'mongodb'
 
-import { Create, Read, ReadMany } 	from './db'
-import { User, secure }				from './backend'
-import { Event } 					from './meetup'
+import DB			from './db'
+import { User }		from './backend'
+import { Event } 	from './meetup'
 
 export class UpcomingClass {
 	constructor(context) {
 		this.context = context
+		this._data = {}
 	}
 
-	get data() { return this._data || {} }
+	get data() { return this._data }
 	set data(d) { this._data = d }
 
-	async create(event = this.data.event) {
+	async create(newEvent = this.data.event) {
 		var user = await new User(this.context).fetch()
 		await user.ensureOrganizer()
 		this.data.teacher = user.data._id
 
 		var event = new Event(this.context)
-		await event.post(event)
+		await event.post(newEvent)
 		this.data.event = event.data
 
-		await this.save()
+		this.data = await DB.Create('upcomingclasses', this.data)
 
 		return this
 	}
@@ -30,43 +31,27 @@ export class UpcomingClass {
 		console.assert(_id !== undefined, 'UpcomingClass.delete: _id undefined')
 		// console.assert(token !== undefined, 'UpcomingClass.delete: token undefined')
 
-		//make sure user is allow to delete
-
-		var user = await new User(this.context).fetch()
-
 		await this.fetch(_id)
 
+		var user = await new User(this.context).fetch()
 		if (!this.data.teacher.equals(user.data._id)) throw "User did not create this class."
 
-		// log(this.data, 'upcomingclasses')
-
 		var event = await new Event(this.context).delete(this.data.event.id)
-
 		if (event.data.status !== 'DELETE_SUCCESS') throw 'Event not deleted.'
-		log(event, 'event')
-		//remove event
 
+		var r = await DB.Delete('upcomingclasses', { _id: ObjectID(_id) })
+		if (r.status !== 'DELETE_SUCCESS') throw 'UpcomingClass was not deleted from DB.'
+		this.data = { _id, status: r.status }
 
-
-		this.data = {
-			_id,
-			status: 'DELETE_SUCCESS'
-		}
-		//if sucess, remove db
 		return this
-
 	}
 
 	async getAll() {
-		this.data = await ReadMany('upcomingclasses')
-	}
-
-	async save() {
-		await Create('upcomingclasses', this.data)
+		this.data = await DB.ReadMany('upcomingclasses')
 	}
 
 	async fetch(_id = this.data._id) {
-		this.data = await Read('upcomingclasses', { _id: ObjectID(_id) })
+		this.data = await DB.Read('upcomingclasses', { _id: ObjectID(_id) })
 		return this
 	}
 }

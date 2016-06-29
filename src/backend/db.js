@@ -91,4 +91,5 @@ export const Update = async (collection, filter, value) => {
 
 }
 
+export default { Create, Delete, Read, ReadMany, Update }
 

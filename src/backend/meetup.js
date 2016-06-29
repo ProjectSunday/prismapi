@@ -1,26 +1,27 @@
 import rest from 'rest'
 
 
-//administrator
-export const ADMINISTRATOR_ID		= 182509367
-export const ADMIN_REFRESH_TOKEN	= process.env.ADMIN_REFRESH_TOKEN || '8f911109da4ac924b8b127cf799e44d0'
+export const ADMIN = {
+	ID: 			process.env.ADMIN_ID 			|| 182509367,
+	API_KEY: 		process.env.ADMIN_API_KEY 		|| '7d156b614b6d5c5e7d357e18151568',
+	REFRESH_TOKEN: 	process.env.ADMIN_REFRESH_TOKEN || '8f911109da4ac924b8b127cf799e44d0'
+
+}
 
 
-//security
-export const PRISMAPIKEY 	= process.env.PRISMAPIKEY	|| '7d156b614b6d5c5e7d357e18151568'
-
-export const CLIENT_ID 		= process.env.CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o'
-export const CLIENT_SECRET 	= process.env.CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9'
-export const REDIRECT_URI 	= process.env.REDIRECT_URI	|| 'http://localhost:7000/authentication'
-
+export const OAUTH = {
+	CLIENT_ID: 		process.env.OAUTH_CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o',
+	CLIENT_SECRET: 	process.env.OAUTH_CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9',
+	REDIRECT_URI: 	process.env.OAUTH_REDIRECT_URI	|| 'http://localhost:7000/authentication'
+}
 
 
-//prism
-export const PRISMGROUPID 	= process.env.PRISMGROUPID 		|| 18049722
-export const PRISMGROUPNAME = process.env.PRISMGROUPNAME 	|| 'locallearners'
+export const GROUP = {
+	ID: 	process.env.GROUP_ID 	|| 18049722,
+	NAME: 	process.env.GROUP_NAME 	|| 'locallearners'
+}
 
 
-//url
 const api = 'https://api.meetup.com/'
 const group = 'locallearners/'
 export const URL = {
@@ -33,14 +34,19 @@ export const URL = {
 	OAUTH2_ACCESS			: 'https://secure.meetup.com/oauth2/access',
 }
 
-//request
 export const request = async (options) => {
 	var result = await rest({ ...options })
+	// console.log('result', result.status)
+
+	if (result.status.code === 204) {
+		// console.log(result)
+		return result
+	}
+	// if (result.status.code !== 200) throw 'meetup.request status code ' + result.status.code
 	return JSON.parse(result.entity)
 }
 
 
-export * from './meetup-administrator'
 export * from './meetup-event'
 export * from './meetup-member'
 
