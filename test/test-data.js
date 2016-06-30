@@ -1,0 +1,3 @@
+export default {
+	LOCAL_LEARNER_TEST_USER_TOKEN: '49d5a5a1ac05c071814bd496c4c4ef1c'
+}

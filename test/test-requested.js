@@ -1,36 +1,15 @@
 import { assert, expect } from 'chai'
-import supertest from 'supertest'
 
-import '../debug'
-
-import App from '~/app'
-
-const HEADERS 					= { 'Content-Type': 'application/graphql' }
-
-// var LOCAL_LEARNER_TEST_USER_TOKEN 	= 'ab34ab95b97d1fa0f483d24acff5d882'
-// var LOCALLEARNERTESTUSERID 			= '5769d3a7ac06af8f0457c10f'
-
-var TEST_UPCOMING_CLASS_ID
+import { sendGraph } from './test-server'
 
 var CREATED_REQUEST_CLASS_ID
 
-var request
+export default () => {
 
-describe('Prism API Mocha Testing', () => {
+	describe('Requested Classes', () => {
 
-	before(async (done) => {
-		var app = await App.start()
-		request = supertest.agent(app.listener)
-		done()
-	})
-
-	///////////////////////////////////////////////////////////////////////////////////
-
-
-	it('should return all requested classes', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
+		it('should return all requested classes', done => {
+			sendGraph(`
 				query {
 					requestedClasses {
 						_id,
@@ -39,16 +18,13 @@ describe('Prism API Mocha Testing', () => {
 				}
 			`)
 			.end((err, res) => {
-				// log(res.body)
 				assert.isArray(res.body.data.requestedClasses)
 				done()
 			})
-	})
+		})
 
-	it('should add a requested class', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
+		it('should create a requested class', done => {
+			sendGraph(`
 				mutation {
 					createRequestedClass (name: "testrequestedclass") {
 						_id,
@@ -64,12 +40,10 @@ describe('Prism API Mocha Testing', () => {
 				CREATED_REQUEST_CLASS_ID = _id
 				done()
 			})
-	})
+		})
 
-	it('should delete a requested class', done => {
-		request.post('/graphql')
-			.set(HEADERS)
-			.send(`
+		it('should delete a requested class', done => {
+			sendGraph(`
 				mutation {
 					deleteRequestedClass(_id: "${CREATED_REQUEST_CLASS_ID}") {
 						_id,
@@ -84,16 +58,12 @@ describe('Prism API Mocha Testing', () => {
 				expect(status).to.equal('DELETE_SUCCESS')
 				done()
 			})
+		})
+
+
 	})
+}
 
 
-	///////////////////////////////////////////////////////////////////////////////////
-
-	after(async (done) => {
-		await App.stop()
-		done()
-	})
-
-})
 
 

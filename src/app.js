@@ -4,9 +4,10 @@ import cors			from 'cors'
 
 import schema 				from '~/schema/schema'
 import { connect }			from '~/backend/db'
-import { Administrator } 	from '~/backend/backend'
+import { Administrator }	from '~/backend/backend'
 
-const PORT = process.env.PORT || 9000
+const PORT 		= process.env.PORT 		|| 9000
+const NODE_ENV	= process.env.NODE_ENV 	|| 'local'
 
 var _listener
 
@@ -43,7 +44,7 @@ export default class App {
 			}))
 
 			var l = app.listen(PORT, () => {
-			    console.log(`=====> Prism API Server Online.  Port: ${PORT}.  Environment: BLAH`)
+			    console.log(`=====> Prism API Server Online.  Port: ${PORT}.  Environment: ${NODE_ENV}`)
 				this.listener = l
 				resolve()
 			})
