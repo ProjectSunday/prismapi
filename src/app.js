@@ -21,6 +21,8 @@ export default class App {
 
 		await this.createApp()
 
+t()
+
 		await Administrator.startTokenMonitoring()
 
 		return this
