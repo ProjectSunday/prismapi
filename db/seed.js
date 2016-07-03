@@ -60,11 +60,11 @@ MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
     var wipeAll = [
     	db.collection('categories').remove(),
     	db.collection('requestedclasses').remove(),
-        db.collection('users').remove()
+        // db.collection('users').remove()
     ]
 
     Promise.all(wipeAll).then(() => {
-        insertFakeUser()
+        // insertFakeUser()
         return db.collection('categories').insert(categories)
     }).then(result => {
     	console.log('result', result)
@@ -73,11 +73,11 @@ MongoClient.connect(PRISM_DB_CONNECTION_STRING).then(db => {
    		categories.forEach(c => {
    			requestedClasses.push({ name: c.name + ' Class A', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
    			requestedClasses.push({ name: c.name + ' Class BB', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
-   			requestedClasses.push({ name: c.name + ' Class npmCCC', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
-   			requestedClasses.push({ name: c.name + ' Class DDDD', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
-   			requestedClasses.push({ name: c.name + ' Class EEEEE', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
-   			requestedClasses.push({ name: c.name + ' Class FFFFF F', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
-   			requestedClasses.push({ name: c.name + ' Class GGGGG GG', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
+   			// requestedClasses.push({ name: c.name + ' Class npmCCC', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
+   			// requestedClasses.push({ name: c.name + ' Class DDDD', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
+   			// requestedClasses.push({ name: c.name + ' Class EEEEE', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
+   			// requestedClasses.push({ name: c.name + ' Class FFFFF F', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
+   			// requestedClasses.push({ name: c.name + ' Class GGGGG GG', category: c._id, date: 'January 22, 1997', location: 'requestedlocation'})
     	})
     	return db.collection('requestedclasses').insert(requestedClasses)
     }).then(inserted => {

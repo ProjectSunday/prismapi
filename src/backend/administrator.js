@@ -14,6 +14,10 @@ export class Administrator {
 
 		this.data = await Read('settings', { name: 'administrator' })
 
+		if (ADMIN.REFRESH_TOKEN) {
+			this.data.refresh_token = ADMIN.REFRESH_TOKEN
+		}
+
 		this.logOutTokens('Administrator')
 
 		if (!await this.accessTokenValid()) {
@@ -59,7 +63,7 @@ export class Administrator {
 				client_id: OAUTH.CLIENT_ID,
 				client_secret: OAUTH.CLIENT_SECRET,
 				grant_type: 'refresh_token',
-				refresh_token: ADMIN.REFRESH_TOKEN
+				refresh_token: this.data.refresh_token
 			}
 		})
 
@@ -69,6 +73,7 @@ export class Administrator {
 			console.log('result:', result.error_description)
 		} else {
 			this.data = {
+				refresh_token: result.refresh_token,
 				access_token: result.access_token,
 				created: new Date()
 			}
@@ -78,7 +83,7 @@ export class Administrator {
 
 	static logOutTokens(message) {
 		console.log(`\n${message}`)
-		console.log('\tREFRESH_TOKEN: ', ADMIN.REFRESH_TOKEN)
+		console.log('\tREFRESH_TOKEN: ', this.data.refresh_token)
 		console.log('\taccess_token:  ', this.data.access_token)
 		console.log('\tcreated:       ', this.data.created)
 		console.log('\tage:           ', ((new Date()) - this.data.created) / 1000 / 60, 'minutes\n')

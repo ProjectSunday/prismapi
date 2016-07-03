@@ -4,7 +4,7 @@ import rest from 'rest'
 export const ADMIN = {
 	ID: 			process.env.ADMIN_ID 			|| 182509367,
 	API_KEY: 		process.env.ADMIN_API_KEY 		|| '7d156b614b6d5c5e7d357e18151568',
-	REFRESH_TOKEN: 	process.env.ADMIN_REFRESH_TOKEN || '8f911109da4ac924b8b127cf799e44d0'
+	REFRESH_TOKEN: 	process.env.ADMIN_REFRESH_TOKEN
 
 }
 
