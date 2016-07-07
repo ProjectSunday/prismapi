@@ -1,5 +1,5 @@
-import prettyjson from 'prettyjson'
-import colors from 'colors'
+var prettyjson = require('prettyjson')
+require('colors')
 
 //logging
 var options = {
@@ -7,7 +7,7 @@ var options = {
   keysColor: 'yellow'
 }
 
-global.log = (data, message) => {
+global.log = function (data, message) {
     if (data === undefined || data === null) {
         data = '[undefined/null]'
     }

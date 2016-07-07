@@ -12,8 +12,6 @@ export class Administrator {
 
 	static async startTokenMonitoring () {
 
-		t('yo')
-
 		this.data = await Read('settings', { name: 'administrator' })
 
 		if (ADMIN.REFRESH_TOKEN) {
@@ -34,8 +32,11 @@ export class Administrator {
 
 		}
 
+
 		clearTimeout(global.__prism_admin_timer_id)
-		global.__prism_admin_timer_id = setTimeout(this.startTokenMonitoring, 10000)
+		global.__prism_admin_timer_id = setTimeout(() => {
+			this.startTokenMonitoring()
+		}, 6e4)
 
 	}
 
