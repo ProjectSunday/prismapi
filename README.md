@@ -2,7 +2,9 @@
 
 ### Dev Notes
 
-i hate you meetup api
+work on authenticating with test user
+
+do requests and extract http information
 
 ### To Do's
 

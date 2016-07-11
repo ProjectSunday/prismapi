@@ -5,13 +5,17 @@ import RequestedClass 	from './schema-requestedclass'
 import UpcomingClass 	from './schema-upcomingclass'
 import User 			from './schema-user'
 
+import Testing			from './schema-testing'
+
 const query = new GraphQLObjectType({
 	name: 'query',
 	fields: {
 		...Category.queries,
 		...RequestedClass.queries,
 		...UpcomingClass.Queries,
-		...User.queries
+		...User.queries,
+
+		...Testing.Queries
 	}
 })
 
