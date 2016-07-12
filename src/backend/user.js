@@ -84,6 +84,8 @@ export class User {
 			var token = body.match(/name="token" value="(.*)"/)[1];
 			// log(token, 'token')
 
+			log(body, 'body')
+
 			var returnUri = body.match(/name="returnUri" value="(.*)"/)[1]
 			returnUri = entities.decodeHTML(returnUri)
 
