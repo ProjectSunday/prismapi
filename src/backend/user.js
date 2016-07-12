@@ -74,33 +74,27 @@ export class User {
 	async getAccessToken() {
 		// log(this.context.meetup, 'meetup')
 
-		var token, returnUri, op, apiAppName
 
+		var authUri = 'https://secure.meetup.com/oauth2/authorize?client_id=sgeirri963sprv1a1vh3r8cp3o&response_type=token&scope=basic+event_management&redirect_uri=http://localhost:7000/authentication'
+		request.get({
+			uri: authUri,
+			jar: true
+		}, (a,b, body) => {
 
-		var request = request.defaults({jar: true});
-
-
-		request('https://secure.meetup.com/oauth2/authorize?client_id=sgeirri963sprv1a1vh3r8cp3o&response_type=token&scope=basic+event_management&redirect_uri=http://localhost:7000/authentication', (a,b, body) => {
-			// console.log(a, 'a')
-			// console.log(b, 'b')
-			// console.log(body, 'c')
-
-
-
-			token = body.match(/name="token" value="(.*)"/)[1];
+			var token = body.match(/name="token" value="(.*)"/)[1];
 			// log(token, 'token')
 
-			returnUri = body.match(/name="returnUri" value="(.*)"/)[1]
+			var returnUri = body.match(/name="returnUri" value="(.*)"/)[1]
 			returnUri = entities.decodeHTML(returnUri)
 
 
 			// log(returnUri, 'returnUri')
 
 
-			op = body.match(/name="op" value="(.*)"/)[1]
+			var op = body.match(/name="op" value="(.*)"/)[1]
 			// log(op, 'op')
 
-			apiAppName = body.match(/name="apiAppName" value="(.*)"/)[1]
+			var apiAppName = body.match(/name="apiAppName" value="(.*)"/)[1]
 			// log(apiAppName)
 
 			// var url = body.match(/form action="([^"]*)/)[1]
@@ -108,18 +102,6 @@ export class User {
 			// log(url)
 
 
-/*
-
-email:locallearnersuser@gmail.com
-password:thirstyscholar1
-rememberme:on
-token:cd4df6ab-dfbc-4ac8-807a-43208d34fd1e
-submitButton:Log in and Grant Access
-returnUri:https://secure.meetup.com/oauth2/authorize/?submit=1&response=yes&scope=basic+event_management&response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A7000%2Fauthentication&client_id=sgeirri963sprv1a1vh3r8cp3o&sig=66f5ca0626d79ee70d0439b9064ffd183501ed12
-op:login
-apiAppName:Prism Dev
-
-*/
 			//https://secure.meetup.com/login/
 
 
@@ -136,10 +118,40 @@ apiAppName:Prism Dev
 				apiAppName
 			}
 
-			log(form,'form')
+			// log(form,'form')
 
-			request.post('https://secure.meetup.com/login/', { form }, function (a,b,c) {
-				console.log(c)
+			var loginUri = 'https://secure.meetup.com/login/'
+
+
+
+			request.post({
+				uri: loginUri,
+				jar: true,
+				form: form
+			}, (a,b,c,d) => {
+				// t(1)
+				// console.log(a,'a')
+				// t(2)
+				// console.log(b.response,'b')
+				// console.log(JSON.stringify(b))
+				// console.log(b.headers,'b')
+
+
+
+				var meetupRedirectUri = b.headers.location
+				log(meetupRedirectUri)
+
+				request.get({
+					uri: meetupRedirectUri,
+					followRedirect: false,
+					jar: true
+				}, (a,b,c) => {
+					// t(4)
+
+					log(b.headers.location)
+					// console.log(JSON.stringify(b))
+					// console.log(c)
+				})
 			})
 
 
@@ -149,25 +161,39 @@ apiAppName:Prism Dev
 		})
 
 
-		function meetupLogin() {
 
-			var form = {
-				email: 'locallearnersuser@gmail.com',
-				password: 'thirstyscholar1',
-				rememberme: 'on',
-				token,
-				submitButton: 'Log in and Grant Access',
-				returnUri,
-				op,
-				apiAppName
-			}
+		/*
 
-			log(form,'form')
+		email:locallearnersuser@gmail.com
+		password:thirstyscholar1
+		rememberme:on
+		token:cd4df6ab-dfbc-4ac8-807a-43208d34fd1e
+		submitButton:Log in and Grant Access
+		returnUri:https://secure.meetup.com/oauth2/authorize/?submit=1&response=yes&scope=basic+event_management&response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A7000%2Fauthentication&client_id=sgeirri963sprv1a1vh3r8cp3o&sig=66f5ca0626d79ee70d0439b9064ffd183501ed12
+		op:login
+		apiAppName:Prism Dev
 
-			request.post('https://secure.meetup.com/login/', { form }, function (a,b,c) {
-				console.log(c)
-			})
-		}
+		*/
+
+		// function meetupLogin() {
+
+		// 	var form = {
+		// 		email: 'locallearnersuser@gmail.com',
+		// 		password: 'thirstyscholar1',
+		// 		rememberme: 'on',
+		// 		token,
+		// 		submitButton: 'Log in and Grant Access',
+		// 		returnUri,
+		// 		op,
+		// 		apiAppName
+		// 	}
+
+		// 	log(form,'form')
+
+		// 	request.post('https://secure.meetup.com/login/', { form }, function (a,b,c) {
+		// 		console.log(c)
+		// 	})
+		// }
 
 
 /*
