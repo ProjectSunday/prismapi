@@ -20,9 +20,9 @@ describe('Prism API Mocha Testing', () => {
 		done()
 	})
 
-	Testing()
+	// Testing()
 
-	// User()
+	User()
 
 	// Category()
 	// Requested()

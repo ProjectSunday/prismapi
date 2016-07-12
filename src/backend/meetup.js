@@ -32,6 +32,7 @@ export const URL = {
     PROFILE					: api + '2/profile',
 
 	OAUTH2_ACCESS			: 'https://secure.meetup.com/oauth2/access',
+	OAUTH2_AUTHORIZE		: 'https://secure.meetup.com/oauth2/authorize'
 }
 
 export const request = async (options) => {
@@ -49,4 +50,5 @@ export const request = async (options) => {
 
 export * from './meetup-event'
 export * from './meetup-member'
+export * from './meetup-oauth'
 

@@ -16,7 +16,7 @@ export default () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				log(res.body, 'body')
 				done()
 			})
 		})

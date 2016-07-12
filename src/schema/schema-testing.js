@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 // import { UserType } 		from './schema-user'
-import { User } 	from '~/backend/backend'
+import { Context, User } 	from '~/backend/backend'
 
 import request from 'request'
 
@@ -32,17 +32,14 @@ const Queries = {
 		// },
 		resolve: async (root, args) => {
 
-			var user = new User({
-				meetup: {
-					email: 'blahemail',
-					password: 'password'
-				}
-			})
+			var ctx = new Context()
+			ctx.meetupEmail = 'locallearnersuser@gmail.com'
+			ctx.meetupPassword = 'thirstyscholar1'
 
-			await user.getAccessToken();
+			await new User(ctx).getAccessToken()
 
 			return {
-				result: 'blah'
+				result: ctx.token
 			}
 		}
 	}

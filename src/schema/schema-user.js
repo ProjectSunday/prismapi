@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { User } from '~/backend/backend'
+import { Context, User } from '~/backend/backend'
 
 const PhotoType = new GraphQLObjectType({
 	name: 'PhotoType',
@@ -10,12 +10,11 @@ const PhotoType = new GraphQLObjectType({
 })
 
 const meetupMemberType = new GraphQLObjectType({
-	name: 'MeetupProfile',
+	name: 'MeetupMember',
 	fields: () => ({
 		id: { type: GraphQLInt },
 		name: { type: GraphQLString },
-		photo: { type: PhotoType },
-		token: { type: GraphQLString }
+		photo: { type: PhotoType }
 	})
 })
 
@@ -29,6 +28,7 @@ export const UserType = new GraphQLObjectType({
 				return user.meetupMember
 			}
 		},
+		token: { type: GraphQLString },
 		status: { type: GraphQLString }
 	})
 })
@@ -39,47 +39,66 @@ const queries = {
 	user: {
 		type: UserType,
 		args: {
-			_id: { type: GraphQLID },
 			token: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-			var requester = new User(args.token)
-			// await requester.hasRole('')
+			var ctx = new Context()
+			ctx.token = args.token
 
-			return db.user.read(args.token)
-		}
-	},
-	self: {
-		type: UserType,
-		args: {
-			token: { type: GraphQLString }
-		},
-		resolve: async (root, args) => {
-			//security check here
-			var context = { token: args.token }
-			var self = await new User(context).fetch()
-			return self.data
+			var user = new User(ctx)
+			await user.fetch()
 
-			// await self.fetch(args.token)
-			// return self
+			return user.data
 		}
 	}
+	// self: {
+	// 	type: UserType,
+	// 	args: {
+	// 		token: { type: GraphQLString }
+	// 	},
+	// 	resolve: async (root, args) => {
+	// 		//security check here
+	// 		var context = { token: args.token }
+	// 		var self = await new User(context).fetch()
+	// 		return self.data
+
+	// 		// await self.fetch(args.token)
+	// 		// return self
+	// 	}
+	// }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
 const mutations = {
-	authenticateUser: {
+	// authenticateUser: {
+	// 	type: UserType,
+	// 	args: {
+	// 		token: { type: GraphQLString }
+	// 	},
+	// 	resolve: async (root, args) => {
+	// 		var context = { token: args.token }
+	// 		var user = await new User(context).authenticate()
+	// 		return user.data
+	// 	}
+
+	// },
+	authenticate: {
 		type: UserType,
 		args: {
-			token: { type: GraphQLString }
+			meetupEmail: { type: GraphQLString },
+			meetupPassword: { type: GraphQLString}
 		},
 		resolve: async (root, args) => {
-			var context = { token: args.token }
-			var user = await new User(context).authenticate()
+			var ctx = new Context()
+			ctx.meetupEmail = args.meetupEmail
+			ctx.meetupPassword = args.meetupPassword
+
+			var user = new User(ctx)
+			await user.authenticate()
+
 			return user.data
 		}
-
 	}
 }
 
