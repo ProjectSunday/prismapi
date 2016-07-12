@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { UserType } 		from './schema-user'
-import { UpcomingClass } 	from '~/backend/backend'
+import { UserType } 				from './schema-user'
+import { Context, UpcomingClass } 	from '~/backend/backend'
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -63,9 +63,16 @@ const Mutations = {
 			name: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-			var context = { token: args.token }
-			var event = { name: args.name }
-			var upcoming = await new UpcomingClass(context).create(event)
+
+			var ctx = new Context()
+			ctx.token = args.token
+
+			var upcoming = new UpcomingClass(ctx)
+			upcoming.data.event = {
+				name: args.name
+			}
+			await upcoming.create()
+
 			return upcoming.data
 		}
 	},

@@ -26,7 +26,7 @@ describe('Prism API Mocha Testing', () => {
 
 	// Category()
 	// Requested()
-	// Upcoming()
+	Upcoming()
 
 
 	after(async (done) => {

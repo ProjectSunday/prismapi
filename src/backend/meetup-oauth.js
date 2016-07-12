@@ -17,12 +17,12 @@ export class MeetupOauth {
 
 		return new Promise((resolve, reject) => {
 
-			var myJar = request.jar();
+			var myCookieJar = request.jar();
 
 			var authUri = `${URL.OAUTH2_AUTHORIZE}?client_id=${OAUTH.CLIENT_ID}&response_type=token&scope=basic+event_management&redirect_uri=${OAUTH.REDIRECT_URI}`
 			request.get({
 				uri: authUri,
-				jar: myJar
+				jar: myCookieJar
 			}, (e1, r1, b1) => {
 				var token = b1.match(/name="token" value="(.*)"/)[1];
 
@@ -36,7 +36,7 @@ export class MeetupOauth {
 				var loginUri = 'https://secure.meetup.com/login/'
 				request.post({
 					uri: loginUri,
-					jar: myJar,
+					jar: myCookieJar,
 					form: {
 						email: self.context.meetupEmail,
 						password: self.context.meetupPassword,
@@ -53,7 +53,7 @@ export class MeetupOauth {
 					request.get({
 						uri: meetupRedirectUri,
 						followRedirect: false,
-						jar: myJar
+						jar: myCookieJar
 					}, function (e3,r3,b3) {
 						var location = r3.headers.location
 						self.context.token = location.match(/access_token=([^&]*)/)[1]

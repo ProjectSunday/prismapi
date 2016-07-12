@@ -13,13 +13,15 @@ export class UpcomingClass {
 	get data() { return this._data }
 	set data(d) { this._data = d }
 
-	async create(newEvent = this.data.event) {
+	async create() {
+		console.assert(this.data.event !== undefined, 'UpcomingClass.create() - this.data.event undefined')
+
 		var user = await new User(this.context).fetch()
 		await user.ensureOrganizer()
 		this.data.teacher = user.data._id
 
 		var event = new Event(this.context)
-		await event.post(newEvent)
+		await event.post(this.data.event)
 		this.data.event = event.data
 
 		this.data = await DB.Create('upcomingclasses', this.data)
@@ -27,7 +29,7 @@ export class UpcomingClass {
 		return this
 	}
 
-	async delete(_id = this.data._id) {
+	async delete() {
 		console.assert(_id !== undefined, 'UpcomingClass.delete: _id undefined')
 		// console.assert(token !== undefined, 'UpcomingClass.delete: token undefined')
 
