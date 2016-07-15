@@ -6,11 +6,8 @@ import { OAUTH, URL } from './meetup'
 export class MeetupOauth {
 	constructor(context) {
 		this.context = context
-		this._data = {}
+		return this
 	}
-
-	get data() { return this._data }
-	set data(d) { this._data = d }
 
 	async login() {
 		var self = this
@@ -56,7 +53,7 @@ export class MeetupOauth {
 						jar: myCookieJar
 					}, function (e3,r3,b3) {
 						var location = r3.headers.location
-						self.context.token = location.match(/access_token=([^&]*)/)[1]
+						self.context.user.token = location.match(/access_token=([^&]*)/)[1]
 						resolve()
 					})
 				})

@@ -1,7 +1,10 @@
 // IMPORTANT!
 // Make sure context is only used with graphql, other modules have their own data.
 export class Context {
-	constructor() {
+	constructor(initialData) {
+		this.meetupEmail = null
+		this.meetupPassword = null
+
 		this._data = {
 			session: {
 				user: {
@@ -13,13 +16,20 @@ export class Context {
 				}
 			}
 		}
+
+		this.user = {
+			token: null,
+			meetupMember: {}
+		}
+
+		Object.assign(this, initialData)
 	}
 	
 	get data() { return this._data }
 	set data(v) { this._data = v }
 
-	get token() { return this._data.session.user.access_token }
-	set token(v) { this._data.session.user.access_token = v }
+	// get token() { return this._data.session.user.access_token }
+	// set token(v) { this._data.session.user.access_token = v }
 
 	get meetupEmail() { return this._data.session.user.meetup.email }
 	set meetupEmail(v) { this._data.session.user.meetup.email = v }

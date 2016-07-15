@@ -9,10 +9,8 @@ import request from 'request'
 export class User {
 	constructor(context) {
 		this.context = context
-		this._data = {}
+		return this
 	}
-	get data() { return this._data }
-	set data(d) { this._data = d }
 
 	async fetch() {
 		var user = await Read('users', { token: this.context.token })
@@ -28,23 +26,12 @@ export class User {
 		await Update('users', { _id: ObjectID(this.data._id ) }, this.data)
 	}
 
-	async fetchMeetupProfile() {
-		var member = new Member(this.context)
-		await member.fetch()
-		this.data.meetupMember = member.data
-		return this
-	}
-
 	async authenticate() {
-		await this.fetchAccessToken()
-		await this.fetchMeetupProfile()
+		await new MeetupOauth(this.context).login()
+		await new Member(this.context).fetch()
 
-		var filter = { 'meetupMember.id': this.data.meetupMember.id }
-		var user = await Update("users", filter, this.data)
-
-		this.data = user
-
-		return this
+		var filter = { 'meetupMember.id': this.context.user.meetupMember.id }
+		this.context.user = await Update("users", filter, this.context.user)
 	}
 
 	async ensureOrganizer() {
@@ -61,10 +48,5 @@ export class User {
 
 	}
 
-	async fetchAccessToken() {
-		await new MeetupOauth(this.context).login()
-		this.data.token = this.context.token
-		return this
-	}
 }
 

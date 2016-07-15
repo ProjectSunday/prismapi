@@ -90,14 +90,14 @@ const mutations = {
 			meetupPassword: { type: GraphQLString}
 		},
 		resolve: async (root, args) => {
-			var ctx = new Context()
-			ctx.meetupEmail = args.meetupEmail
-			ctx.meetupPassword = args.meetupPassword
+			var { meetupEmail, meetupPassword } = args
+			var context = new Context({ meetupEmail, meetupPassword })
+			await new User(context).authenticate()
+			// ctx.user = new User(ctx)
+			// ctx.user = 
+			// await user.authenticate()
 
-			var user = new User(ctx)
-			await user.authenticate()
-
-			return user.data
+			return context.user
 		}
 	}
 }
