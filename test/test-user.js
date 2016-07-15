@@ -21,7 +21,7 @@ export default () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				// log(res.body)
 				var { _id, meetupMember, token } = res.body.data.authenticate
 				var { id, name } = meetupMember
 
@@ -34,31 +34,30 @@ export default () => {
 		})
 
 
+		it('should get the user given a token', done => {
+			sendGraph(`
+				query {
+					user (token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}") {
+						_id,
+						meetupMember {
+							id,
+							name
+						},
+						token
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
+				var { _id, meetupMember } = res.body.data.user
+				var { id, name, token } = meetupMember
 
-		// it('should get the user given a token', done => {
-		// 	sendGraph(`
-		// 		query {
-		// 			user (token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}") {
-		// 				_id,
-		// 				meetupMember {
-		// 					id,
-		// 					name
-		// 				},
-		// 				token
-		// 			}
-		// 		}
-		// 	`)
-		// 	.end((err, res) => {
-		// 		// log(res.body)
-		// 		var { _id, meetupMember } = res.body.data.user
-		// 		var { id, name, token } = meetupMember
-
-		// 		expect(_id).to.exist
-		// 		expect(id).to.exist
-		// 		expect(name).to.exist
-		// 		done()
-		// 	})
-		// })
+				expect(_id).to.exist
+				expect(id).to.exist
+				expect(name).to.exist
+				done()
+			})
+		})
 
 
 	})

@@ -5,46 +5,46 @@ import { request, URL } from './meetup'
 export class Event {
 	constructor(context) {
 		this.context = context
-		this._data = {}
 	}
 
-	get data() { return this._data }
-	set data(d) { this._data = d }
-
-	async post(event = this.data) {
+	async post() {
+		var context = this.context
 
 		var result = await request({
 			method: 'POST',
-			headers: { 'Authorization': `Bearer ${this.context.token}` },
+			headers: { 'Authorization': `Bearer ${context.user.token}` },
 			path: URL.EVENTS,
-			params: event
+			params: context.upcomingClass.event
 		})
 
 		if (result.errors) throw result.errors[0].message
 
-		this.data = result
+		context.upcomingClass.event = result
+
 		return this
 	}
 
-	async delete(id) {
+	async delete() {
+		var context = this.context
 
 		var result = await request({
 			method: 'DELETE',
-			headers: { 'Authorization': `Bearer ${this.context.token}` },
-			path: URL.EVENTS + `/${id}`
+			headers: { 'Authorization': `Bearer ${context.user.token}` },
+			path: URL.EVENTS + `/${context.upcomingClass.event.id}`
 		})
 
-		if (result.errors && result.errors[0].message === 'event was deleted'){
-			this.data = {
-				status: 'DELETE_SUCCESS'
-			}
+		if (result.errors && result.errors[0].message === 'event was deleted') {
+			context.upcomingClass.event.status = 'DELETE_SUCCESS'
+			return this
 		}
 
 		if (result.status.code === 204 ) {
-			this.data = { status: 'DELETE_SUCCESS' }
+			context.upcomingClass.event.status = 'DELETE_SUCCESS'
+			return this
 		}
 
-		return this
+		console.log(result)
+		throw 'Error deleting meetup event'
 	}
 
 

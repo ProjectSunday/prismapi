@@ -22,36 +22,33 @@ export class Member {
 		if (result.problem) throw result.problem
 
 		this.context.user.meetupMember = result
-
-		return this
 	}
 
-	async fetchRole(id = this.data.id) {
-		console.assert(id !== undefined, 'Member.fetchRole() - id is undefined')
+	async fetchRole() {
+		var context = this.context
 
 		var result = await request({
 			method: 'GET',
-			path: `${URL.PROFILE}/${GROUP.ID}/${id}?key=${ADMIN.API_KEY}&sign=true`
+			path: `${URL.PROFILE}/${GROUP.ID}/${context.user.meetupMember.id}?key=${ADMIN.API_KEY}&sign=true`
 		})
 
-		this.data.role = result.role
-
-		return this
+		this.context.user.meetupMember.role = result.role
 	}
 
-	async promoteToEventOrganizer(id = this.data.id) {
+	async promoteToEventOrganizer() {
+		var context = this.context
 
 		var result = await request({
 			method: 'PATCH',
 			headers: { Authorization: `Bearer ${Administrator.data.access_token}` },
-			path: `${URL.MEMBERS}/${id}`,
+			path: `${URL.MEMBERS}/${context.user.meetupMember.id}`,
 			params: {
 				add_role: 'event_organizer'
 			}
 		})
 
 		if (result && result.group_profile) {
-			this.data.role = result.group_profile.role
+			this.context.user.meetupMember.role = result.group_profile.role
 		} else {
 			console.log('Member.promoteToEventOrganizer() error')
 			console.log(result)

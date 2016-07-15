@@ -63,17 +63,13 @@ const Mutations = {
 			name: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-
-			var ctx = new Context()
-			ctx.token = args.token
-
-			var upcoming = new UpcomingClass(ctx)
-			upcoming.data.event = {
+			var context = new Context()
+			context.user.token = args.token
+			context.upcomingClass.event = {
 				name: args.name
 			}
-			await upcoming.create()
-
-			return upcoming.data
+			await new UpcomingClass(context).create()
+			return context.upcomingClass
 		}
 	},
 	deleteUpcomingClass: {
@@ -83,9 +79,11 @@ const Mutations = {
 			_id: { type: GraphQLID }
 		},
 		resolve: async (root, args) => {
-			var context = { token: args.token }
-			var upcoming = await new UpcomingClass(context).delete(args._id)
-			return upcoming.data
+			var context = new Context()
+			context.user.token = args.token
+			context.upcomingClass._id = args._id
+			await new UpcomingClass(context).delete()
+			return context.upcomingClass
 		}
 	}
 

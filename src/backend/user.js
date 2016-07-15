@@ -13,17 +13,17 @@ export class User {
 	}
 
 	async fetch() {
-		var user = await Read('users', { token: this.context.token })
+		var user = await Read('users', { token: this.context.user.token })
 		if (!user) { throw 'User not found.' }
 
 		//also get meetup profile here, maybe?
-		this.data = user
-
+		Object.assign(this.context.user, user)
 		return this
 	}
 
 	async save() {
-		await Update('users', { _id: ObjectID(this.data._id ) }, this.data)
+		var context = this.context
+		await Update('users', { _id: ObjectID(context.user._id ) }, context.user)
 	}
 
 	async authenticate() {
@@ -35,14 +35,15 @@ export class User {
 	}
 
 	async ensureOrganizer() {
+		var context = this.context
 
-		var member = new Member(this.context)
-		member.data = this.data.meetupMember
+		var member = new Member(context)
+		await member.fetch()
 		await member.fetchRole()
 
-	    if (member.data.role !== 'Event Organizer' || member.data.role !== 'Organizer') {
+		var role = context.user.meetupMember.role
+	    if (role !== 'Event Organizer' || role !== 'Organizer') {
 	    	await member.promoteToEventOrganizer()
-	    	this.data.meetupMember = member.data
 	    	await this.save()
 	    }
 

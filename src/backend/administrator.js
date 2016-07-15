@@ -1,5 +1,6 @@
 import rest from 'rest'
 
+import { Context } from '~/backend/backend'
 import { Read, Update } from './db'
 import { ADMIN, Member, OAUTH, request, URL} from './meetup'
 
@@ -49,10 +50,11 @@ export class Administrator {
 		var ageMinutes = (now - this.data.created) / 1000 / 60
 		if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
 
-		var context = { token: this.data.access_token }
-		var member = await new Member(context).fetch()
+		var context = new Context()
+		context.user.token = this.data.access_token
+		await new Member(context).fetch()
 
-		return (member.data.id === ADMIN.ID)
+		return (context.user.meetupMember.id === ADMIN.ID)
 
 	}
 

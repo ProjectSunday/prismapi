@@ -7,54 +7,47 @@ import { Event } 	from './meetup'
 export class UpcomingClass {
 	constructor(context) {
 		this.context = context
-		this._data = {}
 	}
 
-	get data() { return this._data }
-	set data(d) { this._data = d }
-
 	async create() {
-		console.assert(this.data.event !== undefined, 'UpcomingClass.create() - this.data.event undefined')
+		var context = this.context
 
-		var user = await new User(this.context).fetch()
+		var user = new User(context)
+		await user.fetch()
 		await user.ensureOrganizer()
-		this.data.teacher = user.data._id
+		context.upcomingClass.teacher = context.user._id
 
-		var event = new Event(this.context)
-		await event.post(this.data.event)
-		this.data.event = event.data
+		var event = new Event(context)
+		await event.post()
 
-		this.data = await DB.Create('upcomingclasses', this.data)
+		var upcoming = await DB.Create('upcomingclasses', context.upcomingClass)
+		Object.assign(context.upcomingClass, upcoming)
 
 		return this
 	}
 
 	async delete() {
-		console.assert(_id !== undefined, 'UpcomingClass.delete: _id undefined')
-		// console.assert(token !== undefined, 'UpcomingClass.delete: token undefined')
+		var context = this.context
 
-		await this.fetch(_id)
+		await this.fetch()
+		await new User(context).fetch()
 
-		var user = await new User(this.context).fetch()
-		if (!this.data.teacher.equals(user.data._id)) throw "User did not create this class."
+		if (!context.userIsTeacher) throw "User did not create this class."
 
-		var event = await new Event(this.context).delete(this.data.event.id)
-		if (event.data.status !== 'DELETE_SUCCESS') throw 'Event not deleted.'
+		await new Event(context).delete()
 
-		var r = await DB.Delete('upcomingclasses', { _id: ObjectID(_id) })
+		var r = await DB.Delete('upcomingclasses', { _id: ObjectID(context.upcomingClass._id) })
 		if (r.status !== 'DELETE_SUCCESS') throw 'UpcomingClass was not deleted from DB.'
-		this.data = { _id, status: r.status }
-
-		return this
+		context.upcomingClass.status = r.status
 	}
 
 	async getAll() {
 		this.data = await DB.ReadMany('upcomingclasses')
 	}
 
-	async fetch(_id = this.data._id) {
-		this.data = await DB.Read('upcomingclasses', { _id: ObjectID(_id) })
-		return this
+	async fetch() {
+		var upcoming = await DB.Read('upcomingclasses', { _id: ObjectID(this.context.upcomingClass._id) })
+		Object.assign(this.context.upcomingClass, upcoming)
 	}
 }
 

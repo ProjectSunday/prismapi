@@ -42,13 +42,10 @@ const Queries = {
 			token: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-			var ctx = new Context()
-			ctx.token = args.token
-
-			var user = new User(ctx)
-			await user.fetch()
-
-			return user.data
+			var context = new Context()
+			context.user.token = args.token
+			await new User(context).fetch()
+			return context.user
 		}
 	}
 	// self: {
@@ -90,13 +87,10 @@ const Mutations = {
 			meetupPassword: { type: GraphQLString}
 		},
 		resolve: async (root, args) => {
-			var { meetupEmail, meetupPassword } = args
-			var context = new Context({ meetupEmail, meetupPassword })
+			var context = new Context()
+			context.meetupEmail = args.meetupEmail
+			context.meetupPassword = args.meetupPassword
 			await new User(context).authenticate()
-			// ctx.user = new User(ctx)
-			// ctx.user = 
-			// await user.authenticate()
-
 			return context.user
 		}
 	}
