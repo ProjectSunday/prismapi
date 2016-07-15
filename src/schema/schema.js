@@ -13,7 +13,7 @@ const query = new GraphQLObjectType({
 		...Category.queries,
 		...RequestedClass.queries,
 		...UpcomingClass.Queries,
-		...User.queries,
+		...User.Queries,
 
 		...Testing.Queries
 	}
@@ -25,7 +25,7 @@ const mutation = new GraphQLObjectType({
 		...Category.mutations,
 		...RequestedClass.mutations,
 		...UpcomingClass.Mutations,
-		...User.mutations
+		...User.Mutations
 	}
 })
 

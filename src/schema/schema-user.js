@@ -35,7 +35,7 @@ export const UserType = new GraphQLObjectType({
 
 /////////////////////////////////////////////////////////////////////////////
 
-const queries = {
+const Queries = {
 	user: {
 		type: UserType,
 		args: {
@@ -70,7 +70,7 @@ const queries = {
 
 /////////////////////////////////////////////////////////////////////////////
 
-const mutations = {
+const Mutations = {
 	// authenticateUser: {
 	// 	type: UserType,
 	// 	args: {
@@ -105,4 +105,4 @@ const mutations = {
 
 /////////////////////////////////////////////////////////////////////////////
 
-export default { queries, mutations }
+export default { Queries, Mutations }
