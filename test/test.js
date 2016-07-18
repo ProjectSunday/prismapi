@@ -17,6 +17,7 @@ describe('Prism API Mocha Testing', () => {
 
 	before(async (done) => {
 		await TestServer.start()
+		t(5)
 		done()
 	})
 
@@ -26,7 +27,7 @@ describe('Prism API Mocha Testing', () => {
 
 	// Category()
 	// Requested()
-	Upcoming()
+	// Upcoming()
 
 
 	after(async (done) => {

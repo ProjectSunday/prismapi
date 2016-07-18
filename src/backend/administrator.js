@@ -21,8 +21,9 @@ export class Administrator {
 
 		this.logOutTokens('Administrator')
 
+		t(2)
 		if (!await this.accessTokenValid()) {
-
+			t(2.5)
 			console.log('NOT VALID!')
 
 			await this.refreshAccessToken()
@@ -30,9 +31,9 @@ export class Administrator {
 			this.logOutTokens('NEW Administrator')
 
 			await Update('settings', { name: 'administrator' }, this.data)
-
+			t(3)
 		}
-
+		t(4)
 
 		clearTimeout(global.__prism_admin_timer_id)
 		global.__prism_admin_timer_id = setTimeout(() => {

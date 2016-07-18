@@ -18,7 +18,6 @@ export default class App {
 
 	static async start() {
 		await connect()
-
 		
 		await this.createApp()
 

@@ -87,7 +87,9 @@ const Mutations = {
 			meetupPassword: { type: GraphQLString}
 		},
 		resolve: async (root, args) => {
+			t(1)
 			var context = new Context()
+
 			context.meetupEmail = args.meetupEmail
 			context.meetupPassword = args.meetupPassword
 			await new User(context).authenticate()
