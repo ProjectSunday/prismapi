@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 import { CategoryType } from './schema-category'
-import { RequestedClass } from '~/backend/backend'
+import { Context, RequestedClass } from '~/backend/backend'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',
@@ -24,9 +24,10 @@ const queries = {
 	requestedClasses: {
 		type: new GraphQLList(RequestedClassType),
 		resolve: async () => {
-			var requestedClass = new RequestedClass()
+			var context = new Context()
+			var requestedClass = new RequestedClass(context)
 			await requestedClass.getAll()
-			return requestedClass.data
+			return context.requestedClasses
 		}
 	}
 }
@@ -36,11 +37,19 @@ const mutations = {
 	createRequestedClass: {
 		type: RequestedClassType,
 		args: {
+			token: { type: new GraphQLNonNull(GraphQLString) },
 			name: { type: new GraphQLNonNull(GraphQLString) },
-			category: { type: GraphQLID }
+			category: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
+			var context = new Context()
+			context.requestedClass = {
+				name: args.name,
+			}
+			context.category._id = args.category
+			context.user.token = args.token
 			var requestedClass = new RequestedClass()
+
 			await requestedClass.create({ name: args.name, category: args.category })
 			return requestedClass.data
 		}

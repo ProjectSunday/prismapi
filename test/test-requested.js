@@ -1,27 +1,12 @@
 import { assert, expect } from 'chai'
 
 import { sendGraph } from './test-server'
-
-var CREATED_REQUEST_CLASS_ID
+import TestData from './test-data'
 
 export default () => {
 
-	describe('Requested Classes', () => {
+	describe('Requested Classes -', () => {
 
-		it('should return all requested classes', done => {
-			sendGraph(`
-				query {
-					requestedClasses {
-						_id,
-						name
-					}
-				}
-			`)
-			.end((err, res) => {
-				assert.isArray(res.body.data.requestedClasses)
-				done()
-			})
-		})
 
 		it('should create a requested class', done => {
 			sendGraph(`
@@ -35,17 +20,37 @@ export default () => {
 			.end((err, res) => {
 				// log(res.body)
 				var { _id, name } = res.body.data.createRequestedClass
-				expect(_id).to.exist
-				expect(name).to.equal('testrequestedclass')
-				CREATED_REQUEST_CLASS_ID = _id
+				assert(_id !== undefined, '_id is undefined')
+				assert(name === 'testrequestedclass', 'name is not correct')
+				TestData.CREATED_REQUEST_CLASS_ID = _id
 				done()
 			})
 		})
 
+
+		it('should return all requested classes', done => {
+			sendGraph(`
+				query {
+					requestedClasses {
+						_id,
+						name
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
+				var { requestedClasses } = res.body.data
+				assert(Array.isArray(requestedClasses), 'requestedClasses is not an array')
+				assert(requestedClasses.length > 0, 'requestedClasses is empty')
+				done()
+			})
+		})
+
+
 		it('should delete a requested class', done => {
 			sendGraph(`
 				mutation {
-					deleteRequestedClass(_id: "${CREATED_REQUEST_CLASS_ID}") {
+					deleteRequestedClass(_id: "${TestData.CREATED_REQUEST_CLASS_ID}") {
 						_id,
 						status
 					}
@@ -54,7 +59,7 @@ export default () => {
 			.end((err, res) => {
 				// log(res.body)
 				var { _id, status } = res.body.data.deleteRequestedClass
-				expect(_id).to.equal(CREATED_REQUEST_CLASS_ID)
+				expect(_id).to.equal(TestData.CREATED_REQUEST_CLASS_ID)
 				expect(status).to.equal('DELETE_SUCCESS')
 				done()
 			})

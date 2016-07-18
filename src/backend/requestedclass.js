@@ -11,8 +11,7 @@ export class RequestedClass {
 	set data(d) { this._data = d }
 
 	async getAll() {
-		var all = await ReadMany('requestedclasses')
-		this.data = all
+		this.context.requestedClasses = await ReadMany('requestedclasses')
 	}
 	async create (requested) {
 

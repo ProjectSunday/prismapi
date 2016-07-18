@@ -18,6 +18,9 @@ export class Context {
 		// 	}
 		// }
 
+		this.requestedClass = {}
+		this.requestedClasses = []
+
 		this.user = {
 			token: null,
 			meetupMember: {
