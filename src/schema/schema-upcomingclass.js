@@ -35,20 +35,20 @@ const Queries = {
 			_id: { type: GraphQLID }
 		},
 		resolve: async (root, args) => {
-			var upcoming = new UpcomingClass()
-			upcoming.data = {
-				_id: args._id
-			}
+			var context = new Context()
+			context.upcomingClass._id = args._id
+			var upcoming = new UpcomingClass(context)
 			await upcoming.fetch()
-			return upcoming.data
+			return context.upcomingClass
 		}
 	},
 	upcomingClasses: {
 		type: new GraphQLList(UpcomingClassType),
 		resolve: async (root, args) => {
-			var upcoming = new UpcomingClass()
+			var context = new Context()
+			var upcoming = new UpcomingClass(context)
 			await upcoming.getAll()
-			return upcoming.data
+			return context.upcomingClasses
 		}
 	}
 }

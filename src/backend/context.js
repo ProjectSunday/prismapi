@@ -28,6 +28,7 @@ export class Context {
 		this.upcomingClass = {
 			event: {}
 		}
+		this.upcomingClasses = []
 
 		// Object.assign(this, initialData)
 	}

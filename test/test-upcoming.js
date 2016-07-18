@@ -5,7 +5,7 @@ import TestData from './test-data'
 
 export default () => {
 
-	describe('Upcoming Classes', () => {
+	describe('Upcoming Classes ============================================================', () => {
 
 		it('should create an upcoming class', done => {
 			var name = `testupcomingclass ${new Date().toString()}`
@@ -34,56 +34,57 @@ export default () => {
 			})
 		})
 
-		// it('should retrieve all upcoming classes', done => {
-		// 	sendGraph(`
-		// 		query {
-		// 			upcomingClasses {
-		// 				_id
-		// 			}
-		// 		}
-		// 	`)
-		// 	.end((err, res) => {
-		// 		// log(res.body)
+		it('should retrieve all upcoming classes', done => {
+			sendGraph(`
+				query {
+					upcomingClasses {
+						_id
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
 
-		// 		// var { _id, event } = res.body.data.upcomingClass
-		// 		// var { _id, event } = res.body.data.upcomingClass
-		// 		// var { name } = event
+				// var { _id, event } = res.body.data.upcomingClass
+				// var { _id, event } = res.body.data.upcomingClass
+				// var { name } = event
 
-		// 		// expect(_id).to.exist
-		// 		// expect(name).to.equal('testupcomingclass')
+				// expect(_id).to.exist
+				// expect(name).to.equal('testupcomingclass')
 
+				var upcomingClasses = res.body.data.upcomingClasses
+				assert(Array.isArray(upcomingClasses), 'upcomingClasses returned is not array')
+				assert(upcomingClasses.length > 0, 'upcomingClasses array returned is empty')
 
-		// 		assert.isArray(res.body.data.upcomingClasses)
+				done()
+			})
+		})
 
-		// 		done()
-		// 	})
-		// })
+		it('should retrieve an upcoming class', done => {
+			sendGraph(`
+				query {
+					upcomingClass ( _id: "${TestData.TEST_UPCOMING_CLASS_ID}") {
+						_id,
+						event {
+							id,
+							name
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
 
-		// it('should retrieve an upcoming class', done => {
-		// 	sendGraph(`
-		// 		query {
-		// 			upcomingClass ( _id: "${TestData.TEST_UPCOMING_CLASS_ID}") {
-		// 				_id,
-		// 				event {
-		// 					id,
-		// 					name
-		// 				}
-		// 			}
-		// 		}
-		// 	`)
-		// 	.end((err, res) => {
-		// 		log(res.body)
+				var { _id, event } = res.body.data.upcomingClass
+				var { _id, event } = res.body.data.upcomingClass
+				var { name } = event
 
-		// 		var { _id, event } = res.body.data.upcomingClass
-		// 		var { _id, event } = res.body.data.upcomingClass
-		// 		var { name } = event
+				expect(_id).to.exist
+				expect(name).to.exist
 
-		// 		expect(_id).to.exist
-		// 		expect(name).to.exist
-
-		// 		done()
-		// 	})
-		// })
+				done()
+			})
+		})
 
 		it('should delete an upcoming class and its event', done => {
 			// TestData.TEST_UPCOMING_CLASS_ID = '57886c7960900661604f7a5d'

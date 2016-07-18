@@ -42,7 +42,7 @@ export class UpcomingClass {
 	}
 
 	async getAll() {
-		this.data = await DB.ReadMany('upcomingclasses')
+		this.context.upcomingClasses = await DB.ReadMany('upcomingclasses')
 	}
 
 	async fetch() {
