@@ -16,7 +16,7 @@ export class User {
 		var user = await Read('users', { token: this.context.user.token })
 		if (!user) { throw 'User not found.' }
 
-		//also get meetup profile here, maybe?
+		//also get meetup profile here, maybe? udpate profile, not get
 		Object.assign(this.context.user, user)
 		return this
 	}

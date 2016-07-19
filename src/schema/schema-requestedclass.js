@@ -1,7 +1,8 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
 import { CategoryType } from './schema-category'
-import { Context, RequestedClass } from '~/backend/backend'
+import { UserType } from './schema-user'
+import { Context, RequestedClass, User } from '~/backend/backend'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',
@@ -19,12 +20,14 @@ const RequestedClassType = new GraphQLObjectType({
 			}
 		},
 		date: { type: GraphQLString }, //this is wrong
+		interested: { type: new GraphQLList(UserType) },
 		location: { type: GraphQLString },
+
 		status: { type: GraphQLString }
 	})
 })
 
-const queries = {
+const Queries = {
 	requestedClasses: {
 		type: new GraphQLList(RequestedClassType),
 		resolve: async () => {
@@ -36,7 +39,38 @@ const queries = {
 	}
 }
 
-const mutations = {
+const Mutations = {
+
+	addInterested: {
+		type: RequestedClassType,
+		args: {
+			token: { type: new GraphQLNonNull(GraphQLString) },
+			requestedClassId: { type: new GraphQLNonNull(GraphQLID) }
+		},
+		resolve: async (root, args) => {
+			var context = new Context()
+			context.user.token = args.token
+			var user = new User(context)
+			await user.fetch()
+
+			context.requestedClass._id = args.requestedClassId
+			var requestedClass = new RequestedClass(context)
+			await requestedClass.addUserToInterested()
+
+
+
+
+
+			// }
+			// context.user.token = args.token
+
+			// var requestedClass = new RequestedClass(context)
+			// await requestedClass.create()
+
+			// return context.requestedClass
+			return context.requestedClass
+		}
+	},
 
 	createRequestedClass: {
 		type: RequestedClassType,
@@ -49,7 +83,8 @@ const mutations = {
 			var context = new Context()
 			context.requestedClass = {
 				name: args.name,
-				category: args.category
+				category: args.category,
+				interested: []
 			}
 			context.user.token = args.token
 
@@ -76,6 +111,6 @@ const mutations = {
 
 }
 
-export default { queries, mutations }
+export default { Queries, Mutations }
 
 

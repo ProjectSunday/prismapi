@@ -11,7 +11,7 @@ const query = new GraphQLObjectType({
 	name: 'query',
 	fields: {
 		...Category.queries,
-		...RequestedClass.queries,
+		...RequestedClass.Queries,
 		...UpcomingClass.Queries,
 		...User.Queries,
 
@@ -23,7 +23,7 @@ const mutation = new GraphQLObjectType({
 	name: 'mutation',
 	fields: {
 		...Category.mutations,
-		...RequestedClass.mutations,
+		...RequestedClass.Mutations,
 		...UpcomingClass.Mutations,
 		...User.Mutations
 	}
