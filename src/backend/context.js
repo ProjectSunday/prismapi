@@ -3,8 +3,7 @@
 export class Context {
 	constructor() {
 		// initialData = initialData || {}
-		this.meetupEmail = null
-		this.meetupPassword = null
+
 
 		// this._data = {
 		// 	session: {
@@ -18,9 +17,23 @@ export class Context {
 		// 	}
 		// }
 
+		this.category = {}
+		this.categories = []
+
 		this.requestedClass = {}
 		this.requestedClasses = []
 
+		this.upcomingClass = {
+			event: {}
+		}
+		this.upcomingClasses = []
+
+
+
+
+		this.meetupEmail = null
+		this.meetupPassword = null
+		
 		this.user = {
 			token: null,
 			meetupMember: {
@@ -28,10 +41,6 @@ export class Context {
 			}
 		}
 
-		this.upcomingClass = {
-			event: {}
-		}
-		this.upcomingClasses = []
 
 		// Object.assign(this, initialData)
 	}

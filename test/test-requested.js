@@ -3,6 +3,8 @@ import { assert, expect } from 'chai'
 import { sendGraph } from './test-server'
 import TestData from './test-data'
 
+var REQUESTED_CLASS_ID_TO_DELETE
+
 export default () => {
 
 	describe('Requested Classes -', () => {
@@ -11,7 +13,7 @@ export default () => {
 		it('should create a requested class', done => {
 			sendGraph(`
 				mutation {
-					createRequestedClass (name: "testrequestedclass") {
+					createRequestedClass ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", name: "testrequestedclass", category: "${TestData.TEST_CATEGORY_ID}" ) {
 						_id,
 						name
 					}
@@ -22,7 +24,7 @@ export default () => {
 				var { _id, name } = res.body.data.createRequestedClass
 				assert(_id !== undefined, '_id is undefined')
 				assert(name === 'testrequestedclass', 'name is not correct')
-				TestData.CREATED_REQUEST_CLASS_ID = _id
+				REQUESTED_CLASS_ID_TO_DELETE = _id
 				done()
 			})
 		})
@@ -50,17 +52,15 @@ export default () => {
 		it('should delete a requested class', done => {
 			sendGraph(`
 				mutation {
-					deleteRequestedClass(_id: "${TestData.CREATED_REQUEST_CLASS_ID}") {
-						_id,
+					deleteRequestedClass(_id: "${REQUESTED_CLASS_ID_TO_DELETE}") {
 						status
 					}
 				}`
 			)
 			.end((err, res) => {
 				// log(res.body)
-				var { _id, status } = res.body.data.deleteRequestedClass
-				expect(_id).to.equal(TestData.CREATED_REQUEST_CLASS_ID)
-				expect(status).to.equal('DELETE_SUCCESS')
+				var { status } = res.body.data.deleteRequestedClass
+				assert(status === 'DELETE_SUCCESS', 'status not DELETE_SUCCESS')
 				done()
 			})
 		})

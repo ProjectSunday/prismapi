@@ -5,7 +5,7 @@ import TestData from './test-data'
 
 export default () => {
 
-	describe('Upcoming Classes ============================================================', () => {
+	describe('Upcoming Classes -', () => {
 
 		it('should create an upcoming class', done => {
 			var name = `testupcomingclass ${new Date().toString()}`

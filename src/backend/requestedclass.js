@@ -1,47 +1,28 @@
 import { ObjectID } from 'mongodb'
-import { Create, Delete, Query, QueryAll, ReadMany, Mutate } from './db'
+
+import Db from './db'
+import { Category } from '~/backend/backend'
 
 export class RequestedClass {
 	constructor(context) {
 		this.context = context
-		this._data = {}
 	}
 
-	get data() { return this._data }
-	set data(d) { this._data = d }
-
-	async getAll() {
-		this.context.requestedClasses = await ReadMany('requestedclasses')
+	async fetchAll() {
+		this.context.requestedClasses = await Db.ReadMany('requestedclasses')
 	}
-	async create (requested) {
+	async create () {
+		this.context.category._id = this.context.requestedClass.category
+		var category = new Category(this.context)
+		await category.fetch()
 
-		//verify category here
+		if (!this.context.category) throw 'Unable to determine category with _id: ' + this.context.requestedClass.category
 
-		var r = await Create('requestedclasses', requested)
-		this.data = r
-
+		this.context.requestedClass = await Db.Create('requestedclasses', this.context.requestedClass)
 	}
 
 	async delete(_id) {
-		var r = await Delete('requestedclasses', { _id: ObjectID(_id) })
-		this.data = {
-			_id,
-			status: r.status
-		}
+		this.context.requestedClass = await Db.Delete('requestedclasses', { _id: ObjectID(this.context.requestedClass._id) })
 	}
-
-	read (_id) {
-		return new Promise((resolve, reject) => {
-			// if (_id === undefined) {
-			// 	var query = {}
-			// } else {
-			// 	var query = { _id: ObjectID(_id) }
-			// }
-			// console.log('query,', query)
-			var collection = _db.collection('requestedclasses')
-			collection.find().toArray().then(resolve, reject)
-		})
-	}
-
 
 }

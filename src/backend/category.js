@@ -1,59 +1,27 @@
 import { ObjectID } from 'mongodb'
 
-import { Delete, Query, QueryAll, Mutate } from './db'
+import Db from './db'
 
 export class Category {
-	constructor() {
-		this._data = {}
+	constructor(context) {
+		this.context = context
 	}
 
-	get() {
-
+	async create() {
+		this.context.category = await Db.Create('categories', this.context.category)
 	}
 
-	set() {
-
-	}
-	async save(category) {
-
-		var c = await Mutate('categories', {}, category)
-		Object.assign(this._data, c)
-		return this._data
-
-	}
-	fetch() {
-
+	async delete () {
+		this.context.category = await Db.Delete('categories', { _id: ObjectID(this.context.category._id) })
 	}
 
-	async getAll() {
-		return await QueryAll('categories')
+
+	async fetch() {
+		this.context.category = await Db.Read('categories', { _id: ObjectID(this.context.category._id) })
 	}
 
-	// read (_id) {
-
-	// 	const readAll = new Promise((resolve, reject) => {
-	// 		var collection = _db.collection('categories')
-	// 		collection.find().toArray().then(resolve, reject)
-	// 	})
-
-	// 	const readOne = new Promise((resolve, reject) => {
-	// 		var collection = _db.collection('categories')
-	// 		collection.find({ _id: ObjectID(_id) }).toArray().then(result => {
-	// 			resolve(result[0])
-	// 		}, reject)
-	// 	})
-
-	// 	if (_id === undefined) {
-	// 		return readAll
-	// 	} else {
-	// 		return readOne
-	// 	}
-
-	// },
-	async delete (_id) {
-		var s = await Delete('categories', { _id: ObjectID(_id) })
-		Object.assign(this._data, s, { _id: _id })
-		return this._data
+	async fetchAll() {
+		this.context.categories = await Db.ReadMany('categories')
 	}
 }
 

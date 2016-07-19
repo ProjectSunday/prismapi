@@ -10,8 +10,12 @@ const RequestedClassType = new GraphQLObjectType({
 		name: { type: GraphQLString },
 		category: {
 			type: CategoryType,
-			resolve: (requestedClass) => {
-				return db.category.read(requestedClass.category)
+			resolve: async (requestedClass) => {
+				var context = new Context()
+				context.category._id = requestedClass.category
+				var category = new Category(context)
+				await category.fetch()
+				return context.category
 			}
 		},
 		date: { type: GraphQLString }, //this is wrong
@@ -26,7 +30,7 @@ const queries = {
 		resolve: async () => {
 			var context = new Context()
 			var requestedClass = new RequestedClass(context)
-			await requestedClass.getAll()
+			await requestedClass.fetchAll()
 			return context.requestedClasses
 		}
 	}
@@ -45,13 +49,14 @@ const mutations = {
 			var context = new Context()
 			context.requestedClass = {
 				name: args.name,
+				category: args.category
 			}
-			context.category._id = args.category
 			context.user.token = args.token
-			var requestedClass = new RequestedClass()
 
-			await requestedClass.create({ name: args.name, category: args.category })
-			return requestedClass.data
+			var requestedClass = new RequestedClass(context)
+			await requestedClass.create()
+
+			return context.requestedClass
 		}
 	},
 
@@ -61,9 +66,11 @@ const mutations = {
 			_id: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
-			var requestedClass = new RequestedClass()
-			await requestedClass.delete(args._id)
-			return requestedClass.data
+			var context = new Context()
+			context.requestedClass._id = args._id
+			var requestedClass = new RequestedClass(context)
+			await requestedClass.delete()
+			return context.requestedClass
 		}
 	}
 

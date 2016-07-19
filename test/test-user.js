@@ -5,7 +5,7 @@ import TestData from './test-data'
 
 export default () => {
 
-	describe('User ========================================================================', () => {
+	describe('User -', () => {
 
 		it('should authenticate the local learners test user', done => {
 			sendGraph(`

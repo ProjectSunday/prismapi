@@ -3,21 +3,27 @@ import { assert, expect } from 'chai'
 import { sendGraph } from './test-server'
 import TestData from './test-data'
 
+var CATEGORY_ID_TO_DELETE
+
 export default () => {
 
-	describe('Category', () => {
+	describe('Category -', () => {
 
 		it('should return all categories', done => {
 			sendGraph(`
 				query {
 					categories {
-						_id
+						_id,
+						name
 					}
 				}
 			`)
 			.end((err, res) => {
 				// log(res.body)
-				assert.isArray(res.body.data.categories)
+				var { categories } = res.body.data
+				assert(Array.isArray(res.body.data.categories), 'categories not an array')
+				assert(categories.length, 'categories array empty')
+				TestData.TEST_CATEGORY_ID = categories[0]._id
 				done()
 			})
 		})
@@ -32,25 +38,27 @@ export default () => {
 				}
 			`)
 			.end((err, res) => {
-				var { _id } = res.body.data.createCategory
-				TestData.CATEGORY_ID_CREATED = _id
-				expect(_id).to.exist
+				// log(res.body)
+				var { name, _id } = res.body.data.createCategory
+				assert(name === 'testtesttest', 'name is not testtesttest')
+				assert(_id !== undefined, '_id is undefined')
+				CATEGORY_ID_TO_DELETE = _id
 				done()
 			})
 		})
 
-		it('should remove a category', done => {
+		it('should delete a category', done => {
 			sendGraph(`
 				mutation {
-					deleteCategory(_id: "${TestData.CATEGORY_ID_CREATED}") {
-						_id,
+					deleteCategory(_id: "${CATEGORY_ID_TO_DELETE}") {
 						status
 					}
 				}
 			`)
 			.end((err, res) => {
+				// log(res.body)
 				var { status } = res.body.data.deleteCategory
-				expect(status).to.equal('DELETE_SUCCESS')
+				assert(status === 'DELETE_SUCCESS', 'status not DELETE_SUCCESS')
 				done()
 			})
 		})

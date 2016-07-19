@@ -59,14 +59,6 @@ export const Mutate = async (collection, filter, value) => {
 
 export const Read = async (collection, filter) => {
 	var r = await _db.collection(collection).find(filter).toArray()
-
-	// if (r.length > 1) {
-	// 	throw 'DB error: more than one result for read operation on collection: ' + collection
-	// }
-	// if (r.length < 1) {
-	// 	throw 'DB error: no result for read operation on collection: ' + collection
-	// }
-
 	return r[0]
 }
 
