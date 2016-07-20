@@ -2,9 +2,7 @@
 
 ### Dev Notes
 
-work on authenticating with test user
-
-do requests and extract http information
+working on requested class
 
 ### To Do's
 

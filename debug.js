@@ -8,11 +8,11 @@ var options = {
 }
 
 global.log = function (data, message) {
-    if (data === undefined || data === null) {
-        data = '[undefined/null]'
-    }
-    message = message || '-----'
-    if (message) { console.log(message.blue) }
+    if (data === undefined || data === null) { data = '[undefined/null]' }
+
+    var header = '============================='
+    if (message) { header = message + ' ' + header } 
+	console.log(header.blue)
 
     try {
         console.log(prettyjson.render(data, options))

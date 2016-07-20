@@ -51,7 +51,43 @@ export default () => {
 		it('should add an interested user to a requested class', done => {
 			sendGraph(`
 				mutation {
-					addInterested ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", requestedClassId: "${TEST_CREATED_REQUESTED_CLASS_ID}" ) {
+					addInterestedUser ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", requestedClassId: "${TEST_CREATED_REQUESTED_CLASS_ID}" ) {
+						_id,
+						name,
+						interested {
+							_id,
+							meetupMember {
+								id,
+								name
+							}
+						}
+					}
+				}
+			`)
+			.end((err, res) => {
+				// log(res.body)
+				var { _id, name, interested } = res.body.data.addInterestedUser
+
+				assert(_id !== undefined, '_id undefined')
+				assert(name !== undefined, 'class name undefined')
+				assert(Array.isArray(interested), 'interested list is not an array')
+				assert(interested.length, 'interested list is empty')
+
+				// log(interested[0], 'interested0')
+				var { _id, meetupMember } = interested[0]
+				assert(_id !== null, 'user _id null')
+				assert(meetupMember !== undefined, 'user meetup profile undefined')
+				assert(meetupMember.name === 'Local Learners Test User', 'meetup name not local learners test user')
+
+				done()
+			})
+		})
+
+
+		it('should remove an interested user to a requested class', done => {
+			sendGraph(`
+				mutation {
+					removeInterestedUser ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", requestedClassId: "${TEST_CREATED_REQUESTED_CLASS_ID}" ) {
 						_id,
 						name,
 						interested {
@@ -66,25 +102,19 @@ export default () => {
 			`)
 			.end((err, res) => {
 				log(res.body)
-				var requestedClass = res.body.data.addInterested
+				var { _id, name, interested } = res.body.data.removeInterestedUser
 
-				var { _id, name, interested } = requestedClass
-
-				assert(_id !== undefined, '_id undefined')
-				assert(name !== undefined, 'class name undefined')
-				assert(Array.isArray(interested), 'interested list is not an array')
-				assert(interested.length, 'interested list is empty')
-
-				log(interested[0])
-				var { _id, meetupMember } = interested[0]
-				assert(_id !== null, 'user _id null')
-				assert(meetupMember !== undefined, 'user meetup profile undefined')
-				// assert(meetupMember.name === 'Local Learners Test User', 'name not local learners test user')
+				assert(_id !== undefined, '_id should be defined')
+				assert(name !== undefined, 'class name should be defined')
+				assert(Array.isArray(interested), 'interested list should be an array')
+				assert(interested.length === 0, 'interested list should be empty')
 
 
 				done()
 			})
 		})
+
+
 
 
 		it('should delete a requested class', done => {

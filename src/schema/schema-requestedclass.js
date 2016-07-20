@@ -41,37 +41,6 @@ const Queries = {
 
 const Mutations = {
 
-	addInterested: {
-		type: RequestedClassType,
-		args: {
-			token: { type: new GraphQLNonNull(GraphQLString) },
-			requestedClassId: { type: new GraphQLNonNull(GraphQLID) }
-		},
-		resolve: async (root, args) => {
-			var context = new Context()
-			context.user.token = args.token
-			var user = new User(context)
-			await user.fetch()
-
-			context.requestedClass._id = args.requestedClassId
-			var requestedClass = new RequestedClass(context)
-			await requestedClass.addUserToInterested()
-
-
-
-
-
-			// }
-			// context.user.token = args.token
-
-			// var requestedClass = new RequestedClass(context)
-			// await requestedClass.create()
-
-			// return context.requestedClass
-			return context.requestedClass
-		}
-	},
-
 	createRequestedClass: {
 		type: RequestedClassType,
 		args: {
@@ -90,7 +59,6 @@ const Mutations = {
 
 			var requestedClass = new RequestedClass(context)
 			await requestedClass.create()
-
 			return context.requestedClass
 		}
 	},
@@ -107,7 +75,54 @@ const Mutations = {
 			await requestedClass.delete()
 			return context.requestedClass
 		}
-	}
+	},
+
+	addInterestedUser: {
+		type: RequestedClassType,
+		args: {
+			token: { type: new GraphQLNonNull(GraphQLString) },
+			requestedClassId: { type: new GraphQLNonNull(GraphQLID) }
+		},
+		resolve: async (root, args) => {
+			var context = new Context()
+			context.user.token = args.token
+			var user = new User(context)
+			await user.fetch()
+
+			context.requestedClass._id = args.requestedClassId
+			var requestedClass = new RequestedClass(context)
+			await requestedClass.addInterestedUser()
+
+			return context.requestedClass
+		}
+	},
+
+	removeInterestedUser: {
+		type: RequestedClassType,
+		args: {
+			token: { type: new GraphQLNonNull(GraphQLString) },
+			requestedClassId: { type: new GraphQLNonNull(GraphQLID) }
+		},
+		resolve: async (root, args) => {
+			var context = new Context()
+			context.user.token = args.token
+			var user = new User(context)
+			await user.fetch()
+
+			context.requestedClass._id = args.requestedClassId
+			var requestedClass = new RequestedClass(context)
+			await requestedClass.removeInterestedUser()
+
+			return context.requestedClass
+
+			// return {
+			// 	_id: 'blah',
+			// 	name: 'blah',
+			// 	interested: []
+			// }
+		}
+	},
+
 
 }
 

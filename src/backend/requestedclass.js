@@ -33,21 +33,29 @@ export class RequestedClass {
 		this.context.requestedClasses = await Db.ReadMany('requestedclasses')
 	}
 
-
-	async addUserToInterested() {
+	async addInterestedUser() {
 		await this.read()
 
-
-		// log(this.context.user, 'requestedclasses')
-		var u = this.context.user._id
-		// log(u, 'u')
-		this.context.requestedClass.interested.push(u)
-
+		var u = this.context.user
+		this.context.requestedClass.interested.push({
+			_id: u._id,
+			meetupMember: u.meetupMember
+		})
 
 		await this.update()
+	}
 
-		// log(this.context.requestedClass, 'yo')
-		
+	async removeInterestedUser() {
+		await this.read()
+
+		var user = this.context.user
+
+		var removeIndex = this.context.requestedClass.interested.findIndex(u => u._id.equals(user._id))
+		if (removeIndex === -1) throw 'Unable to find interested user to remove from requested class.'
+
+		this.context.requestedClass.interested.splice(removeIndex, 1)
+
+		await this.update()
 	}
 
 }
