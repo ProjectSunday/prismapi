@@ -21,7 +21,7 @@ export default () => {
 				}
 			`)
 			.end((err, res) => {
-				// log(res.body)
+				log(res.body)
 				var { _id, meetupMember, token } = res.body.data.authenticate
 				var { id, name } = meetupMember
 
@@ -62,4 +62,3 @@ export default () => {
 
 	})
 }
-

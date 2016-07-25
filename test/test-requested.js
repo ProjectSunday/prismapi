@@ -13,14 +13,14 @@ export default () => {
 		it('should create a requested class', done => {
 			sendGraph(`
 				mutation {
-					createRequestedClass ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", name: "testrequestedclass", category: "${TestData.TEST_CATEGORY_ID}" ) {
+					createRequestedClass ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", name: "testrequestedclass", categoryId: "${TestData.TEST_CATEGORY_ID}" ) {
 						_id,
 						name
 					}
 				}
 			`)
 			.end((err, res) => {
-				// log(res.body)
+				log(res.body)
 				var { _id, name } = res.body.data.createRequestedClass
 				assert(_id !== undefined, '_id is undefined')
 				assert(name === 'testrequestedclass', 'name is not correct')
@@ -35,15 +35,25 @@ export default () => {
 				query {
 					requestedClasses {
 						_id,
-						name
+						name,
+						category {
+							_id,
+							name
+						}
 					}
 				}
 			`)
 			.end((err, res) => {
-				// log(res.body)
+				log(res.body)
 				var { requestedClasses } = res.body.data
 				assert(Array.isArray(requestedClasses), 'requestedClasses is not an array')
 				assert(requestedClasses.length > 0, 'requestedClasses is empty')
+
+				var { category } = requestedClasses[0]
+
+				log(category, 'category')
+
+
 				done()
 			})
 		})
@@ -101,7 +111,7 @@ export default () => {
 				}
 			`)
 			.end((err, res) => {
-				log(res.body)
+				// log(res.body)
 				var { _id, name, interested } = res.body.data.removeInterestedUser
 
 				assert(_id !== undefined, '_id should be defined')

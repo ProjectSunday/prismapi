@@ -1,7 +1,12 @@
 // IMPORTANT!
 // Make sure context is only used with graphql, other modules have their own data.
+
+import { User } from '~/backend/backend'
+
 export class Context {
 	constructor() {
+
+		this.user = new User(this)
 		// initialData = initialData || {}
 
 
@@ -17,29 +22,29 @@ export class Context {
 		// 	}
 		// }
 
-		this.category = {}
-		this.categories = []
+		// this.category = {}
+		// this.categories = []
 
-		this.requestedClass = {}
-		this.requestedClasses = []
+		// this.requestedClass = {}
+		// this.requestedClasses = []
 
-		this.upcomingClass = {
-			event: {}
-		}
-		this.upcomingClasses = []
-
-
+		// this.upcomingClass = {
+		// 	event: {}
+		// }
+		// this.upcomingClasses = []
 
 
-		this.meetupEmail = null
-		this.meetupPassword = null
+
+
+		// this.meetupEmail = null
+		// this.meetupPassword = null
 		
-		this.user = {
-			token: null,
-			meetupMember: {
-				role: undefined
-			}
-		}
+		// this.user = {
+		// 	token: null,
+		// 	meetupMember: {
+		// 		role: undefined
+		// 	}
+		// }
 
 
 		// Object.assign(this, initialData)
@@ -57,11 +62,11 @@ export class Context {
 	// get meetupPassword() { return this._data.session.user.meetup.password }
 	// set meetupPassword(v) { this._data.session.user.meetup.password = v }
 
-	get userIsTeacher() {
+	// get userIsTeacher() {
 		// log(this.user._id, 'userIsTeacher user._id')
 		// log(this.upcomingClass.teacher, 'userIsTeacher teacher _id')
 		// console.log(this.user._id.equals(this.upcomingClass.teacher), 'comparison')
-		return this.user._id.equals(this.upcomingClass.teacher)
-	}
+	// 	return this.user._id.equals(this.upcomingClass.teacher)
+	// }
 
 }

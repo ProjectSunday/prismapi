@@ -1,9 +1,5 @@
 # prismapi
 
-### Dev Notes
-
-working on requested class
-
 ### To Do's
 
 - change User.fetch to also sync with meetup

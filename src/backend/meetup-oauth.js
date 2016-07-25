@@ -4,12 +4,8 @@ import request from 'request'
 import { OAUTH, URL } from './meetup'
 
 export class MeetupOauth {
-	constructor(context) {
-		this.context = context
-		return this
-	}
 
-	async login() {
+	static async getToken({ email, password }) {
 		var self = this
 
 		return new Promise((resolve, reject) => {
@@ -35,8 +31,8 @@ export class MeetupOauth {
 					uri: loginUri,
 					jar: myCookieJar,
 					form: {
-						email: self.context.meetupEmail,
-						password: self.context.meetupPassword,
+						email,
+						password,
 						rememberme: 'on',
 						token,
 						submitButton: 'Log in and Grant Access',
@@ -53,8 +49,8 @@ export class MeetupOauth {
 						jar: myCookieJar
 					}, function (e3,r3,b3) {
 						var location = r3.headers.location
-						self.context.user.token = location.match(/access_token=([^&]*)/)[1]
-						resolve()
+						var token = location.match(/access_token=([^&]*)/)[1]
+						resolve(token)
 					})
 				})
 			})

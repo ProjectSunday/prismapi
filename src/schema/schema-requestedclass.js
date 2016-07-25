@@ -2,23 +2,24 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 
 import { CategoryType } from './schema-category'
 import { UserType } from './schema-user'
-import { Context, RequestedClass, User } from '~/backend/backend'
+import { NewContext, Context, RequestedClass, User } from '~/backend/backend'
 
 const RequestedClassType = new GraphQLObjectType({
 	name: 'RequestedClass',
 	fields: () => ({
 		_id: { type: GraphQLID },
 		name: { type: GraphQLString },
-		category: {
-			type: CategoryType,
-			resolve: async (requestedClass) => {
-				var context = new Context()
-				context.category._id = requestedClass.category
-				var category = new Category(context)
-				await category.fetch()
-				return context.category
-			}
-		},
+		category: { type: CategoryType },
+		// category: {
+		// 	type: CategoryType,
+		// 	resolve: async (requestedClass) => {
+		// 		var context = new Context()
+		// 		context.category._id = requestedClass.category
+		// 		var category = new Category(context)
+		// 		await category.fetch()
+		// 		return context.category
+		// 	}
+		// },
 		date: { type: GraphQLString }, //this is wrong
 		interested: { type: new GraphQLList(UserType) },
 		location: { type: GraphQLString },
@@ -46,20 +47,28 @@ const Mutations = {
 		args: {
 			token: { type: new GraphQLNonNull(GraphQLString) },
 			name: { type: new GraphQLNonNull(GraphQLString) },
-			category: { type: new GraphQLNonNull(GraphQLID) }
+			categoryId: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
-			var context = new Context()
+			var context = new NewContext()
+			context.user.token = args.token
+			await context.user.fetch()
+
+			context.category._id = args.categoryId
+			await context.category.fetch()
+
 			context.requestedClass = {
 				name: args.name,
-				category: args.category,
 				interested: []
 			}
-			context.user.token = args.token
+			await context.requestedClass.create()
 
-			var requestedClass = new RequestedClass(context)
-			await requestedClass.create()
-			return context.requestedClass
+
+			// context.category._id = args.categoryId
+
+			// var requestedClass = new RequestedClass(context)
+			// await requestedClass.create()
+			return context.requestedClass.get()
 		}
 	},
 

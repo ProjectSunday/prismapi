@@ -4,31 +4,49 @@ import { Context } from '~/backend/backend'
 import { Read, Update } from './db'
 import { ADMIN, Member, OAUTH, request, URL} from './meetup'
 
-var _data = {}
+// var _data = {}
+
+var _singleton
 
 export class Administrator {
 
-	static get data() { return _data }
-	static set data(d) { _data = d }
+	constructor() {
+		debugger;
+		if (!_singleton) _singleton = this
+		console.log(_singleton, '_singleton')
+		return _singleton
+	}
+
+	// static get data() { return _data }
+	// static set data(d) { _data = d }
+
+	get() {
+		return {
+			access_token: Administrator.access_token,
+			created: Administrator.created,
+			refresh_token: Administrator.refresh_token
+		}
+	}
 
 	static async startTokenMonitoring () {
 
-		this.data = await Read('settings', { name: 'administrator' })
+		var admin = await Read('settings', { name: 'administrator' })
+		Object.assign(this, admin)
+		console.log('this', this)
+
 
 		if (ADMIN.REFRESH_TOKEN) {
-			this.data.refresh_token = ADMIN.REFRESH_TOKEN
+			this.refresh_token = ADMIN.REFRESH_TOKEN
 		}
 
 		this.logOutTokens('Administrator')
-
 		if (!await this.accessTokenValid()) {
 			console.log('NOT VALID!')
 
 			await this.refreshAccessToken()
-
 			this.logOutTokens('NEW Administrator')
 
-			await Update('settings', { name: 'administrator' }, this.data)
+			await Update('settings', { name: 'administrator' }, this.get())
 		}
 
 		clearTimeout(global.__prism_admin_timer_id)
@@ -41,17 +59,16 @@ export class Administrator {
 
 	static async accessTokenValid () {
 
-		if (!this.data.access_token) { return false }
+		if (!this.access_token) { return false }
 
 		var now = new Date()
-		var ageMinutes = (now - this.data.created) / 1000 / 60
+		var ageMinutes = (now - this.created) / 1000 / 60
 		if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
 
-		var context = new Context()
-		context.user.token = this.data.access_token
-		await new Member(context).fetch()
+		var member = await new Member().fetch(this.access_token)
 
-		return (context.user.meetupMember.id === ADMIN.ID)
+		log(member, 'member')
+		return (member.id === ADMIN.ID)
 
 	}
 
@@ -85,10 +102,10 @@ export class Administrator {
 
 	static logOutTokens(message) {
 		console.log(`\n${message}`)
-		console.log('\tREFRESH_TOKEN: ', this.data.refresh_token)
-		console.log('\taccess_token:  ', this.data.access_token)
-		console.log('\tcreated:       ', this.data.created)
-		console.log('\tage:           ', ((new Date()) - this.data.created) / 1000 / 60, 'minutes\n')
+		console.log('\tREFRESH_TOKEN: ', this.refresh_token)
+		console.log('\taccess_token:  ', this.access_token)
+		console.log('\tcreated:       ', this.created)
+		console.log('\tage:           ', ((new Date()) - this.created) / 1000 / 60, 'minutes\n')
 	}
 
 }

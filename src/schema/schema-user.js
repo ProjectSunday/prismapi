@@ -42,10 +42,11 @@ const Queries = {
 			token: { type: GraphQLString }
 		},
 		resolve: async (root, args) => {
-			var context = new Context()
-			context.user.token = args.token
-			await new User(context).fetch()
-			return context.user
+			// var context = new Context()
+			// context.user.token = args.token
+			// await context.user.fetch()
+			// return context.user.get()
+			return { blah: 'blah'}
 		}
 	}
 	// self: {
@@ -87,11 +88,14 @@ const Mutations = {
 			meetupPassword: { type: GraphQLString}
 		},
 		resolve: async (root, args) => {
-			var context = new Context()
-			context.meetupEmail = args.meetupEmail
-			context.meetupPassword = args.meetupPassword
-			await new User(context).authenticate()
-			return context.user
+			// var context = new Context()
+			// context.user.meetupEmail = args.meetupEmail
+			// context.user.meetupPassword = args.meetupPassword
+			// t(1)
+			console.log(context, 'context')
+			// await context.user.authenticate()
+			// return context.user.get()
+			return { blah: 'blah '}
 		}
 	}
 }

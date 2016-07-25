@@ -5,15 +5,15 @@ import { ADMIN, GROUP, request, URL} from './meetup'
 
 export class Member {
 	constructor(context) {
-		this.context = context
+	// 	this.context = context
 		return this
 	}
 
-	async fetch() {
+	static async fetch(token) {
 
 		var result = await rest({
 			method: 'GET',
-			headers: { Authorization: `Bearer ${this.context.user.token}` },
+			headers: { Authorization: `Bearer ${token}` },
 			path: URL.MEMBERS + '/self'
 		})
 
@@ -21,7 +21,7 @@ export class Member {
 		if (!result) throw "Unable to get meetup member"
 		if (result.problem) throw result.problem
 
-		this.context.user.meetupMember = result
+		return result
 	}
 
 	async fetchRole() {
