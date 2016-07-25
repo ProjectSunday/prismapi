@@ -11,9 +11,7 @@ var _singleton
 export class Administrator {
 
 	constructor() {
-		debugger;
 		if (!_singleton) _singleton = this
-		console.log(_singleton, '_singleton')
 		return _singleton
 	}
 
@@ -28,12 +26,10 @@ export class Administrator {
 		}
 	}
 
-	static async startTokenMonitoring () {
+	async startTokenMonitoring () {
 
 		var admin = await Read('settings', { name: 'administrator' })
 		Object.assign(this, admin)
-		console.log('this', this)
-
 
 		if (ADMIN.REFRESH_TOKEN) {
 			this.refresh_token = ADMIN.REFRESH_TOKEN
@@ -57,7 +53,7 @@ export class Administrator {
 	}
 
 
-	static async accessTokenValid () {
+	async accessTokenValid () {
 
 		if (!this.access_token) { return false }
 
@@ -72,7 +68,7 @@ export class Administrator {
 
 	}
 
-	static async refreshAccessToken () {
+	async refreshAccessToken () {
 
 		var result = await request({
 			method: 'POST',
@@ -82,7 +78,7 @@ export class Administrator {
 				client_id: OAUTH.CLIENT_ID,
 				client_secret: OAUTH.CLIENT_SECRET,
 				grant_type: 'refresh_token',
-				refresh_token: this.data.refresh_token
+				refresh_token: this.refresh_token
 			}
 		})
 
@@ -91,16 +87,14 @@ export class Administrator {
 			console.error('THE ADMIN.REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
 			console.log('result:', result.error_description)
 		} else {
-			this.data = {
-				refresh_token: result.refresh_token,
-				access_token: result.access_token,
-				created: new Date()
-			}
+			this.refresh_token = result.refresh_token
+			this.access_token = result.access_token
+			this.created = new Date()
 		}
 
 	}
 
-	static logOutTokens(message) {
+	logOutTokens(message) {
 		console.log(`\n${message}`)
 		console.log('\tREFRESH_TOKEN: ', this.refresh_token)
 		console.log('\taccess_token:  ', this.access_token)
