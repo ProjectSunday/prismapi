@@ -13,20 +13,26 @@ export class User {
 	}
 
 	get() {
-		return {
-			_id: this._id,
+		var user = {
 			token: this.token,
 			meetupMember: this.meetupMember
 		}
+		if (this._id) user._id = this._id
+		return user
 	}
 
-	async fetch() {
-		var user = await Read('users', { token: this.token })
+	async fetch(token) {
+		var user = await Read('users', { token })
 		if (!user) { throw 'User not found.' }
 
 		//also get meetup profile here, maybe? udpate profile, not get
 		Object.assign(this, user)
-		return this
+	}
+
+	async upsert(filter) {
+		if (!filter) {
+
+		}
 	}
 
 	async save() {
@@ -45,8 +51,6 @@ export class User {
 		var filter = { 'meetupMember.id': this.meetupMember.id }
 		var user = await Update("users", filter, this.get())
 		Object.assign(this, user)
-
-		log(this, 'authenticate')
 	}
 
 	async ensureOrganizer() {

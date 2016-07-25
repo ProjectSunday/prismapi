@@ -4,8 +4,6 @@ import { Context } from '~/backend/backend'
 import { Read, Update } from './db'
 import { ADMIN, Member, OAUTH, request, URL} from './meetup'
 
-// var _data = {}
-
 var _singleton
 
 export class Administrator {
@@ -15,14 +13,11 @@ export class Administrator {
 		return _singleton
 	}
 
-	// static get data() { return _data }
-	// static set data(d) { _data = d }
-
 	get() {
 		return {
-			access_token: Administrator.access_token,
-			created: Administrator.created,
-			refresh_token: Administrator.refresh_token
+			access_token: this.access_token,
+			created: this.created,
+			refresh_token: this.refresh_token
 		}
 	}
 
@@ -38,7 +33,6 @@ export class Administrator {
 		this.logOutTokens('Administrator')
 		if (!await this.accessTokenValid()) {
 			console.log('NOT VALID!')
-
 			await this.refreshAccessToken()
 			this.logOutTokens('NEW Administrator')
 
@@ -54,18 +48,15 @@ export class Administrator {
 
 
 	async accessTokenValid () {
-
 		if (!this.access_token) { return false }
 
 		var now = new Date()
 		var ageMinutes = (now - this.created) / 1000 / 60
 		if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
 
-		var member = await new Member().fetch(this.access_token)
+		var member = await Member.fetch(this.access_token)
 
-		log(member, 'member')
 		return (member.id === ADMIN.ID)
-
 	}
 
 	async refreshAccessToken () {
