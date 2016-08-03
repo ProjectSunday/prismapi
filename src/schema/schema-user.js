@@ -22,6 +22,7 @@ export const UserType = new GraphQLObjectType({
 	name: 'User',
 	fields: () => ({
 		_id: { type: GraphQLID },
+		name: { type: GraphQLString },
 		meetupMember: {
 			type: meetupMemberType,
 			resolve: (user) => {
@@ -67,18 +68,6 @@ const Queries = {
 /////////////////////////////////////////////////////////////////////////////
 
 const Mutations = {
-	// authenticateUser: {
-	// 	type: UserType,
-	// 	args: {
-	// 		token: { type: GraphQLString }
-	// 	},
-	// 	resolve: async (root, args) => {
-	// 		var context = { token: args.token }
-	// 		var user = await new User(context).authenticate()
-	// 		return user.data
-	// 	}
-
-	// },
 	authenticate: {
 		type: UserType,
 		args: {
@@ -91,6 +80,17 @@ const Mutations = {
 			context.user.meetupPassword = args.meetupPassword
 			await context.user.authenticate()
 			return context.user.get()
+		}
+	},
+	createUser: {
+		type: UserType,
+		args: {
+			//todo: token
+			name: { type: GraphQLString }
+		},
+		resolve: async (root, args) => {
+			var context = new Context()
+			return await context.user.create({ name: args.name })
 		}
 	}
 }

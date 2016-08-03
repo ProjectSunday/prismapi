@@ -50,7 +50,7 @@ const Mutations = {
 			categoryId: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
-			var context = new NewContext()
+			var context = new Context()
 			context.user.token = args.token
 			await context.user.fetch()
 

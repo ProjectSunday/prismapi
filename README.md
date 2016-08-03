@@ -6,7 +6,7 @@
 
 ### Installation
 
-node v5.10.0<br />
+node v6.3.1<br />
 npm 3.8.3<br />
 mongo v3.0.7<br />
 

@@ -1,63 +1,89 @@
 import { assert, expect } from 'chai'
 
-import { sendGraph } from './test-server'
-import TestData from './test-data'
+import { sendQuery, sendMutation } from './test-server'
+// import TestData from './test-data'
+
+
+var LOCAL_LEARNER_TEST_USER_TOKEN, TEST_USER_ID
 
 export default () => {
 
 	describe('User -', () => {
 
-		it('should authenticate the local learners test user', done => {
-			sendGraph(`
-				mutation {
-					authenticate (meetupEmail: "locallearnersuser@gmail.com", meetupPassword: "thirstyscholar1") {
-						_id,
-						meetupMember {
-							id,
-							name
-						},
-						token
-					}
+		it('should create a test user', async (done, fail) => {
+			var user = await sendMutation(`
+				createUser ( name: "testuser" ) {
+					_id,
+					name
 				}
 			`)
-			.end((err, res) => {
-				log(res.body)
-				var { _id, meetupMember, token } = res.body.data.authenticate
-				var { id, name } = meetupMember
 
-				TestData.LOCAL_LEARNER_TEST_USER_TOKEN = token
+			var { _id, name } = user
 
-				assert.equal(name, 'Local Learners Test User')
+			// log(user, 'user')
+			try {
+				assert(_id !== undefined, '_id should be defined')
+				assert.equal(name, 'testuserasdf')
+			done()
 
-				done()
-			})
+			} catch (err) {
+
+
+				console.log('craps', err.message)
+				fail()
+				// throw "shit"
+			}
+
+
 		})
 
+		// it('should delete the test user', async done => {
 
-		it('should get the user given a token', done => {
-			sendGraph(`
-				query {
-					user (token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}") {
-						_id,
-						meetupMember {
-							id,
-							name
-						},
-						token
-					}
-				}
-			`)
-			.end((err, res) => {
-				// log(res.body)
-				var { _id, meetupMember } = res.body.data.user
-				var { id, name, token } = meetupMember
+		// })
 
-				expect(_id).to.exist
-				expect(id).to.exist
-				expect(name).to.exist
-				done()
-			})
-		})
+		// it('should authenticate the local learners test user', async done => {
+		// 	var user = await sendMutation(`
+		// 		authenticate (meetupEmail: "locallearnersuser@gmail.com", meetupPassword: "thirstyscholar1") {
+		// 			_id,
+		// 			meetupMember {
+		// 				id,
+		// 				name
+		// 			},
+		// 			token
+		// 		}
+		// 	`)
+		// 	var { _id, meetupMember, token } = user
+		// 	var { id, name } = meetupMember
+
+		// 	LOCAL_LEARNER_TEST_USER_TOKEN = token
+
+		// 	assert.equal(name, 'Local Learners Test User')
+
+		// 	done()
+		// })
+
+
+		// it('should get the user given a token', async done => {
+		// 	var user = await sendQuery(`
+		// 		user (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}") {
+		// 			_id,
+		// 			meetupMember {
+		// 				id,
+		// 				name
+		// 			},
+		// 			token
+		// 		}
+		// 	`)
+		// 	var { _id, meetupMember } = user
+		// 	var { id, name, token } = meetupMember
+
+		// 	expect(_id).to.exist()
+		// 	expect(id).to.exist
+		// 	expect(name).to.exist
+
+		// 	done()
+
+		// })
 
 
 	})

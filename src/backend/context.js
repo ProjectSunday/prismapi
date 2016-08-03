@@ -1,12 +1,16 @@
 // IMPORTANT!
 // Make sure context is only used with graphql, other modules have their own data.
 
-import { User } from '~/backend/backend'
+import { Category, RequestedClass, User } from '~/backend/backend'
 
 export class Context {
 	constructor() {
 
+		this.category = new Category(this)
+		this.requestedClass = new RequestedClass(this)
 		this.user = new User(this)
+
+		
 		// initialData = initialData || {}
 
 

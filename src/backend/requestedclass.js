@@ -6,16 +6,17 @@ import { Category } from '~/backend/backend'
 export class RequestedClass {
 	constructor(context) {
 		this.context = context
+		return this
 	}
 
-	async create () {
-		this.context.category._id = this.context.requestedClass.category
-		var category = new Category(this.context)
-		await category.fetch()
+	async create (newClass) {
+		var category = new Category(this.context).fetch(newClass.category._id)
 
-		if (!this.context.category) throw 'Unable to determine category with _id: ' + this.context.requestedClass.category
+		if (!category) throw 'Unable to determine category with _id: ' + newClass.category._id
 
-		this.context.requestedClass = await Db.Create('requestedclasses', this.context.requestedClass)
+		newClass.category = category
+
+		return await Db.Create('requestedclasses', newClass)
 	}
 	async read() {
 		this.context.requestedClass = await Db.Read('requestedclasses', { _id: ObjectID(this.context.requestedClass._id) })

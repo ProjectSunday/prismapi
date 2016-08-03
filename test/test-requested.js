@@ -3,28 +3,62 @@ import { assert, expect } from 'chai'
 import { sendGraph } from './test-server'
 import TestData from './test-data'
 
-var TEST_CREATED_REQUESTED_CLASS_ID
+var TEST_CREATED_REQUESTED_CLASS_ID, TEST_CATEGORY_ID
 
 export default () => {
 
 	describe('Requested Classes -', () => {
 
+		before(async done => {
+			TEST_CATEGORY_ID = await TestData.createCategory()._id
+
+		})
+
+		after(async done => {
+			await TestData.deleteCategory(TEST_CATEGORY_ID)
+
+			sendGraph(`
+				mutation {
+					deleteCategory(_id: "${TEST_CATEGORY_ID}") {
+						status
+					}
+				}
+			`)
+			.end((err, res) => {
+				done()
+			})
+		})
+
 
 		it('should create a requested class', done => {
 			sendGraph(`
 				mutation {
-					createRequestedClass ( token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", name: "testrequestedclass", categoryId: "${TestData.TEST_CATEGORY_ID}" ) {
+					createRequestedClass ( 
+						token: "${TestData.LOCAL_LEARNER_TEST_USER_TOKEN}", 
+						name: "testrequestedclass",
+						categoryId: "${TEST_CATEGORY_ID}" 
+					) {
 						_id,
-						name
+						name,
+						category {
+							_id,
+							name,
+							imageName
+						}
 					}
 				}
 			`)
 			.end((err, res) => {
 				log(res.body)
-				var { _id, name } = res.body.data.createRequestedClass
-				assert(_id !== undefined, '_id is undefined')
-				assert(name === 'testrequestedclass', 'name is not correct')
+				var { _id, name, category } = res.body.data.createRequestedClass
+				assert(_id !== undefined, 'class _id should be defined')
+				assert(name === 'testrequestedclass', 'class name should be testrequestedclass')
 				TEST_CREATED_REQUESTED_CLASS_ID = _id
+
+				var { _id, name, imageName } = category
+				assert(_id !== undefined, 'category _id should be defined')
+				assert(name !== undefined, 'category _id should be defined')
+				assert(_id !== undefined, 'category _id should be defined')
 				done()
 			})
 		})
@@ -142,6 +176,11 @@ export default () => {
 				done()
 			})
 		})
+
+
+
+
+
 
 
 	})

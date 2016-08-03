@@ -17,9 +17,7 @@ const queries = {
 		type: new GraphQLList(CategoryType),
 		resolve: async () => {
 			var context = new Context()
-			var category = new Category(context)
-			await category.fetchAll()
-			return context.categories
+			return await context.category.fetchAll()
 		}
 	}
 }
@@ -34,10 +32,7 @@ const mutations = {
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.category.name = args.name
-			var category = new Category(context)
-			await category.create()
-			return context.category
+			return context.category.create({ name: args.name })
 		}
 	},
 
@@ -49,10 +44,7 @@ const mutations = {
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.category._id = args._id
-			var category = new Category(context)
-			await category.delete()
-			return context.category
+			return await context.category.delete(args._id)
 		}
 	}
 

@@ -5,23 +5,23 @@ import Db from './db'
 export class Category {
 	constructor(context) {
 		this.context = context
+		return this
 	}
 
-	async create() {
-		this.context.category = await Db.Create('categories', this.context.category)
+	async create(category) {
+		return await Db.Create('categories', category)
 	}
 
-	async delete () {
-		this.context.category = await Db.Delete('categories', { _id: ObjectID(this.context.category._id) })
+	async delete (_id) {
+		return await Db.Delete('categories', { _id: ObjectID(_id) })
 	}
 
-
-	async fetch() {
-		this.context.category = await Db.Read('categories', { _id: ObjectID(this.context.category._id) })
+	async fetch(_id) {
+		return await Db.Read('categories', { _id: ObjectID(_id) })
 	}
 
 	async fetchAll() {
-		this.context.categories = await Db.ReadMany('categories')
+		return await Db.ReadMany('categories')
 	}
 }
 

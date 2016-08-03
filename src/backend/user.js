@@ -1,6 +1,6 @@
 import { ObjectID } from 'mongodb'
 
-import { Read, Update }	from './db'
+import Db from './db'
 import { Member, OAUTH, MeetupOauth }		from './meetup'
 
 import request from 'request'
@@ -21,6 +21,14 @@ export class User {
 		return user
 	}
 
+	async create(newUser) {
+		return await Db.Create('users', newUser)
+	}
+
+	async delete(_id) {
+		return await Db.Delete('users', { _id: ObjectID(_id)})
+	}
+
 	async fetch(token) {
 		var user = await Read('users', { token })
 		if (!user) { throw 'User not found.' }
@@ -37,7 +45,7 @@ export class User {
 
 	async save() {
 		var context = this.context
-		await Update('users', { _id: ObjectID(context.user._id ) }, context.user)
+		await Db.Update('users', { _id: ObjectID(context.user._id ) }, context.user)
 	}
 
 	async authenticate() {
@@ -49,7 +57,7 @@ export class User {
 		this.meetupMember = await Member.fetch(this.token)
 
 		var filter = { 'meetupMember.id': this.meetupMember.id }
-		var user = await Update("users", filter, this.get())
+		var user = await Db.Update("users", filter, this.get())
 		Object.assign(this, user)
 	}
 
