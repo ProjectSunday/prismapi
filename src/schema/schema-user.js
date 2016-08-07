@@ -2,6 +2,8 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 
 import { Context, User } from '~/backend/backend'
 
+import { randomBytes } from 'crypto'
+
 const PhotoType = new GraphQLObjectType({
 	name: 'PhotoType',
 	fields: () => ({
@@ -91,6 +93,17 @@ const Mutations = {
 		resolve: async (root, args) => {
 			var context = new Context()
 			return await context.user.create({ name: args.name })
+		}
+	},
+	deleteUser: {
+		type: UserType,
+		args: {
+			//todo: token
+			_id: { type: GraphQLID }
+		},
+		resolve: async (root, args) => {
+			var context = new Context()
+			return await context.user.delete({ _id: args._id })
 		}
 	}
 }

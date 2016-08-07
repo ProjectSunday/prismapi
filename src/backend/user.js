@@ -25,8 +25,8 @@ export class User {
 		return await Db.Create('users', newUser)
 	}
 
-	async delete(_id) {
-		return await Db.Delete('users', { _id: ObjectID(_id)})
+	async delete(filter) {
+		return await Db.Delete('users', filter)
 	}
 
 	async fetch(token) {

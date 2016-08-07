@@ -20,13 +20,22 @@ export default () => {
 				var { _id, name } = data.createUser
 				assert(_id !== undefined, '_id should be defined')
 				assert(name === 'testuser', 'name should equal testuser')
+				TEST_USER_ID = _id
 				done()
 			})
 		})
 
-		// it('should delete the test user', async done => {
-
-		// })
+		it('should delete the test user', done => {
+			sendMutation(`
+				deleteUser ( _id: "${TEST_USER_ID}" ) {
+					status
+				}
+			`, data => {
+				var { status } = data.deleteUser
+				assert(status === 'DELETE_SUCCESS', 'status should say DELETE_SUCCESS')
+				done()
+			})
+		})
 
 		// it('should authenticate the local learners test user', async done => {
 		// 	var user = await sendMutation(`
