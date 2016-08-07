@@ -10,31 +10,18 @@ export default () => {
 
 	describe('User -', () => {
 
-		it('should create a test user', async (done, fail) => {
-			var user = await sendMutation(`
+		it('should create a test user', done => {
+			sendMutation(`
 				createUser ( name: "testuser" ) {
 					_id,
 					name
 				}
-			`)
-
-			var { _id, name } = user
-
-			// log(user, 'user')
-			try {
+			`, data => {
+				var { _id, name } = data.createUser
 				assert(_id !== undefined, '_id should be defined')
-				assert.equal(name, 'testuserasdf')
-			done()
-
-			} catch (err) {
-
-
-				console.log('craps', err.message)
-				fail()
-				// throw "shit"
-			}
-
-
+				assert(name === 'testuser', 'name should equal testuser')
+				done()
+			})
 		})
 
 		// it('should delete the test user', async done => {
