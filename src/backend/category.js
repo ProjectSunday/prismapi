@@ -20,7 +20,7 @@ export class Category {
 		return await Db.Read('categories', { _id: ObjectID(_id) })
 	}
 
-	async fetchAll() {
+	static async fetchAll() {
 		return await Db.ReadMany('categories')
 	}
 }

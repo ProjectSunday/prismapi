@@ -18,8 +18,10 @@ export class Member {
 		})
 
 		result = JSON.parse(result.entity)
+		// log(result, 'result')
 		if (!result) throw "Unable to get meetup member"
 		if (result.problem) throw result.problem
+		if (result.errors) throw result.errors[0]
 
 		return result
 	}

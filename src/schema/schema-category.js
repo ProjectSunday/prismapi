@@ -16,37 +16,43 @@ const queries = {
 	categories: {
 		type: new GraphQLList(CategoryType),
 		resolve: async () => {
-			var context = new Context()
-			return await context.category.fetchAll()
+			// var category = new Category()
+
+			var blah = await Category.fetchAll()
+
+			log(blah, 'blah')
+			return await Category.fetchAll()
+			// var context = new Context()
+			// return await context.category.fetchAll()
 		}
 	}
 }
 
 const mutations = {
 
-	createCategory: {
-		type: CategoryType,
-		args: {
-			//token: //shuld be here
-			name: { type: new GraphQLNonNull(GraphQLString) }
-		},
-		resolve: async (root, args) => {
-			var context = new Context()
-			return context.category.create({ name: args.name })
-		}
-	},
+	// createCategory: {
+	// 	type: CategoryType,
+	// 	args: {
+	// 		//token: //shuld be here
+	// 		name: { type: new GraphQLNonNull(GraphQLString) }
+	// 	},
+	// 	resolve: async (root, args) => {
+	// 		var context = new Context()
+	// 		return context.category.create({ name: args.name })
+	// 	}
+	// },
 
-	deleteCategory: {
-		type: CategoryType,
-		args: {
-			// token: //should be here
-			_id: { type: new GraphQLNonNull(GraphQLID) }
-		},
-		resolve: async (root, args) => {
-			var context = new Context()
-			return await context.category.delete(args._id)
-		}
-	}
+	// deleteCategory: {
+	// 	type: CategoryType,
+	// 	args: {
+	// 		// token: //should be here
+	// 		_id: { type: new GraphQLNonNull(GraphQLID) }
+	// 	},
+	// 	resolve: async (root, args) => {
+	// 		var context = new Context()
+	// 		return await context.category.delete(args._id)
+	// 	}
+	// }
 
 }
 

@@ -11,8 +11,8 @@ const PhotoType = new GraphQLObjectType({
 	})
 })
 
-const meetupMemberType = new GraphQLObjectType({
-	name: 'MeetupMember',
+const MemberType = new GraphQLObjectType({
+	name: 'MemberType',
 	fields: () => ({
 		id: { type: GraphQLInt },
 		name: { type: GraphQLString },
@@ -20,17 +20,19 @@ const meetupMemberType = new GraphQLObjectType({
 	})
 })
 
+const MeetupType = new GraphQLObjectType({
+	name: 'MeetupType',
+	fields: () => ({
+		token: { type: GraphQLString },
+		member: { type: MemberType }
+	})
+})
+
 export const UserType = new GraphQLObjectType({
-	name: 'User',
+	name: 'UserType',
 	fields: () => ({
 		_id: { type: GraphQLID },
-		name: { type: GraphQLString },
-		meetupMember: {
-			type: meetupMemberType,
-			resolve: (user) => {
-				return user.meetupMember
-			}
-		},
+		meetup: { type: MeetupType },
 		token: { type: GraphQLString },
 		status: { type: GraphQLString }
 	})
@@ -82,6 +84,17 @@ const Mutations = {
 			context.user.meetupPassword = args.meetupPassword
 			await context.user.authenticate()
 			return context.user.get()
+		}
+	},
+	authenticateViaMeetup: {
+		type: UserType,
+		args: {
+			token: { type: GraphQLString }
+		},
+		resolve: async (root, args) => {
+			var user = new User()
+			await user.authenticateViaMeetup(args.token)
+			return user.toJSON()
 		}
 	},
 	createUser: {

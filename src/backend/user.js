@@ -2,6 +2,7 @@ import { ObjectID } from 'mongodb'
 
 import Db from './db'
 import { Member, OAUTH, MeetupOauth }		from './meetup'
+import { generateToken } from './utils'
 
 import request from 'request'
 
@@ -12,17 +13,43 @@ export class User {
 		return this
 	}
 
-	get() {
+	toJSON() {
 		var user = {
 			token: this.token,
-			meetupMember: this.meetupMember
+			meetup: this.meetup
 		}
-		if (this._id) user._id = this._id
+		if (this._id) user._id 		= this._id
+		if (this.error) user.error 	= this.error
 		return user
+	}
+
+	async authenticateViaMeetup(token) {
+		var member = await Member.fetch(token)
+		if (member.error) {
+			return { error: member.error }
+		}
+
+		var user = await Db.Read('users', { 'meetup.member.id': member.id })
+		if (!user) {
+			this.error = { message: 'User not found with this token: ' + token }
+		}
+		Object.assign(this, user)
 	}
 
 	async create(newUser) {
 		return await Db.Create('users', newUser)
+	}
+	async createFromMeetup(credential) {
+		this.token = generateToken()
+
+		this.meetup = {}
+		this.meetup.token = await MeetupOauth.getToken(credential)
+		this.meetup.member = await Member.fetch(this.meetup.token)
+
+		var filter = { 'meetup.member.id': this.meetup.member.id }
+		var user = await Db.Update("users", filter, this.toJSON())
+		Object.assign(this, user)
+		return this
 	}
 
 	async delete(filter) {
@@ -48,18 +75,15 @@ export class User {
 		await Db.Update('users', { _id: ObjectID(context.user._id ) }, context.user)
 	}
 
-	async authenticate() {
-		this.token = await MeetupOauth.getToken({
-			email: this.meetupEmail,
-			password: this.meetupPassword
-		})
+	// async authenticate(credential) {
+	// 	this.token = await MeetupOauth.getToken(credential)
 
-		this.meetupMember = await Member.fetch(this.token)
+	// 	this.meetupMember = await Member.fetch(this.token)
 
-		var filter = { 'meetupMember.id': this.meetupMember.id }
-		var user = await Db.Update("users", filter, this.get())
-		Object.assign(this, user)
-	}
+	// 	var filter = { 'meetupMember.id': this.meetupMember.id }
+	// 	var user = await Db.Update("users", filter, this.get())
+	// 	Object.assign(this, user)
+	// }
 
 	async ensureOrganizer() {
 		var context = this.context

@@ -48,7 +48,7 @@ export const sendMutation = (graph, callback) => {
 		})
 }
 
-export const sendQuery = async (graph, callback) => {
+export const sendQuery = (graph, callback) => {
 	return _request.post('/graphql')
 		.set(HEADERS)
 		.send(`query { ${graph.trim()} }`)
@@ -57,6 +57,7 @@ export const sendQuery = async (graph, callback) => {
 				var msg = err || res.body.errors[0].message
 				console.log('sendGraph error: ' + msg)
 			} else {
+				t(1)
 				callback(res.body.data)
 			}
 		})

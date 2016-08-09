@@ -1,41 +1,40 @@
 import { assert, expect } from 'chai'
 
 import { sendQuery, sendMutation } from './test-server'
-// import TestData from './test-data'
 
 
-var LOCAL_LEARNER_TEST_USER_TOKEN, TEST_USER_ID
+var LOCAL_LEARNER_TEST_USER_TOKEN
 
 export default () => {
 
 	describe('User -', () => {
 
-		it('should create a test user', done => {
-			sendMutation(`
-				createUser ( name: "testuser" ) {
-					_id,
-					name
-				}
-			`, data => {
-				var { _id, name } = data.createUser
-				assert(_id !== undefined, '_id should be defined')
-				assert(name === 'testuser', 'name should equal testuser')
-				TEST_USER_ID = _id
-				done()
-			})
-		})
 
-		it('should delete the test user', done => {
-			sendMutation(`
-				deleteUser ( _id: "${TEST_USER_ID}" ) {
-					status
-				}
-			`, data => {
-				var { status } = data.deleteUser
-				assert(status === 'DELETE_SUCCESS', 'status should say DELETE_SUCCESS')
-				done()
-			})
-		})
+		// it('should create a test user', done => {
+		// 	sendMutation(`
+		// 		createUser ( name: "testuser" ) {
+		// 			_id
+		// 		}
+		// 	`, data => {
+		// 		var { _id } = data.createUser
+		// 		assert(_id !== undefined, '_id should be defined')
+		// 		// assert(name === 'testuser', 'name should equal testuser')
+		// 		TEST_USER_ID = _id
+		// 		done()
+		// 	})
+		// })
+
+		// it('should delete the test user', done => {
+		// 	sendMutation(`
+		// 		deleteUser ( _id: "${TEST_USER_ID}" ) {
+		// 			status
+		// 		}
+		// 	`, data => {
+		// 		var { status } = data.deleteUser
+		// 		assert(status === 'DELETE_SUCCESS', 'status should say DELETE_SUCCESS')
+		// 		done()
+		// 	})
+		// })
 
 		// it('should authenticate the local learners test user', async done => {
 		// 	var user = await sendMutation(`
@@ -57,6 +56,42 @@ export default () => {
 
 		// 	done()
 		// })
+
+
+
+		it('should authenticate the local learners test user', done => {
+			sendMutation(`
+				authenticateViaMeetup ( token: "${TEST_USER.meetup.token}" ) {
+					_id,
+					meetup {
+						member {
+							id,
+							name
+						},
+						token
+					},
+					token
+				}
+			`, data => {
+				assert(data.authenticateViaMeetup, 'authenticateViaMeetup should object')
+
+				var { _id, meetup, token } = data.authenticateViaMeetup
+				assert(_id !== undefined, '_id should exist')
+				assert(meetup !== undefined, '_id should exist')
+				assert(token !== undefined, 'user token should exist')
+
+				var { member, token } = meetup
+				assert(member !== undefined, 'member should exist')
+				assert(token !== undefined, 'meetup token should exist')
+
+				var { id, name } = member
+				assert(id !== undefined, 'id should exist')
+				assert(name === 'Local Learners Test User', 'name should say Local Learners Test User')
+
+				done()
+			})
+
+		})
 
 
 		// it('should get the user given a token', async done => {
