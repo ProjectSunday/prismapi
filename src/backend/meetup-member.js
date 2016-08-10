@@ -4,45 +4,40 @@ import { Administrator } from './backend'
 import { ADMIN, GROUP, request, URL} from './meetup'
 
 export class Member {
-	constructor(context) {
+	constructor() {
 	// 	this.context = context
-		return this
+		// return this
 	}
 
-	static async fetch(token) {
-
-		var result = await rest({
+	async fetch(args) {
+		var member = await request({
 			method: 'GET',
-			headers: { Authorization: `Bearer ${token}` },
+			headers: { Authorization: `Bearer ${args.token}` },
 			path: URL.MEMBERS + '/self'
 		})
 
-		result = JSON.parse(result.entity)
-		// log(result, 'result')
-		if (!result) throw "Unable to get meetup member"
-		if (result.problem) throw result.problem
-		if (result.errors) throw result.errors[0]
+		if (!member) throw "Unable to get meetup member"
+		if (member.problem) throw member.problem
+		if (member.errors) throw member.errors[0]
 
-		return result
+		Object.assign(this, member)
 	}
 
-	async fetchRole() {
-		var context = this.context
-
+	async fetchRole(args = { id: this.id }) {
 		var result = await request({
 			method: 'GET',
-			path: `${URL.PROFILE}/${GROUP.ID}/${context.user.meetupMember.id}?key=${ADMIN.API_KEY}&sign=true`
+			path: `${URL.PROFILE}/${GROUP.ID}/${args.id}?key=${ADMIN.API_KEY}&sign=true`
 		})
-
-		this.context.user.meetupMember.role = result.role
+		this.role = result.role
 	}
 
 	async promoteToEventOrganizer() {
-		var context = this.context
+		// var context = this.context
+		var administrator = new Administrator()
 
 		var result = await request({
 			method: 'PATCH',
-			headers: { Authorization: `Bearer ${Administrator.data.access_token}` },
+			headers: { Authorization: `Bearer ${administrator.access_token}` },
 			path: `${URL.MEMBERS}/${context.user.meetupMember.id}`,
 			params: {
 				add_role: 'event_organizer'

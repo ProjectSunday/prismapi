@@ -24,6 +24,19 @@ export class Event {
 		return this
 	}
 
+	static async post2(args) {
+		var result = await request({
+			method: 'POST',
+			headers: { 'Authorization': `Bearer ${args.token}` },
+			path: URL.EVENTS,
+			params: args.newEvent
+		})
+
+		if (result.errors) throw result.errors[0].message
+
+		return result
+	}
+
 	async delete() {
 		var context = this.context
 

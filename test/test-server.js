@@ -57,7 +57,6 @@ export const sendQuery = (graph, callback) => {
 				var msg = err || res.body.errors[0].message
 				console.log('sendGraph error: ' + msg)
 			} else {
-				t(1)
 				callback(res.body.data)
 			}
 		})

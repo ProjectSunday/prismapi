@@ -8,6 +8,15 @@ export class Category {
 		return this
 	}
 
+	toJSON () {
+		var category = {
+			name: this.name,
+			imageName: this.imageName
+		}
+		if (this._id) category._id = this._id
+		return category
+	}
+
 	async create(category) {
 		return await Db.Create('categories', category)
 	}
@@ -16,8 +25,15 @@ export class Category {
 		return await Db.Delete('categories', { _id: ObjectID(_id) })
 	}
 
-	async fetch(_id) {
-		return await Db.Read('categories', { _id: ObjectID(_id) })
+	async fetch(filter) {
+		var category = await Db.Read('categories', filter)
+		Object.assign(this, category)
+	}
+
+	static async fetch2(filter) {
+		var category = await Db.Read('categories', filter)
+		if (!catgory) throw "Unable to get category with filter: " + JSON.stringify(filter)
+		return category
 	}
 
 	static async fetchAll() {

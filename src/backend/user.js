@@ -13,18 +13,21 @@ export class User {
 		return this
 	}
 
-	toJSON() {
-		var user = {
-			token: this.token,
-			meetup: this.meetup
-		}
-		if (this._id) user._id 		= this._id
-		if (this.error) user.error 	= this.error
-		return user
-	}
+	// toJSON() {
+	// 	var meetup = Object.assign({}, this.meetup)
+	// 	delete meetup.token
+
+	// 	var user = {
+	// 		meetup
+	// 	}
+	// 	if (this._id) 			user._id 	= this._id
+	// 	if (this.error) 		user.error 	= this.error
+	// 	return user
+	// }
 
 	async authenticateViaMeetup(token) {
-		var member = await Member.fetch(token)
+		var member = new Member()
+		await member.fetch({ token })
 		if (member.error) {
 			return { error: member.error }
 		}
@@ -44,10 +47,16 @@ export class User {
 
 		this.meetup = {}
 		this.meetup.token = await MeetupOauth.getToken(credential)
-		this.meetup.member = await Member.fetch(this.meetup.token)
+
+		this.meetup.member = new Member()
+		this.meetup.member.fetch({ token: this.meetup.token})
 
 		var filter = { 'meetup.member.id': this.meetup.member.id }
-		var user = await Db.Update("users", filter, this.toJSON())
+
+		var user = Object.assign({}, this)
+		delete user.context
+
+		user = await Db.Update("users", filter, user)
 		Object.assign(this, user)
 		return this
 	}
@@ -56,12 +65,20 @@ export class User {
 		return await Db.Delete('users', filter)
 	}
 
-	async fetch(token) {
-		var user = await Read('users', { token })
-		if (!user) { throw 'User not found.' }
-
-		//also get meetup profile here, maybe? udpate profile, not get
+	async fetch(filter) {
+		var user = await Db.Read('users', filter)
+		if (!user) { throw 'User not found with filter: ' + JSON.stringify(filter) }
 		Object.assign(this, user)
+	}
+
+	static async fetch2(filter) {
+		var user = await Db.Read('users', filter)
+		if (!user) { throw 'User not found.' }
+			
+		// delete user.token
+		// delete user.meetup.token
+
+		return user
 	}
 
 	async upsert(filter) {
@@ -71,8 +88,9 @@ export class User {
 	}
 
 	async save() {
-		var context = this.context
-		await Db.Update('users', { _id: ObjectID(context.user._id ) }, context.user)
+		var user = Object.assign({}, this)
+		delete user.context
+		await Db.Update('users', { _id: this._id }, user)
 	}
 
 	// async authenticate(credential) {
@@ -86,19 +104,18 @@ export class User {
 	// }
 
 	async ensureOrganizer() {
-		var context = this.context
+		// var context = this.context
 
-		var member = new Member(context)
-		await member.fetch()
+		var member = new Member()
+		await member.fetch({ token: this.context.user.meetup.token })
 		await member.fetchRole()
 
-		var role = context.user.meetupMember.role
+		var role = member.role
 	    if (role !== 'Event Organizer' || role !== 'Organizer') {
-	    	await member.promoteToEventOrganizer()
+	    	// await member.promoteToEventOrganizer()
 	    	await this.save()
 	    }
 
 	}
 
 }
-

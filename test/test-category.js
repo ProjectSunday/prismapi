@@ -16,6 +16,7 @@ export default () => {
 					name
 				}
 			`, data => {
+				// log(data, 'data')
 				var { categories } = data
 				assert(Array.isArray(categories), 'categories should be an array')
 				assert(categories.length, 'categories should not be empty')

@@ -2,31 +2,9 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 
 import { Context, User } from '~/backend/backend'
 
+import { MeetupType } from './meetup-type'
+
 import { randomBytes } from 'crypto'
-
-const PhotoType = new GraphQLObjectType({
-	name: 'PhotoType',
-	fields: () => ({
-		thumb_link: { type: GraphQLString }
-	})
-})
-
-const MemberType = new GraphQLObjectType({
-	name: 'MemberType',
-	fields: () => ({
-		id: { type: GraphQLInt },
-		name: { type: GraphQLString },
-		photo: { type: PhotoType }
-	})
-})
-
-const MeetupType = new GraphQLObjectType({
-	name: 'MeetupType',
-	fields: () => ({
-		token: { type: GraphQLString },
-		member: { type: MemberType }
-	})
-})
 
 export const UserType = new GraphQLObjectType({
 	name: 'UserType',
@@ -94,7 +72,12 @@ const Mutations = {
 		resolve: async (root, args) => {
 			var user = new User()
 			await user.authenticateViaMeetup(args.token)
-			return user.toJSON()
+
+			delete user.context
+			delete user.token
+			delete user.meetup.token
+
+			return user
 		}
 	},
 	createUser: {

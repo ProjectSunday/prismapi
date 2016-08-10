@@ -9,13 +9,14 @@ export class UpcomingClass {
 		this.context = context
 	}
 
-	async create() {
-		var context = this.context
+	async create(newClass) {
+		// var context = this.context
 
-		var user = new User(context)
-		await user.fetch()
-		await user.ensureOrganizer()
-		context.upcomingClass.teacher = context.user._id
+		// var user = new User(context)
+		// await user.fetch()
+		// await user.ensureOrganizer()
+		
+		// context.upcomingClass.teacher = context.user._id
 
 		var event = new Event(context)
 		await event.post()
@@ -24,6 +25,28 @@ export class UpcomingClass {
 		Object.assign(context.upcomingClass, upcoming)
 
 		return this
+	}
+
+	static async create2(newClass) {
+		// var context = this.context
+
+		// var user = new User(context)
+		// await user.fetch()
+		// await user.ensureOrganizer()
+		
+		// context.upcomingClass.teacher = context.user._id
+
+		// var newEvent = {
+		// 	name: newClass.name
+		// }
+
+		// var event = await Event.post2({ token: newClass.meetup.event)
+		// await event.post(newClass.event)
+
+		// var upcoming = await DB.Create('upcomingclasses', context.upcomingClass)
+		// Object.assign(context.upcomingClass, upcoming)
+
+		// return this
 	}
 
 	async delete() {

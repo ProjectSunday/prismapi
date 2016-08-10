@@ -3,7 +3,7 @@ import supertest from 'supertest'
 import '../debug'
 
 import { TestServer } from './test-server'
-import { getTestUser } from './test-data'
+import { getCategoryByName, getTestUser } from './test-data'
 
 import User from './test-user'
 
@@ -19,6 +19,7 @@ describe('Prism API Mocha Testing', () => {
 	before(async (done) => {
 		await TestServer.start()
 		global.TEST_USER = await getTestUser()
+		global.CATEGORY_TECHNOLOGY = await getCategoryByName('Technology')
 		done()
 	})
 
@@ -26,11 +27,11 @@ describe('Prism API Mocha Testing', () => {
 
 	User()
 
-	Category()
+	// Category()
 	
 	// Requested()
 
-	// Upcoming()
+	Upcoming()
 
 
 	after(async (done) => {

@@ -1,4 +1,4 @@
-import { Context, User } from '~/backend/backend'
+import { Category, Context, User } from '~/backend/backend'
 
 // export default {
 // 	LOCAL_LEARNER_TEST_USER_TOKEN: '',
@@ -36,7 +36,13 @@ export const getTestUser = async () => {
 		email: 'locallearnersuser@gmail.com',
 		password: 'thirstyscholar1'
 	})
-	return user.toJSON()
+	return user
+}
+
+export const getCategoryByName = async (name) => {
+	var category = new Category()
+	await category.fetch({ name })
+	return category
 }
 
 // var TEST_USER

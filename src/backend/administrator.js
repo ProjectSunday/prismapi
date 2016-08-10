@@ -7,7 +7,6 @@ import { ADMIN, Member, OAUTH, request, URL} from './meetup'
 var _singleton
 
 export class Administrator {
-
 	constructor() {
 		if (!_singleton) _singleton = this
 		return _singleton
@@ -38,7 +37,6 @@ export class Administrator {
 
 			await Update('settings', { name: 'administrator' }, this.get())
 		}
-
 		clearTimeout(global.__prism_admin_timer_id)
 		global.__prism_admin_timer_id = setTimeout(() => {
 			this.startTokenMonitoring()
@@ -54,13 +52,12 @@ export class Administrator {
 		var ageMinutes = (now - this.created) / 1000 / 60
 		if (ageMinutes > 45) { return false }  //60 minutes is life span of access token
 
-		var member = await Member.fetch(this.access_token)
-
+		var member = new Member()
+		await member.fetch({ token: this.access_token})
 		return (member.id === ADMIN.ID)
 	}
 
 	async refreshAccessToken () {
-
 		var result = await request({
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -72,7 +69,6 @@ export class Administrator {
 				refresh_token: this.refresh_token
 			}
 		})
-
 
 		if (!result || !result.access_token) {
 			console.error('THE ADMIN.REFRESH_TOKEN IS NOT WORKING, TELL HAI!')
