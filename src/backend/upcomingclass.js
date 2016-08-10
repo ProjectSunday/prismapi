@@ -2,7 +2,7 @@ import { ObjectID } from 'mongodb'
 
 import DB			from './db'
 import { User }		from './backend'
-import { Event } 	from './meetup'
+import { Event, deleteEvent } 	from './meetup'
 
 export class UpcomingClass {
 	constructor(context) {
@@ -47,8 +47,6 @@ export class UpcomingClass {
 		delete teacher.token
 		delete teacher.meetup.token
 
-		console.log('teacher', teacher)
-
 		var upcomingClass = {
 			category,
 			event,
@@ -60,19 +58,31 @@ export class UpcomingClass {
 		Object.assign(this, upcomingClass)
 	}
 
-	async delete() {
-		var context = this.context
+	async read(filter) {
+		var upcoming = await DB.Read('upcomingclasses', filter)
+		if (!upcoming) throw 'Unable to get upcoming class with filter: ' + JSON.stringify(filter)
+		Object.assign(this, upcoming)
+	}
 
-		await this.fetch()
-		await new User(context).fetch()
+	async delete(filter) {
+		await this.read(filter)
 
-		if (!context.userIsTeacher) throw "User did not create this class."
+		if (!this._userIsTeacher(this.context.user._id)) throw "User did not create this class."
 
-		await new Event(context).delete()
+		await deleteEvent({ token: this.context.user.meetup.token, id: this.event.id })
+		
+		var result = await DB.Delete('upcomingclasses', { _id: this._id })
 
-		var r = await DB.Delete('upcomingclasses', { _id: ObjectID(context.upcomingClass._id) })
-		if (r.status !== 'DELETE_SUCCESS') throw 'UpcomingClass was not deleted from DB.'
-		context.upcomingClass.status = r.status
+		Object.assign(this, result)
+	}
+
+	_userIsTeacher(_id) {
+		// var _id = ObjectID(_id)
+		for (var i = 0; i < this.teachers.length; i++) {
+			// console.log('yo', this.teachers[i]._id, _id)
+			if (this.teachers[i]._id.equals(_id)) return true
+		}
+		return false
 	}
 
 	async getAll() {

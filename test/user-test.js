@@ -3,7 +3,7 @@ import { assert, expect } from 'chai'
 import { sendQuery, sendMutation } from './test-server'
 
 
-var LOCAL_LEARNER_TEST_USER_TOKEN
+// var LOCAL_LEARNER_TEST_USER_TOKEN
 
 export default () => {
 
@@ -61,7 +61,7 @@ export default () => {
 
 		it('should authenticate the local learners test user', done => {
 			sendMutation(`
-				authenticateViaMeetup ( token: "${TEST_USER.meetup.token}" ) {
+				authenticateViaMeetup ( token: "${LOCAL_LEARNERS_TEST_USER.meetup.token}" ) {
 					_id,
 					meetup {
 						member {

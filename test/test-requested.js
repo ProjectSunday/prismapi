@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai'
 
 import { sendGraph } from './test-server'
-import TestData from './test-data'
+// import TestData from './test-data'
 
 var TEST_CREATED_REQUESTED_CLASS_ID, TEST_CATEGORY_ID
 

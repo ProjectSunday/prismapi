@@ -68,11 +68,8 @@ const Mutations = {
 
 			await context.upcomingClass.create2({ name: args.name })
 
-
 			var upcomingClass = Object.assign({}, context.upcomingClass)
 			delete upcomingClass.context
-
-			console.log(upcomingClass, 'upcomingClass')
 
 			return upcomingClass
 
@@ -103,10 +100,13 @@ const Mutations = {
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.user.token = args.token
-			context.upcomingClass._id = args._id
-			await new UpcomingClass(context).delete()
-			return context.upcomingClass
+			
+			await context.user.read({ token: args.token })
+			await context.upcomingClass.delete({ _id: args._id })
+
+			var { _id, status } = context.upcomingClass
+
+			return { _id, status }
 		}
 	}
 

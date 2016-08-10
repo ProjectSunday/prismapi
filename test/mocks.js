@@ -30,6 +30,15 @@ import { Category, Context, User } from '~/backend/backend'
 // 	TEST_USER: undefined
 // }
 
+export const getLocalLearnersTestUser = async () => {
+	var user = new User()
+	await user.createFromMeetup({
+		email: 'locallearnersuser@gmail.com',
+		password: 'thirstyscholar1'
+	})
+	return user
+}
+
 export const getTestUser = async () => {
 	var user = new User()
 	await user.createFromMeetup({

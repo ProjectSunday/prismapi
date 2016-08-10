@@ -16,7 +16,8 @@ export class Member {
 			path: URL.MEMBERS + '/self'
 		})
 
-		if (!member) throw "Unable to get meetup member"
+		// log(member, 'member')
+		if (!member || !member.id) throw "Unable to get meetup member"
 		if (member.problem) throw member.problem
 		if (member.errors) throw member.errors[0]
 

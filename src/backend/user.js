@@ -48,8 +48,9 @@ export class User {
 		this.meetup = {}
 		this.meetup.token = await MeetupOauth.getToken(credential)
 
-		this.meetup.member = new Member()
-		this.meetup.member.fetch({ token: this.meetup.token})
+		var member = new Member()
+		await member.fetch({ token: this.meetup.token})
+		this.meetup.member = member
 
 		var filter = { 'meetup.member.id': this.meetup.member.id }
 
@@ -66,6 +67,12 @@ export class User {
 	}
 
 	async fetch(filter) {
+		var user = await Db.Read('users', filter)
+		if (!user) { throw 'User not found with filter: ' + JSON.stringify(filter) }
+		Object.assign(this, user)
+	}
+	
+	async read(filter) {
 		var user = await Db.Read('users', filter)
 		if (!user) { throw 'User not found with filter: ' + JSON.stringify(filter) }
 		Object.assign(this, user)

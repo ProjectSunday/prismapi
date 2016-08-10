@@ -1,7 +1,6 @@
 import { assert, expect } from 'chai'
 
 import { sendGraph } from './test-server'
-import TestData from './test-data'
 
 export default () => {
 

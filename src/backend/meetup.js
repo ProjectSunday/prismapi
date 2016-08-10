@@ -52,3 +52,24 @@ export * from './meetup-event'
 export * from './meetup-member'
 export * from './meetup-oauth'
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Event
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const deleteEvent = async (args) => {
+	var result = await request({
+		method: 'DELETE',
+		headers: { 'Authorization': `Bearer ${args.token}` },
+		path: URL.EVENTS + `/${args.id}`
+	})
+
+	if (result.errors && result.errors[0].message === 'event was deleted') {
+		return { status: 'DELETE_SUCCESS' }
+	}
+
+	if (result.status.code === 204 ) {
+		return { status: 'DELETE_SUCCESS' }
+	}
+
+	throw 'Error deleting meetup event with args: ' + JSON.stringify(args)
+}

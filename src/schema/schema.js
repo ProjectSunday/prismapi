@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 
 import Category 		from './schema-category'
 import RequestedClass 	from './schema-requestedclass'
-import UpcomingClass 	from './schema-upcomingclass'
+import UpcomingClass 	from './upcomingclass-schema'
 import User 			from './schema-user'
 
 import Testing			from './schema-testing'
