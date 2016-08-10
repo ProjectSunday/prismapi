@@ -16,10 +16,17 @@ export default () => {
 						_id,
 						name
 					},
-					meetup {
-						event {
-							id,
-							name
+					event {
+						id,
+						name
+					},
+					teachers {
+						_id,
+						meetup {
+							member {
+								id,
+								name
+							}
 						}
 					}
 				}

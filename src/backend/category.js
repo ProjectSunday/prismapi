@@ -21,18 +21,19 @@ export class Category {
 		return await Db.Create('categories', category)
 	}
 
-	async delete (_id) {
+	async delete(_id) {
 		return await Db.Delete('categories', { _id: ObjectID(_id) })
 	}
 
 	async fetch(filter) {
 		var category = await Db.Read('categories', filter)
+		if (!category) throw 'Unable to fetch category with filter: ' + JSON.stringify(filter)
 		Object.assign(this, category)
 	}
 
 	static async fetch2(filter) {
 		var category = await Db.Read('categories', filter)
-		if (!catgory) throw "Unable to get category with filter: " + JSON.stringify(filter)
+		if (!catgory) throw 'Unable to fetch category with filter: ' + JSON.stringify(filter)
 		return category
 	}
 

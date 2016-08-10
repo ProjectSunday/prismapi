@@ -10,7 +10,7 @@ export const MeetupType = new GraphQLObjectType({
 	})
 })
 
-const EventType = new GraphQLObjectType({
+export const EventType = new GraphQLObjectType({
 	name: 'EventType',
 	fields: () => ({
 		id: { type: GraphQLID },

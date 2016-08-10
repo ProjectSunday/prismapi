@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 
 import { UserType } 		from './schema-user'
 import { CategoryType } 	from './schema-category'
-import { MeetupType }		from './meetup-type'
+import { MeetupType, EventType }		from './meetup-type'
 
 import { Category, Context, UpcomingClass, User } from '~/backend/backend'
 
@@ -15,7 +15,7 @@ const UpcomingClassType = new GraphQLObjectType({
 		_id: { type: GraphQLID },
 		name: { type: GraphQLString },
 		category: { type: CategoryType },
-		meetup: { type: MeetupType },
+		event: { type: EventType },
 		teachers: { type: new GraphQLList(UserType) },
 		status: { type: GraphQLString }
 	})
@@ -60,27 +60,21 @@ const Mutations = {
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
+
 			await context.user.fetch({ token: args.token })
 			await context.user.ensureOrganizer()  //broken
 
-			// log(args, 'args')
 			await context.category.fetch({ _id: args.categoryId })
-			console.log('blah', context.category)
 
-			// var user = User.fetch2({ token: args.token })
-			// var category = Category.fetch2({ _id: args.categoryId })
-			// var newClass = {
-			// 	category,
-			// 	meetup: {
-			// 		token: user.meetup.token,
-			// 		event: {
-			// 			name: args.name
-			// 		}
-			// 	},
-			// 	teachers: [ user ]
-			// }
+			await context.upcomingClass.create2({ name: args.name })
 
-			// return await UpcomingClass.create2(newClass)
+
+			var upcomingClass = Object.assign({}, context.upcomingClass)
+			delete upcomingClass.context
+
+			console.log(upcomingClass, 'upcomingClass')
+
+			return upcomingClass
 
 			// await context.upcomingClass.create({
 			// 	name: args.name

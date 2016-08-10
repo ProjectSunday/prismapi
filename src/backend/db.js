@@ -25,7 +25,7 @@ export const Create = async (collection, value) => {
 
 export const Read = async (collection, filter = {}) => {
 
-	if (filter._id instanceof ObjectID) {
+	if (filter._id && !(filter._id instanceof ObjectID)) {
 		filter._id = ObjectID(filter._id)
 	}
 
@@ -33,7 +33,7 @@ export const Read = async (collection, filter = {}) => {
 	return r[0]
 }
 export const ReadMany = async (collection, filter = {}) => {
-	if (filter._id instanceof ObjectID) {
+	if (filter._id && !(filter._id instanceof ObjectID)) {
 		filter._id = ObjectID(filter._id)
 	}
 
@@ -43,7 +43,7 @@ export const ReadMany = async (collection, filter = {}) => {
 
 export const Update = async (collection, filter = {}, value) => {
 
-	if (filter._id instanceof ObjectID) {
+	if (filter._id && !(filter._id instanceof ObjectID)) {
 		filter._id = ObjectID(filter._id)
 	}
 
@@ -67,7 +67,7 @@ export const Update = async (collection, filter = {}, value) => {
 
 export const Delete = async (collection, filter = {}) => {
 
-	if (filter._id instanceof ObjectID) {
+	if (filter._id && !(filter._id instanceof ObjectID)) {
 		filter._id = ObjectID(filter._id)
 	}
 
