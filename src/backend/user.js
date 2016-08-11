@@ -25,6 +25,14 @@ export class User {
 	// 	return user
 	// }
 
+	get() {
+		var user = Object.assign({}, this)
+		delete user.context
+		delete user.token
+		delete user.meetup.token
+		return user
+	}
+
 	async authenticateViaMeetup(token) {
 		var member = new Member()
 		await member.fetch({ token })

@@ -10,16 +10,6 @@ const RequestedClassType = new GraphQLObjectType({
 		_id: { type: GraphQLID },
 		name: { type: GraphQLString },
 		category: { type: CategoryType },
-		// category: {
-		// 	type: CategoryType,
-		// 	resolve: async (requestedClass) => {
-		// 		var context = new Context()
-		// 		context.category._id = requestedClass.category
-		// 		var category = new Category(context)
-		// 		await category.fetch()
-		// 		return context.category
-		// 	}
-		// },
 		date: { type: GraphQLString }, //this is wrong
 		interested: { type: new GraphQLList(UserType) },
 		location: { type: GraphQLString },
@@ -51,38 +41,30 @@ const Mutations = {
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.user.token = args.token
-			await context.user.fetch()
 
-			context.category._id = args.categoryId
-			await context.category.fetch()
+			await context.user.read({ token: args.token })
+			await context.category.read({ _id: args.categoryId })
+			await context.requestedClass.create({ name: args.name })
+			
+			delete context.requestedClass.context
 
-			context.requestedClass = {
-				name: args.name,
-				interested: []
-			}
-			await context.requestedClass.create()
-
-
-			// context.category._id = args.categoryId
-
-			// var requestedClass = new RequestedClass(context)
-			// await requestedClass.create()
-			return context.requestedClass.get()
+			return context.requestedClass
 		}
 	},
 
 	deleteRequestedClass: {
 		type: RequestedClassType,
 		args: {
+			//TODO: token to check to see if user is authorized to delete
 			_id: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.requestedClass._id = args._id
-			var requestedClass = new RequestedClass(context)
-			await requestedClass.delete()
-			return context.requestedClass
+
+			await context.requestedClass.delete({ _id: args._id })
+
+			var { _id, status } = context.requestedClass
+			return { _id, status }
 		}
 	},
 
@@ -90,17 +72,13 @@ const Mutations = {
 		type: RequestedClassType,
 		args: {
 			token: { type: new GraphQLNonNull(GraphQLString) },
-			requestedClassId: { type: new GraphQLNonNull(GraphQLID) }
+			_id: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.user.token = args.token
-			var user = new User(context)
-			await user.fetch()
 
-			context.requestedClass._id = args.requestedClassId
-			var requestedClass = new RequestedClass(context)
-			await requestedClass.addInterestedUser()
+			await context.user.read({ token: args.token })
+			await context.requestedClass.addInterestedUser({ _id: args._id })
 
 			return context.requestedClass
 		}
@@ -110,25 +88,15 @@ const Mutations = {
 		type: RequestedClassType,
 		args: {
 			token: { type: new GraphQLNonNull(GraphQLString) },
-			requestedClassId: { type: new GraphQLNonNull(GraphQLID) }
+			_id: { type: new GraphQLNonNull(GraphQLID) }
 		},
 		resolve: async (root, args) => {
 			var context = new Context()
-			context.user.token = args.token
-			var user = new User(context)
-			await user.fetch()
 
-			context.requestedClass._id = args.requestedClassId
-			var requestedClass = new RequestedClass(context)
-			await requestedClass.removeInterestedUser()
+			await context.user.read({ token: args.token })
+			await context.requestedClass.removeInterestedUser({ _id: args._id })
 
 			return context.requestedClass
-
-			// return {
-			// 	_id: 'blah',
-			// 	name: 'blah',
-			// 	interested: []
-			// }
 		}
 	},
 

@@ -1,35 +1,5 @@
 import { Category, Context, User } from '~/backend/backend'
 
-// export default {
-// 	LOCAL_LEARNER_TEST_USER_TOKEN: '',
-// 	TEST_CATEGORY_ID: undefined,
-// 	TEST_UPCOMING_CLASS_ID: '',
-// 	CREATED_REQUEST_CLASS_ID: undefined
-// }
-
-// export const createCategory = async () => {
-// 	var category = await sendGraph(`
-// 		mutation {
-// 			createCategory (name: "testtesttest") {
-// 				_id
-// 			}
-// 		}
-// 	`)
-
-// 	return category._id
-
-// 	.end((err, res) => {
-// 		var { _id } = res.body.data.createCategory
-// 		TEST_CATEGORY_ID = _id
-// 		done()
-// 	})
-
-// }
-
-// var _TEST_DATA = {
-// 	TEST_USER: undefined
-// }
-
 export const getLocalLearnersTestUser = async () => {
 	var user = new User()
 	await user.createFromMeetup({
@@ -39,13 +9,27 @@ export const getLocalLearnersTestUser = async () => {
 	return user
 }
 
-export const getTestUser = async () => {
+export const getTestUserAlpha = async () => {
+	var testUserAlpha = {
+		token: 'TEST_USER_ALPHA.token',
+		meetup: {
+			token: 'TEST_USER_ALPHA.meetup.token',
+			member: {
+				id: 1234,
+				name: 'TEST_USER_ALPHA.name'
+			}
+		}
+	}
+
 	var user = new User()
-	await user.createFromMeetup({
-		email: 'locallearnersuser@gmail.com',
-		password: 'thirstyscholar1'
-	})
-	return user
+
+	try {
+		await user.read({ token: 'TEST_USER_ALPHA.token' })
+		return user
+	} catch (er) {
+		await user.create(testUserAlpha)
+		return user
+	}
 }
 
 export const getCategoryByName = async (name) => {
@@ -54,31 +38,3 @@ export const getCategoryByName = async (name) => {
 	return category
 }
 
-// var TEST_USER
-
-// export const init = async () => {
-// 	var user = new User()
-// 	await user.createFromMeetup({
-// 		email: 'locallearnersuser@gmail.com',
-// 		password: 'thirstyscholar1'
-// 	})
-// 	TEST_USER = user.toJSON()
-// }
-
-
-// var _testUser
-
-// export const TEST_USER = async () => {
-// 	if (_testUser)
-// 	var user = new User()
-// 	await user.createFromMeetup({
-// 		email: 'locallearnersuser@gmail.com',
-// 		password: 'thirstyscholar1'
-// 	})
-// 	_TEST_DATA.TEST_USER = user.toJSON()
-// }
-
-// export default {
-// 	init,
-// 	TEST_USER
-// }

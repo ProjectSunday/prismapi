@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull, GraphQLOutputType } from 'graphql/type'
 
 import Category 		from './schema-category'
-import RequestedClass 	from './schema-requestedclass'
+import RequestedClass 	from './requestedclass-schema'
 import UpcomingClass 	from './upcomingclass-schema'
 import User 			from './schema-user'
 

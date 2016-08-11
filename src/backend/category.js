@@ -17,8 +17,20 @@ export class Category {
 		return category
 	}
 
+	get() {
+		var category = Object.assign({}, this)
+		delete category.context
+		return category
+	}
+
 	async create(category) {
 		return await Db.Create('categories', category)
+	}
+
+	async read(filter) {
+		var category = await Db.Read('categories', filter)
+		if (!category) throw 'Unable to fetch category with filter: ' + JSON.stringify(filter)
+		Object.assign(this, category)
 	}
 
 	async delete(_id) {

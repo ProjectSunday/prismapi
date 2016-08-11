@@ -1,6 +1,6 @@
 import { ObjectID } from 'mongodb'
 
-import Db from './db'
+import DB from './db'
 import { Category } from '~/backend/backend'
 
 export class RequestedClass {
@@ -9,54 +9,55 @@ export class RequestedClass {
 		return this
 	}
 
+
+	
+
 	async create (newClass) {
-		var category = new Category(this.context).fetch(newClass.category._id)
+		newClass.interested = [ this.context.user.get() ]
+		newClass.category = this.context.category.get()
+		var requested = await DB.Create('requestedclasses', newClass)
+		Object.assign(this, requested)
+	}
+	async read(filter) {
+		var requested = await DB.Read('requestedclasses', filter)
+		Object.assign(this, requested)
+	}
+	async update(filter) {
+		var requested = Object.assign({}, this)
+		delete requested.context
+		requested = await DB.Update('requestedclasses', filter, requested)
+		Object.assign(this, requested)
+	}
+	async delete(filter) {
+		await this.read(filter)
+		var requested = await DB.Delete('requestedclasses', filter)
+		Object.assign(this, requested)
+	}
 
-		if (!category) throw 'Unable to determine category with _id: ' + newClass.category._id
-
-		newClass.category = category
-
-		return await Db.Create('requestedclasses', newClass)
-	}
-	async read() {
-		this.context.requestedClass = await Db.Read('requestedclasses', { _id: ObjectID(this.context.requestedClass._id) })
-	}
-	async update() {
-		await Db.Update('requestedclasses', { _id: ObjectID(this.context.requestedClass._id) }, this.context.requestedClass)
-	}
-	async delete() {
-		this.context.requestedClass = await Db.Delete('requestedclasses', { _id: ObjectID(this.context.requestedClass._id) })
-	}
 
 
 
 	async fetchAll() {
-		this.context.requestedClasses = await Db.ReadMany('requestedclasses')
+		this.context.requestedClasses = await DB.ReadMany('requestedclasses')
 	}
 
-	async addInterestedUser() {
-		await this.read()
+	async addInterestedUser(args) {
+		await this.read({ _id: args._id })
 
 		var u = this.context.user
-		this.context.requestedClass.interested.push({
-			_id: u._id,
-			meetupMember: u.meetupMember
-		})
+		this.interested.push( this.context.user.get() )
 
-		await this.update()
+		this.update({ _id: args._id })
 	}
 
-	async removeInterestedUser() {
-		await this.read()
+	async removeInterestedUser(args) {
+		await this.read({ _id: args._id })
 
-		var user = this.context.user
+		var removeIndex = this.interested.findIndex(u => u._id.equals(this.context.user._id))
+		if (removeIndex === -1) throw `Unable to find interested user (_id: ${this.context.user._id}) to remove from requested class (_id: ${this._id}).`
+		this.interested.splice(removeIndex, 1)
 
-		var removeIndex = this.context.requestedClass.interested.findIndex(u => u._id.equals(user._id))
-		if (removeIndex === -1) throw 'Unable to find interested user to remove from requested class.'
-
-		this.context.requestedClass.interested.splice(removeIndex, 1)
-
-		await this.update()
+		this.update({ _id: args._id })
 	}
 
 }
