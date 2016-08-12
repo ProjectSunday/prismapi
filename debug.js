@@ -18,7 +18,8 @@ global.log = function (data, message) {
         console.log(prettyjson.render(data, options))
     } catch (err) {
         console.log('!!!!!!!!!!!!PRETTYJSON FAILED!!!!!!!!!!!!!!')
-        console.log('err: ', err)
+        t()
+        // console.log('err: ', err)
         // console.log('data: ', data)
     }
 }

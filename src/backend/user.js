@@ -48,7 +48,8 @@ export class User {
 	}
 
 	async create(newUser) {
-		return await DB.Create('users', newUser)
+		var user = await DB.Create('users', newUser)
+		Object.assign(this, user)
 	}
 	async createFromMeetup(credential) {
 		this.token = generateToken()
@@ -103,9 +104,14 @@ export class User {
 		return user
 	}
 
-	async upsert(filter) {
-		if (!filter) {
-
+	async upsert(filter, updatedUser) {
+		var user
+		try {
+			user = await this.read(filter)
+		} catch (err) {
+			user = await this.create(updatedUser)
+		} finally {
+			Object.assign(this, user)
 		}
 	}
 

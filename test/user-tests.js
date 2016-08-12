@@ -2,7 +2,7 @@ import { assert, expect } from 'chai'
 
 import { sendQuery, sendMutation } from './test-server'
 
-import { createTestUserBeta, deleteTestUserBeta } from './mocks'
+// import { createTestUserBeta, deleteTestUserBeta } from './mocks'
 // var LOCAL_LEARNER_TEST_USER_TOKEN
 
 export default () => {
@@ -93,15 +93,13 @@ export default () => {
 		})
 
 		it('should log a user out', async done => {
-			var user = await createTestUserBeta()
-			console.log(user, 'user')
 			sendMutation(`
-				logoutUser ( token: "${user.token}" ) {
+				logoutUser ( token: "${TEST_USER_BETA.token}" ) {
 					_id,
 					status
 				}
-			`, data => {
-				log(data)
+			`, async data => {
+				// log(data)
 				var { logoutUser } = data
 				assert(logoutUser, 'logoutUser should contain data')
 
@@ -121,7 +119,6 @@ export default () => {
 				done()
 			})
 
-			await deleteTestUserBeta()
 
 		})
 

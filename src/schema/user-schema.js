@@ -110,7 +110,6 @@ const Mutations = {
 		resolve: async (root, args) => {
 			var context = new Context()
 			await context.user.logout({ token: args.token })
-			log(context.user)
 			return {
 				_id: context.user._id,
 				status: context.user.status

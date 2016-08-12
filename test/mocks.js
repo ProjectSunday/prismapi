@@ -45,18 +45,14 @@ export const createTestUserBeta = async () => {
 	}
 
 	var user = new User()
-
-	try {
-		await user.read({ token: 'TEST_USER_BETA.token' })
-		return user
-	} catch (er) {
-		await user.create(testUserBeta)
-		return user
-	}
+	await user.upsert({ token: 'TEST_USER_BETA.token'}, testUserBeta)
+	delete user.context
+	return user
 }
 
-export const deleteTestUserBeta = async () => {
-	await user.delete({ token: 'TEST_USER_BETA.token' })
+export const deleteTestUserBeta = async (filter) => {
+	var user = new User()
+	await user.delete(filter)
 }
 
 
