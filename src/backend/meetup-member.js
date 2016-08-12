@@ -16,10 +16,12 @@ export class Member {
 			path: URL.MEMBERS + '/self'
 		})
 
-		// log(member, 'member')
-		if (!member || !member.id) throw "Unable to get meetup member"
+		if (member.errors) {
+			console.log('Meetup Member errors: ', member.errors)
+			throw member.errors[0]
+		}
 		if (member.problem) throw member.problem
-		if (member.errors) throw member.errors[0]
+		if (!member || !member.id) throw "Unable to get meetup member"
 
 		Object.assign(this, member)
 	}

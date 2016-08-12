@@ -1,9 +1,6 @@
 import { assert } from 'chai'
 
 import { sendQuery } from './test-server'
-// import TestData from './test-data'
-
-// var CATEGORY_ID_TO_DELETE
 
 export default () => {
 

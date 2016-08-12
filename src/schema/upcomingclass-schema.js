@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull } from 'graphql/type'
 
-import { UserType } 		from './schema-user'
-import { CategoryType } 	from './schema-category'
+import { UserType } 		from './user-schema'
+import { CategoryType } 	from './category-schema'
 import { MeetupType, EventType }		from './meetup-type'
 
 import { Category, Context, UpcomingClass, User } from '~/backend/backend'

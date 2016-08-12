@@ -2,7 +2,7 @@ import { assert, expect } from 'chai'
 
 import { sendQuery, sendMutation } from './test-server'
 
-
+// import { createTestUserBeta } from './mocks'
 // var LOCAL_LEARNER_TEST_USER_TOKEN
 
 export default () => {
@@ -58,7 +58,6 @@ export default () => {
 		// })
 
 
-
 		it('should authenticate the local learners test user', done => {
 			sendMutation(`
 				authenticateViaMeetup ( token: "${LOCAL_LEARNERS_TEST_USER.meetup.token}" ) {
@@ -92,6 +91,46 @@ export default () => {
 			})
 
 		})
+
+		// it('should log a user out', async done => {
+		// 	// var user = await createTestUserBeta()
+
+		// 	sendMutation(`
+		// 		logoutUser ( token: "${user.token}" ) {
+		// 			_id,
+		// 			meetup {
+		// 				member {
+		// 					id,
+		// 					name
+		// 				},
+		// 				token
+		// 			},
+		// 			token
+		// 		}
+		// 	`, data => {
+		// 		log(data)
+		// 		var { logoutUser } = data
+		// 		assert(logoutUser, 'authenticateViaMeetup should object')
+
+		// 		// var { _id, meetup, token } = data.authenticateViaMeetup
+		// 		// assert(_id !== undefined, '_id should exist')
+		// 		// assert(meetup !== undefined, '_id should exist')
+		// 		// assert(token !== undefined, 'user token should exist')
+
+		// 		// var { member, token } = meetup
+		// 		// assert(member !== undefined, 'member should exist')
+		// 		// assert(token !== undefined, 'meetup token should exist')
+
+		// 		// var { id, name } = member
+		// 		// assert(id !== undefined, 'id should exist')
+		// 		// assert(name === 'Local Learners Test User', 'name should say Local Learners Test User')
+
+		// 		done()
+		// 	})
+
+		// 	// await deleteTestUserBeta()
+
+		// })
 
 
 		// it('should get the user given a token', async done => {

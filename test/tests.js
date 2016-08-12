@@ -5,10 +5,10 @@ import '../debug'
 import { TestServer } from './test-server'
 import { getCategoryByName, getTestUserAlpha, getLocalLearnersTestUser } from './mocks'
 
-import User 		from './user-test'
-import Category 	from './test-category'
+import User 		from './user-tests'
+import Category 	from './category-tests'
 import Requested 	from './requested-tests'
-import Upcoming 	from './upcoming-test'
+import Upcoming 	from './upcoming-tests'
 
 import Testing from './test-testing'
 
@@ -29,7 +29,7 @@ describe('Prism API Mocha Testing', () => {
 
 	// Category()
 	
-	Requested()
+	// Requested()
 
 	// Upcoming()
 

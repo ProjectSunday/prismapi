@@ -31,19 +31,21 @@ export class Administrator {
 
 		this.logOutTokens('Administrator')
 		if (!await this.accessTokenValid()) {
-			console.log('NOT VALID!')
+			console.log('Administrator token NOT VALID!')
 			await this.refreshAccessToken()
 			this.logOutTokens('NEW Administrator')
 
 			await Update('settings', { name: 'administrator' }, this.get())
+		} else {
+			console.log('Administrator token valid.')
 		}
+
 		clearTimeout(global.__prism_admin_timer_id)
 		global.__prism_admin_timer_id = setTimeout(() => {
 			this.startTokenMonitoring()
 		}, 6e4)
 
 	}
-
 
 	async accessTokenValid () {
 		if (!this.access_token) { return false }
