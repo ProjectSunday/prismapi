@@ -1,6 +1,6 @@
 import { ObjectID } from 'mongodb'
 
-import Db from './db'
+import DB from './db'
 import { Member, OAUTH, MeetupOauth }		from './meetup'
 import { generateToken } from './utils'
 
@@ -40,7 +40,7 @@ export class User {
 			return { error: member.error }
 		}
 
-		var user = await Db.Read('users', { 'meetup.member.id': member.id })
+		var user = await DB.Read('users', { 'meetup.member.id': member.id })
 		if (!user) {
 			this.error = { message: 'User not found with this token: ' + token }
 		}
@@ -48,7 +48,7 @@ export class User {
 	}
 
 	async create(newUser) {
-		return await Db.Create('users', newUser)
+		return await DB.Create('users', newUser)
 	}
 	async createFromMeetup(credential) {
 		this.token = generateToken()
@@ -65,29 +65,36 @@ export class User {
 		var user = Object.assign({}, this)
 		delete user.context
 
-		user = await Db.Update("users", filter, user)
+		user = await DB.Update("users", filter, user)
 		Object.assign(this, user)
 		return this
 	}
 
 	async delete(filter) {
-		return await Db.Delete('users', filter)
+		return await DB.Delete('users', filter)
 	}
 
 	async fetch(filter) {
-		var user = await Db.Read('users', filter)
+		var user = await DB.Read('users', filter)
 		if (!user) { throw 'User not found with filter: ' + JSON.stringify(filter) }
 		Object.assign(this, user)
 	}
 	
 	async read(filter) {
-		var user = await Db.Read('users', filter)
+		var user = await DB.Read('users', filter)
 		if (!user) { throw 'User not found with filter: ' + JSON.stringify(filter) }
 		Object.assign(this, user)
 	}
 
+	async update(filter) {
+		var user = Object.assign({}, this)
+		delete user.context
+		await DB.Update('users', filter, user)
+		Object.assign(this, user)
+	}
+
 	static async fetch2(filter) {
-		var user = await Db.Read('users', filter)
+		var user = await DB.Read('users', filter)
 		if (!user) { throw 'User not found.' }
 			
 		// delete user.token
@@ -105,7 +112,7 @@ export class User {
 	async save() {
 		var user = Object.assign({}, this)
 		delete user.context
-		await Db.Update('users', { _id: this._id }, user)
+		await DB.Update('users', { _id: this._id }, user)
 	}
 
 	// async authenticate(credential) {
@@ -114,7 +121,7 @@ export class User {
 	// 	this.meetupMember = await Member.fetch(this.token)
 
 	// 	var filter = { 'meetupMember.id': this.meetupMember.id }
-	// 	var user = await Db.Update("users", filter, this.get())
+	// 	var user = await DB.Update("users", filter, this.get())
 	// 	Object.assign(this, user)
 	// }
 
@@ -131,6 +138,15 @@ export class User {
 	    	await this.save()
 	    }
 
+	}
+
+	async logout(filter) {
+		await this.read(filter)
+
+		this.token = null
+		await this.update({ _id: this._id })
+
+		this.status = 'LOGOUT_SUCCESS'
 	}
 
 }

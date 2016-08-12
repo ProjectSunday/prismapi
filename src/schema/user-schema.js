@@ -101,6 +101,21 @@ const Mutations = {
 			var context = new Context()
 			return await context.user.delete({ _id: args._id })
 		}
+	},
+	logoutUser: {
+		type: UserType,
+		args: {
+			token: { type: new GraphQLNonNull(GraphQLString) }
+		},
+		resolve: async (root, args) => {
+			var context = new Context()
+			await context.user.logout({ token: args.token })
+			log(context.user)
+			return {
+				_id: context.user._id,
+				status: context.user.status
+			}
+		}
 	}
 }
 
