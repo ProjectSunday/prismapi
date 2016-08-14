@@ -1,6 +1,6 @@
 import { MongoClient, ObjectID } from 'mongodb'
 
-var PRISM_MONGO_CONNECTION_STRING = process.env.PRISM_MONGO_CONNECTION_STRING || 'mongodb://localhost:27017/prism'
+var PRISM_MONGO_CONNECTION_STRING = process.env.MONGODB_URI || 'mongodb://localhost:27017/prism'
 
 var _db
 

@@ -6,7 +6,8 @@
   "scripts": {
     "mongo": "mongod --dbpath db/local",
     "test": "mongod --dbpath db/local | mocha --watch test/index.js",
-    "start": "mongod --dbpath db/local | node index.js"
+    "local": "mongod --dbpath db/local | node index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
