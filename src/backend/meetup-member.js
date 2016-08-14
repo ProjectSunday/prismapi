@@ -9,15 +9,20 @@ export class Member {
 		// return this
 	}
 
+	get() {
+		var member = Object.assign({}, this)
+		delete member.context
+		return member
+	}
+
 	async fetch(args) {
 		var member = await request({
 			method: 'GET',
 			headers: { Authorization: `Bearer ${args.token}` },
 			path: URL.MEMBERS + '/self'
 		})
-
 		if (member.errors) {
-			console.log('Meetup Member errors: ', member.errors)
+			console.log('Meetup Member errors:', member.errors, 'args:', args)
 			throw member.errors[0]
 		}
 		if (member.problem) throw member.problem

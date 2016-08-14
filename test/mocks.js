@@ -2,10 +2,12 @@ import { Category, Context, User } from '~/backend/backend'
 
 export const getLocalLearnersTestUser = async () => {
 	var user = new User()
-	await user.createFromMeetup({
+	await user._createFromMeetup({
 		email: 'locallearnersuser@gmail.com',
 		password: 'thirstyscholar1'
 	})
+	delete user.context
+	// console.log('user _createFromMeetup: ', user)
 	return user
 }
 

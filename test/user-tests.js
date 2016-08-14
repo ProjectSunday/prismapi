@@ -59,8 +59,10 @@ export default () => {
 
 
 		it('should authenticate the local learners test user', done => {
+			var meetupToken = LOCAL_LEARNERS_TEST_USER.meetup.token
+			// var meetupToken = 'a85b3ad2b93c1cda66f36d2e0b4eab3d'
 			sendMutation(`
-				authenticateViaMeetup ( token: "${LOCAL_LEARNERS_TEST_USER.meetup.token}" ) {
+				authenticateViaMeetup ( token: "${meetupToken}" ) {
 					_id,
 					meetup {
 						member {
@@ -81,7 +83,7 @@ export default () => {
 
 				var { member, token } = meetup
 				assert(member !== undefined, 'member should exist')
-				assert(token !== undefined, 'meetup token should exist')
+				assert(token === meetupToken, `meetup token (${token}) should be ${meetupToken}`)
 
 				var { id, name } = member
 				assert(id !== undefined, 'id should exist')

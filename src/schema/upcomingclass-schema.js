@@ -62,7 +62,7 @@ const Mutations = {
 			var context = new Context()
 
 			await context.user.fetch({ token: args.token })
-			await context.user.ensureOrganizer()  //broken
+			// await context.user.ensureOrganizer()  //broken
 
 			await context.category.fetch({ _id: args.categoryId })
 

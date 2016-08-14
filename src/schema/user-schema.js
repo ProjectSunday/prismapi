@@ -50,20 +50,20 @@ const Queries = {
 /////////////////////////////////////////////////////////////////////////////
 
 const Mutations = {
-	authenticate: {
-		type: UserType,
-		args: {
-			meetupEmail: { type: GraphQLString },
-			meetupPassword: { type: GraphQLString}
-		},
-		resolve: async (root, args) => {
-			var context = new Context()
-			context.user.meetupEmail = args.meetupEmail
-			context.user.meetupPassword = args.meetupPassword
-			await context.user.authenticate()
-			return context.user.get()
-		}
-	},
+	// authenticate: {
+	// 	type: UserType,
+	// 	args: {
+	// 		meetupEmail: { type: GraphQLString },
+	// 		meetupPassword: { type: GraphQLString}
+	// 	},
+	// 	resolve: async (root, args) => {
+	// 		var context = new Context()
+	// 		context.user.meetupEmail = args.meetupEmail
+	// 		context.user.meetupPassword = args.meetupPassword
+	// 		await context.user.authenticate()
+	// 		return context.user.get()
+	// 	}
+	// },
 	authenticateViaMeetup: {
 		type: UserType,
 		args: {
@@ -74,8 +74,8 @@ const Mutations = {
 			await user.authenticateViaMeetup(args.token)
 
 			delete user.context
-			delete user.token
-			delete user.meetup.token
+			// delete user.token
+			// delete user.meetup.token
 
 			return user
 		}

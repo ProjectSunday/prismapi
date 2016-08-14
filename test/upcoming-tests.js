@@ -92,23 +92,23 @@ export default () => {
 			})
 		})
 
-		it('should delete an upcoming class and its event', done => {
-			sendMutation(`
-				deleteUpcomingClass ( token: "${LOCAL_LEARNERS_TEST_USER.token}", _id: "${UPCOMING_CLASS_ID}") {
-					_id,
-					status
-				}
-			`, data => {
-				var { deleteUpcomingClass } = data
-				assert(deleteUpcomingClass, 'deleteUpcomingClass should have data')
+		// it('should delete an upcoming class and its event', done => {
+		// 	sendMutation(`
+		// 		deleteUpcomingClass ( token: "${LOCAL_LEARNERS_TEST_USER.token}", _id: "${UPCOMING_CLASS_ID}") {
+		// 			_id,
+		// 			status
+		// 		}
+		// 	`, data => {
+		// 		var { deleteUpcomingClass } = data
+		// 		assert(deleteUpcomingClass, 'deleteUpcomingClass should have data')
 
-				var { _id, status } = deleteUpcomingClass
-				assert(_id === UPCOMING_CLASS_ID, '_id should be ' + UPCOMING_CLASS_ID)
-				assert(status === 'DELETE_SUCCESS', 'status should BE DELETE_SUCCESS')
+		// 		var { _id, status } = deleteUpcomingClass
+		// 		assert(_id === UPCOMING_CLASS_ID, '_id should be ' + UPCOMING_CLASS_ID)
+		// 		assert(status === 'DELETE_SUCCESS', 'status should BE DELETE_SUCCESS')
 
-				done()
-			})
-		})
+		// 		done()
+		// 	})
+		// })
 
 
 	})

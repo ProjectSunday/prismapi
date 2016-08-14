@@ -32,7 +32,7 @@ describe('Prism API Mocha Testing', () => {
 	
 	// Requested()
 
-	// Upcoming()
+	Upcoming()
 
 
 	after(async (done) => {
