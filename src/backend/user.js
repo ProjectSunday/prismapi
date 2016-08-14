@@ -32,6 +32,7 @@ export class User {
 		if (!user) {
 			this.error = { message: 'User not found with this token: ' + token }
 		}
+		user.token = generateToken()
 		user.meetup.token = token
 		user.meetup.member = member.get()
 		user = await DB.Update('users', { _id: user._id }, user)
