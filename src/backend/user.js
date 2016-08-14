@@ -51,24 +51,32 @@ export class User {
 		var user = await DB.Create('users', newUser)
 		Object.assign(this, user)
 	}
-	async createFromMeetup(credential) {
-		this.token = generateToken()
-
-		this.meetup = {}
-		this.meetup.token = await MeetupOauth.getToken(credential)
-
+	async _createFromMeetup(credential) {
+		var token = await MeetupOauth.getToken(credential)
 		var member = new Member()
-		await member.fetch({ token: this.meetup.token})
-		this.meetup.member = member
+		await member.fetch({ token })
 
-		var filter = { 'meetup.member.id': this.meetup.member.id }
+		var user = await DB.Read('users', { 'meetup.member.id': member.id })
 
-		var user = Object.assign({}, this)
-		delete user.context
+		if (user) {
+			user.token = generateToken()
+			user.meetup = {
+				token,
+				member: member.get()
+			}
+			user = await DB.Update('users', { _id: user._id }, user)
+		} else {
+			var newUser = {
+				token: generateToken()
+				meetup: {
+					token,
+					member.member.get()
+				}
+			}
+			user = await DB.Create('users', newUser)
+		}
 
-		user = await DB.Update("users", filter, user)
 		Object.assign(this, user)
-		return this
 	}
 
 	async delete(filter) {
