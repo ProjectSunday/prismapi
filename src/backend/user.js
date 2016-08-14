@@ -13,18 +13,6 @@ export class User {
 		return this
 	}
 
-	// toJSON() {
-	// 	var meetup = Object.assign({}, this.meetup)
-	// 	delete meetup.token
-
-	// 	var user = {
-	// 		meetup
-	// 	}
-	// 	if (this._id) 			user._id 	= this._id
-	// 	if (this.error) 		user.error 	= this.error
-	// 	return user
-	// }
-
 	get() {
 		var user = Object.assign({}, this)
 		delete user.context
@@ -44,6 +32,10 @@ export class User {
 		if (!user) {
 			this.error = { message: 'User not found with this token: ' + token }
 		}
+		user.meetup.token = token
+		user.meetup.member = member.get()
+		user = await DB.Update('users', { _id: user._id }, user)
+
 		Object.assign(this, user)
 	}
 
