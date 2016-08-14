@@ -14,19 +14,14 @@ mongo v3.0.7<br />
 npm install
 ```
 
-Start mongo:
-```
-npm run mongo
-```
-
 Mocha testing:
 ```
-npm start
+npm run test
 ```
 
-To just run the server:
+Run local server and local db:
 ```
-npm run server
+npm run local
 ```
 
 http://localhost:9000
