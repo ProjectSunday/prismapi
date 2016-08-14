@@ -67,10 +67,10 @@ export class User {
 			user = await DB.Update('users', { _id: user._id }, user)
 		} else {
 			var newUser = {
-				token: generateToken()
+				token: generateToken(),
 				meetup: {
 					token,
-					member.member.get()
+					member: member.get()
 				}
 			}
 			user = await DB.Create('users', newUser)
