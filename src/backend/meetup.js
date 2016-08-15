@@ -11,7 +11,6 @@ export const ADMIN = {
 
 export const OAUTH = {
 	CLIENT_ID: 		process.env.OAUTH_CLIENT_ID 	|| 'sgeirri963sprv1a1vh3r8cp3o',
-	CLIENT_SECRET: 	process.env.OAUTH_CLIENT_SECRET || '72ifhdnu3s76fk87tg60tqb8m9',
 	REDIRECT_URI: 	process.env.OAUTH_REDIRECT_URI	|| 'http://localhost:7000/authentication'
 }
 
