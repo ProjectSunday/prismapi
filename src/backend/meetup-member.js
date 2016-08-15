@@ -18,7 +18,10 @@ export class Member {
 	async fetch(args) {
 		var member = await request({
 			method: 'GET',
-			headers: { Authorization: `Bearer ${args.token}` },
+			headers: {
+				Authorization: `Bearer ${args.token}`,
+				'X-Meta-Photo-Host': 'secure'
+			},
 			path: URL.MEMBERS + '/self'
 		})
 		if (member.errors) {
