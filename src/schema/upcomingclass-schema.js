@@ -63,7 +63,6 @@ const Mutations = {
 
 			await context.user.fetch({ token: args.token })
 			await context.user.ensureOrganizer()
-			t(2)
 
 			await context.category.fetch({ _id: args.categoryId })
 
