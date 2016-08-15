@@ -34,7 +34,7 @@ export class Member {
 		Object.assign(this, member)
 	}
 
-	async fetchRole(args = { id: this.id }) {
+	async fetchRole(args) {
 		var result = await request({
 			method: 'GET',
 			path: `${URL.PROFILE}/${GROUP.ID}/${args.id}?key=${ADMIN.API_KEY}&sign=true`

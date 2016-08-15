@@ -62,7 +62,8 @@ const Mutations = {
 			var context = new Context()
 
 			await context.user.fetch({ token: args.token })
-			// await context.user.ensureOrganizer()  //broken
+			await context.user.ensureOrganizer()
+			t(2)
 
 			await context.category.fetch({ _id: args.categoryId })
 
@@ -72,24 +73,6 @@ const Mutations = {
 			delete upcomingClass.context
 
 			return upcomingClass
-
-			// await context.upcomingClass.create({
-			// 	name: args.name
-			// })
-
-			// var blah = context.upcomingClass.toJSON()
-
-
-
-
-			// console.log('blah', blah)
-
-			// context.upcomingClass.event = {
-			// 	name: args.name
-			// }
-			// await new UpcomingClass(context).create()
-			// return context.upcomingClass
-			// return { blah: 'blah'}
 		}
 	},
 	deleteUpcomingClass: {

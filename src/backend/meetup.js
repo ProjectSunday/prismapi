@@ -1,5 +1,6 @@
 import rest from 'rest'
 
+import { Administrator } from './backend'
 
 export const ADMIN = {
 	ID: 			process.env.ADMIN_ID 			|| 182509367,
@@ -52,9 +53,36 @@ export * from './meetup-event'
 export * from './meetup-member'
 export * from './meetup-oauth'
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//Administrator
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const Administrator2 = {
+	promoteUser: async (args) => {
+		var administrator = new Administrator()
+
+		var result = await request({
+			method: 'PATCH',
+			headers: { Authorization: `Bearer ${administrator.access_token}` },
+			path: `${URL.MEMBERS}/${args.id}`,
+			params: {
+				add_role: 'event_organizer'
+			}
+		})
+
+		if (result && result.group_profile) {
+			return result
+		} else {
+			console.log('Member.promoteToEventOrganizer() error')
+			console.log(result)
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 //Event
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const deleteEvent = async (args) => {
 	var result = await request({
@@ -73,3 +101,40 @@ export const deleteEvent = async (args) => {
 
 	throw 'Error deleting meetup event with args: ' + JSON.stringify(args)
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//Member
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const Member2 = {
+	get: async (args) => {
+		var member = await request({
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${args.token}`,
+				'X-Meta-Photo-Host': 'secure'
+			},
+			path: URL.MEMBERS + '/self'
+		})
+		if (member.errors) {
+			console.log('Meetup Member2 errors:', member.errors, 'args:', args)
+			throw member.errors[0]
+		}
+		if (member.problem) throw member.problem
+		if (!member || !member.id) throw "Unable to get meetup member"
+
+		return member
+	},
+	getRole: async (args) => {
+		var result = await request({
+			method: 'GET',
+			path: `${URL.PROFILE}/${GROUP.ID}/${args.id}?key=${ADMIN.API_KEY}&sign=true`
+		})
+		return result.role
+	}
+}
+
+
+
+
+

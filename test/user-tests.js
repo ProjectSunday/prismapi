@@ -94,58 +94,36 @@ export default () => {
 
 		})
 
-		it('should log a user out', async done => {
-			sendMutation(`
-				logoutUser ( token: "${TEST_USER_BETA.token}" ) {
-					_id,
-					status
-				}
-			`, async data => {
-				// log(data)
-				var { logoutUser } = data
-				assert(logoutUser, 'logoutUser should contain data')
-
-				// var { _id, meetup, token } = data.authenticateViaMeetup
-				// assert(_id !== undefined, '_id should exist')
-				// assert(meetup !== undefined, '_id should exist')
-				// assert(token !== undefined, 'user token should exist')
-
-				// var { member, token } = meetup
-				// assert(member !== undefined, 'member should exist')
-				// assert(token !== undefined, 'meetup token should exist')
-
-				// var { id, name } = member
-				// assert(id !== undefined, 'id should exist')
-				// assert(name === 'Local Learners Test User', 'name should say Local Learners Test User')
-
-				done()
-			})
-
-
-		})
-
-
-		// it('should get the user given a token', async done => {
-		// 	var user = await sendQuery(`
-		// 		user (token: "${LOCAL_LEARNER_TEST_USER_TOKEN}") {
+		// it('should log a user out', async done => {
+		// 	sendMutation(`
+		// 		logoutUser ( token: "${TEST_USER_BETA.token}" ) {
 		// 			_id,
-		// 			meetupMember {
-		// 				id,
-		// 				name
-		// 			},
-		// 			token
+		// 			status
 		// 		}
-		// 	`)
-		// 	var { _id, meetupMember } = user
-		// 	var { id, name, token } = meetupMember
+		// 	`, async data => {
+		// 		// log(data)
+		// 		var { logoutUser } = data
+		// 		assert(logoutUser, 'logoutUser should contain data')
 
-		// 	expect(_id).to.exist()
-		// 	expect(id).to.exist
-		// 	expect(name).to.exist
+		// 		// var { _id, meetup, token } = data.authenticateViaMeetup
+		// 		// assert(_id !== undefined, '_id should exist')
+		// 		// assert(meetup !== undefined, '_id should exist')
+		// 		// assert(token !== undefined, 'user token should exist')
 
-		// 	done()
+		// 		// var { member, token } = meetup
+		// 		// assert(member !== undefined, 'member should exist')
+		// 		// assert(token !== undefined, 'meetup token should exist')
+
+		// 		// var { id, name } = member
+		// 		// assert(id !== undefined, 'id should exist')
+		// 		// assert(name === 'Local Learners Test User', 'name should say Local Learners Test User')
+
+		// 		done()
+		// 	})
+
 
 		// })
+
 
 
 	})

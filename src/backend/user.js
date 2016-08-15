@@ -1,7 +1,7 @@
 import { ObjectID } from 'mongodb'
 
 import DB from './db'
-import { Member, OAUTH, MeetupOauth }		from './meetup'
+import { Administrator2, Member, Member2, OAUTH, MeetupOauth }		from './meetup'
 import { generateToken } from './utils'
 
 import request from 'request'
@@ -145,18 +145,12 @@ export class User {
 	// }
 
 	async ensureOrganizer() {
-		// var context = this.context
+		var member = await Member2.get({ token: this.meetup.token })
 
-		var member = new Member()
-		await member.fetch({ token: this.context.user.meetup.token })
-		await member.fetchRole()
+		var role = await Member2.getRole({ id: member.id })
+		if (role === 'Event Organizer' || role == 'Organizer') return
 
-		var role = member.role
-	    if (role !== 'Event Organizer' || role !== 'Organizer') {
-	    	// await member.promoteToEventOrganizer()
-	    	await this.save()
-	    }
-
+		await Administrator2.promoteUser({ id: member.id })
 	}
 
 	async logout(filter) {

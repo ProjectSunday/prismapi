@@ -18,6 +18,7 @@ describe('Prism API Mocha Testing', () => {
 	before(async (done) => {
 		await TestServer.start()
 		global.LOCAL_LEARNERS_TEST_USER = await getLocalLearnersTestUser()
+		console.log('LOCAL_LEARNERS_TEST_USER', LOCAL_LEARNERS_TEST_USER)
 		global.TEST_USER_ALPHA = await getTestUserAlpha()
 		global.TEST_USER_BETA = await createTestUserBeta()
 		global.CATEGORY_TECHNOLOGY = await getCategoryByName('Technology')
