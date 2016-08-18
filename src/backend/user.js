@@ -30,13 +30,9 @@ export class User {
 
 		var user = await DB.Read('users', { 'meetup.member.id': member.id })
 		if (user) {
-			user = {
-				token: generateToken(),
-				meetup: {
-					token,
-					member: member.get()
-				}
-			}
+			user.token = generateToken()
+			user.meetup.token = token
+			user.meetup.member = member.get()
 			user = await DB.Update('users', { _id: user._id }, user)
 		} else {
 			user = {
