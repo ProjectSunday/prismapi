@@ -41,7 +41,7 @@ export const sendMutation = (graph, callback) => {
 		.end((err, res) => {
 			if (err || (res.body.errors && res.body.errors[0].message) ) {
 				var msg = err || res.body.errors[0].message
-				console.log('sendGraph error: ' + msg)
+				console.log('sendMutation error: ' + msg)
 			} else {
 				callback(res.body.data)
 			}
@@ -55,7 +55,7 @@ export const sendQuery = (graph, callback) => {
 		.end((err, res) => {
 			if (err || (res.body.errors && res.body.errors[0].message) ) {
 				var msg = err || res.body.errors[0].message
-				console.log('sendGraph error: ' + msg)
+				console.log('sendQuery error: ' + msg)
 			} else {
 				callback(res.body.data)
 			}

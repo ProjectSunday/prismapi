@@ -2,16 +2,8 @@ import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, G
 
 import { Category, Context } from '~/backend/backend'
 
-export const CategoryType = new GraphQLObjectType({
-	name: 'CategoryType',
-	fields: () => ({
-		_id: { type: GraphQLID },
-		key: { type: GraphQLInt },
-		name: { type: GraphQLString },
-		imageName: { type: GraphQLString },
-		status: { type: GraphQLString }
-	})
-})
+import { CategoryType, MeetupType, UpcomingClassType, UserType } from './types'
+
 
 const queries = {
 	categories: {

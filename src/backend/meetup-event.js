@@ -1,6 +1,6 @@
 import rest from 'rest'
 
-import { request, URL } from './meetup'
+import { meetupRest, URL } from './meetup'
 
 export class Event {
 	constructor(context) {
@@ -10,7 +10,7 @@ export class Event {
 	async post() {
 		var context = this.context
 
-		var result = await request({
+		var result = await meetupRest({
 			method: 'POST',
 			headers: { 'Authorization': `Bearer ${context.user.token}` },
 			path: URL.EVENTS,
@@ -25,7 +25,7 @@ export class Event {
 	}
 
 	static async post2(args) {
-		var result = await request({
+		var result = await meetupRest({
 			method: 'POST',
 			headers: { 'Authorization': `Bearer ${args.token}` },
 			path: URL.EVENTS,
@@ -40,7 +40,7 @@ export class Event {
 	async delete() {
 		var context = this.context
 
-		var result = await request({
+		var result = await meetupRest({
 			method: 'DELETE',
 			headers: { 'Authorization': `Bearer ${context.user.token}` },
 			path: URL.EVENTS + `/${context.upcomingClass.event.id}`

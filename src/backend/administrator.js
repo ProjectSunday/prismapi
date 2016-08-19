@@ -2,7 +2,7 @@ import rest from 'rest'
 
 import { Context } from '~/backend/backend'
 import { Read, Update } from './db'
-import { ADMIN, Member, OAUTH, request, URL} from './meetup'
+import { ADMIN, Member, OAUTH, request, URL, OAuth2 } from './meetup'
 
 var _singleton
 
@@ -22,28 +22,28 @@ export class Administrator {
 
 	async startTokenMonitoring () {
 
-		var admin = await Read('settings', { name: 'administrator' })
-		Object.assign(this, admin)
+		// var admin = await Read('settings', { name: 'administrator' })
+		// Object.assign(this, admin)
 
-		if (ADMIN.REFRESH_TOKEN) {
-			this.refresh_token = ADMIN.REFRESH_TOKEN
-		}
+		// if (ADMIN.REFRESH_TOKEN) {
+		// 	this.refresh_token = ADMIN.REFRESH_TOKEN
+		// }
 
-		this.logOutTokens('Administrator')
-		if (!await this.accessTokenValid()) {
-			console.log('Administrator token NOT VALID!')
-			await this.refreshAccessToken()
-			this.logOutTokens('NEW Administrator')
+		// this.logOutTokens('Administrator')
+		// if (!await this.accessTokenValid()) {
+		// 	console.log('Administrator token NOT VALID!')
+		// 	await this.refreshAccessToken()
+		// 	this.logOutTokens('NEW Administrator')
 
-			await Update('settings', { name: 'administrator' }, this.get())
-		} else {
-			console.log('Administrator token valid.')
-		}
+		// 	await Update('settings', { name: 'administrator' }, this.get())
+		// } else {
+		// 	console.log('Administrator token valid.')
+		// }
 
-		clearTimeout(global.__prism_admin_timer_id)
-		global.__prism_admin_timer_id = setTimeout(() => {
-			this.startTokenMonitoring()
-		}, 6e4)
+		// clearTimeout(global.__prism_admin_timer_id)
+		// global.__prism_admin_timer_id = setTimeout(() => {
+		// 	this.startTokenMonitoring()
+		// }, 6e4)
 
 	}
 

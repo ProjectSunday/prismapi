@@ -4,7 +4,6 @@ import cors			from 'cors'
 
 import schema 				from '~/schema/schema'
 import { connect }			from '~/backend/db'
-import { Administrator }	from '~/backend/backend'
 
 const PORT 		= process.env.PORT 		|| 9000
 const NODE_ENV	= process.env.NODE_ENV 	|| 'local'
@@ -18,11 +17,7 @@ export default class App {
 
 	static async start() {
 		await connect()
-		
 		await this.createApp()
-
-		await new Administrator().startTokenMonitoring()
-
 		return this
 	}
 

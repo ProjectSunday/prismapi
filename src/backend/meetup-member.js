@@ -1,7 +1,7 @@
 import rest from 'rest'
 
 import { Administrator } from './backend'
-import { ADMIN, GROUP, request, URL} from './meetup'
+import { ADMIN, GROUP, meetupRest, URL} from './meetup'
 
 export class Member {
 	constructor() {
@@ -16,7 +16,7 @@ export class Member {
 	}
 
 	async fetch(args) {
-		var member = await request({
+		var member = await meetupRest({
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${args.token}`,
@@ -35,7 +35,7 @@ export class Member {
 	}
 
 	async fetchRole(args) {
-		var result = await request({
+		var result = await meetupRest({
 			method: 'GET',
 			path: `${URL.PROFILE}/${GROUP.ID}/${args.id}?key=${ADMIN.API_KEY}&sign=true`
 		})
@@ -46,7 +46,7 @@ export class Member {
 		// var context = this.context
 		var administrator = new Administrator()
 
-		var result = await request({
+		var result = await meetupRest({
 			method: 'PATCH',
 			headers: { Authorization: `Bearer ${administrator.access_token}` },
 			path: `${URL.MEMBERS}/${context.user.meetupMember.id}`,
