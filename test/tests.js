@@ -6,11 +6,8 @@ import '../debug'
 import { sendQuery, sendMutation, TestServer } from './test-server'
 import { getCategoryByName, getTestUserAlpha, createTestUserBeta, deleteTestUserBeta, getLocalLearnersTestUser } from './mocks'
 
-// import User 		from './user-tests'
 import Category 	from './category-tests'
 import Requested 	from './requested-tests'
-
-import Testing from './test-testing'
 
 
 describe('Prism API Mocha Testing', () => {
@@ -18,14 +15,13 @@ describe('Prism API Mocha Testing', () => {
 	before(async (done) => {
 		await TestServer.start()
 		global.LOCAL_LEARNERS_TEST_USER = await getLocalLearnersTestUser()
-		console.log('LOCAL_LEARNERS_TEST_USER', LOCAL_LEARNERS_TEST_USER)
 		global.TEST_USER_ALPHA = await getTestUserAlpha()
 		global.TEST_USER_BETA = await createTestUserBeta()
 		global.CATEGORY_TECHNOLOGY = await getCategoryByName('Technology')
 		done()
 	})
 
-	// Testing()
+	// TestingTests()
 
 	UserTests()
 
@@ -42,6 +38,29 @@ describe('Prism API Mocha Testing', () => {
 		done()
 	})
 })
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//TestingTests
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function TestingTests () {
+
+	describe('Testing/Debugging/Fucking around', () => {
+
+		it('do the thing', done => {
+			sendQuery(`
+				testing {
+					result
+				}
+			`, data => {
+				log(data, 'testing')
+				done()
+			})
+		})
+
+	})
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UpcomingTests
@@ -158,7 +177,6 @@ function UpcomingTests () {
 	})
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UserTests
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,55 +184,6 @@ function UpcomingTests () {
 function UserTests () {
 
 	describe('User -', () => {
-
-
-		// it('should create a test user', done => {
-		// 	sendMutation(`
-		// 		createUser ( name: "testuser" ) {
-		// 			_id
-		// 		}
-		// 	`, data => {
-		// 		var { _id } = data.createUser
-		// 		assert(_id !== undefined, '_id should be defined')
-		// 		// assert(name === 'testuser', 'name should equal testuser')
-		// 		TEST_USER_ID = _id
-		// 		done()
-		// 	})
-		// })
-
-		// it('should delete the test user', done => {
-		// 	sendMutation(`
-		// 		deleteUser ( _id: "${TEST_USER_ID}" ) {
-		// 			status
-		// 		}
-		// 	`, data => {
-		// 		var { status } = data.deleteUser
-		// 		assert(status === 'DELETE_SUCCESS', 'status should say DELETE_SUCCESS')
-		// 		done()
-		// 	})
-		// })
-
-		// it('should authenticate the local learners test user', async done => {
-		// 	var user = await sendMutation(`
-		// 		authenticate (meetupEmail: "locallearnersuser@gmail.com", meetupPassword: "thirstyscholar1") {
-		// 			_id,
-		// 			meetupMember {
-		// 				id,
-		// 				name
-		// 			},
-		// 			token
-		// 		}
-		// 	`)
-		// 	var { _id, meetupMember, token } = user
-		// 	var { id, name } = meetupMember
-
-		// 	LOCAL_LEARNER_TEST_USER_TOKEN = token
-
-		// 	assert.equal(name, 'Local Learners Test User')
-
-		// 	done()
-		// })
-
 
 		it('should authenticate the local learners test user', done => {
 			var meetupToken = LOCAL_LEARNERS_TEST_USER.meetup.token

@@ -7,7 +7,7 @@ export const getLocalLearnersTestUser = async () => {
 		password: 'thirstyscholar1'
 	})
 	delete user.context
-	// console.log('user _createFromMeetup: ', user)
+	// log(user, 'Local Learners Test User')
 	return user
 }
 

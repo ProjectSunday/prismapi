@@ -4,21 +4,85 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLLis
 import CategorySchema 		from './category-schema'
 import RequestedClass 	from './requestedclass-schema'
 
-import Testing			from './testing-schema'
+// import Testing			from './testing-schema'
 
 
-import { Category, Context, UpcomingClass, User } from '~/backend/backend'
+import { Category, Context, UpcomingClass, User, Testing } from '~/backend/backend'
 
 
 import { CategoryType, MeetupType, UpcomingClassType, UserType } from './types'
 
 
+var userSchema = new UserSchema()
+var upcomingClassSchema = new UpcomingClassSchema()
+var testingSchema = new TestingSchema()
+
+const query = new GraphQLObjectType({
+	name: 'query',
+	fields: {
+		...CategorySchema.queries,
+		...RequestedClass.Queries,
+		...upcomingClassSchema.queries,
+		...userSchema.queries,
+
+		...testingSchema.queries
+	}
+})
+
+const mutation = new GraphQLObjectType({
+	name: 'mutation',
+	fields: {
+		...CategorySchema.mutations,
+		...RequestedClass.Mutations,
+		...upcomingClassSchema.mutations,
+		...userSchema.mutations
+	}
+})
+
+export default new GraphQLSchema({ query, mutation })
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//TestingSchema
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function TestingSchema() {
+
+	const TestingType = new GraphQLObjectType({
+		name: 'TestingType',
+		fields: () => ({
+			result: { type: GraphQLString }
+		})
+	})
+
+	return {
+		queries: {
+			testing: {
+				type: TestingType,
+				// args: {
+				// 	_id: { t÷ype: GraphQLID }
+				// },
+				resolve: async (root, args) => {
+
+					// var testing = new Testing()
+					// await testing.test()
+
+					return { result: 'blah'}
+
+				}
+			}
+		}
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UpcomingClassSchema
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 function UpcomingClassSchema () {
+	
 	return {
 		queries: {
 			upcomingClass: {
@@ -55,12 +119,12 @@ function UpcomingClassSchema () {
 				resolve: async (root, args) => {
 					var context = new Context()
 
-					await context.user.fetch({ token: args.token })
+					await context.user.read({ token: args.token })
 					await context.user.ensureOrganizer()
 
 					await context.category.fetch({ _id: args.categoryId })
 
-					await context.upcomingClass.create2({ name: args.name })
+					await context.upcomingClass.create({ name: args.name })
 
 					var upcomingClass = Object.assign({}, context.upcomingClass)
 					delete upcomingClass.context
@@ -89,11 +153,9 @@ function UpcomingClassSchema () {
 	}
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UserSchema
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 function UserSchema() {
 	return {
@@ -166,37 +228,8 @@ function UserSchema() {
 	}
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-var userSchema = UserSchema()
-var upcomingClassSchema = new UpcomingClassSchema()
-
-const query = new GraphQLObjectType({
-	name: 'query',
-	fields: {
-		...CategorySchema.queries,
-		...RequestedClass.Queries,
-		...upcomingClassSchema.queries,
-		...userSchema.queries,
-
-		...Testing.Queries
-	}
-})
-
-const mutation = new GraphQLObjectType({
-	name: 'mutation',
-	fields: {
-		...CategorySchema.mutations,
-		...RequestedClass.Mutations,
-		...upcomingClassSchema.mutations,
-		...userSchema.mutations
-	}
-})
-
-export default new GraphQLSchema({ query, mutation })
-
 
