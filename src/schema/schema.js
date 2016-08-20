@@ -1,18 +1,10 @@
-import { randomBytes } from 'crypto'
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID, GraphQLNonNull, GraphQLOutputType } from 'graphql/type'
 
-import CategorySchema 		from './category-schema'
-import RequestedClass 	from './requestedclass-schema'
-
-// import Testing			from './testing-schema'
-
-
+import { CategoryType, MeetupType, RequestedClassType, UpcomingClassType, UserType } from './types'
 import { Category, Context, UpcomingClass, User, Testing } from '~/backend/backend'
 
-
-import { CategoryType, MeetupType, UpcomingClassType, UserType } from './types'
-
-
+var categorySchema = new CategorySchema()
+var requestedClassSchema = new RequestedClassSchema()
 var userSchema = new UserSchema()
 var upcomingClassSchema = new UpcomingClassSchema()
 var testingSchema = new TestingSchema()
@@ -20,8 +12,8 @@ var testingSchema = new TestingSchema()
 const query = new GraphQLObjectType({
 	name: 'query',
 	fields: {
-		...CategorySchema.queries,
-		...RequestedClass.Queries,
+		...categorySchema.queries,
+		...requestedClassSchema.Queries,
 		...upcomingClassSchema.queries,
 		...userSchema.queries,
 
@@ -32,8 +24,8 @@ const query = new GraphQLObjectType({
 const mutation = new GraphQLObjectType({
 	name: 'mutation',
 	fields: {
-		...CategorySchema.mutations,
-		...RequestedClass.Mutations,
+		...categorySchema.mutations,
+		...requestedClassSchema.Mutations,
 		...upcomingClassSchema.mutations,
 		...userSchema.mutations
 	}
@@ -42,14 +34,136 @@ const mutation = new GraphQLObjectType({
 export default new GraphQLSchema({ query, mutation })
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//CategorySchema
+////////////////////////////////////////////////////////////////////////////////////////////////////
+function CategorySchema() {
+	return {
+		queries: {
+			categories: {
+				type: new GraphQLList(CategoryType),
+				resolve: async () => {
+					return await Category.readAll()
+				}
+			}
+		},
+		mutations: {
 
+			// createCategory: {
+			// 	type: CategoryType,
+			// 	args: {
+			// 		//token: //shuld be here
+			// 		name: { type: new GraphQLNonNull(GraphQLString) }
+			// 	},
+			// 	resolve: async (root, args) => {
+			// 		var context = new Context()
+			// 		return context.category.create({ name: args.name })
+			// 	}
+			// },
 
+			// deleteCategory: {
+			// 	type: CategoryType,
+			// 	args: {
+			// 		// token: //should be here
+			// 		_id: { type: new GraphQLNonNull(GraphQLID) }
+			// 	},
+			// 	resolve: async (root, args) => {
+			// 		var context = new Context()
+			// 		return await context.category.delete(args._id)
+			// 	}
+			// }
+
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//RequestedClassSchema
+////////////////////////////////////////////////////////////////////////////////////////////////////
+function RequestedClassSchema() {
+	return {
+		queries: {
+			requestedClasses: {
+				type: new GraphQLList(RequestedClassType),
+				resolve: async () => {
+					var context = new Context()
+					var requestedClass = new RequestedClass(context)
+					await requestedClass.fetchAll()
+					return context.requestedClasses
+				}
+			}
+		},
+		mutations: {
+			createRequestedClass: {
+				type: RequestedClassType,
+				args: {
+					token: { type: new GraphQLNonNull(GraphQLString) },
+					name: { type: new GraphQLNonNull(GraphQLString) },
+					categoryId: { type: new GraphQLNonNull(GraphQLID) }
+				},
+				resolve: async (root, args) => {
+					var context = new Context()
+
+					await context.user.read({ token: args.token })
+					await context.category.read({ _id: args.categoryId })
+					await context.requestedClass.create({ name: args.name })
+					
+					delete context.requestedClass.context
+
+					return context.requestedClass
+				}
+			},
+			deleteRequestedClass: {
+				type: RequestedClassType,
+				args: {
+					//TODO: token to check to see if user is authorized to delete
+					_id: { type: new GraphQLNonNull(GraphQLID) }
+				},
+				resolve: async (root, args) => {
+					var context = new Context()
+
+					await context.requestedClass.delete({ _id: args._id })
+
+					var { _id, status } = context.requestedClass
+					return { _id, status }
+				}
+			},
+			addInterestedUser: {
+				type: RequestedClassType,
+				args: {
+					token: { type: new GraphQLNonNull(GraphQLString) },
+					_id: { type: new GraphQLNonNull(GraphQLID) }
+				},
+				resolve: async (root, args) => {
+					var context = new Context()
+
+					await context.user.read({ token: args.token })
+					await context.requestedClass.addInterestedUser({ _id: args._id })
+
+					return context.requestedClass
+				}
+			},
+			removeInterestedUser: {
+				type: RequestedClassType,
+				args: {
+					token: { type: new GraphQLNonNull(GraphQLString) },
+					_id: { type: new GraphQLNonNull(GraphQLID) }
+				},
+				resolve: async (root, args) => {
+					var context = new Context()
+
+					await context.user.read({ token: args.token })
+					await context.requestedClass.removeInterestedUser({ _id: args._id })
+
+					return context.requestedClass
+				}
+			}
+		}
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //TestingSchema
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function TestingSchema() {
-
 	const TestingType = new GraphQLObjectType({
 		name: 'TestingType',
 		fields: () => ({
@@ -76,11 +190,9 @@ function TestingSchema() {
 		}
 	}
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UpcomingClassSchema
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function UpcomingClassSchema () {
 	
 	return {
@@ -122,7 +234,7 @@ function UpcomingClassSchema () {
 					await context.user.read({ token: args.token })
 					await context.user.ensureOrganizer()
 
-					await context.category.fetch({ _id: args.categoryId })
+					await context.category.read({ _id: args.categoryId })
 
 					await context.upcomingClass.create({ name: args.name })
 
@@ -152,11 +264,9 @@ function UpcomingClassSchema () {
 		}
 	}
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UserSchema
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function UserSchema() {
 	return {
 		queries: {
@@ -227,9 +337,6 @@ function UserSchema() {
 		}
 	}
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

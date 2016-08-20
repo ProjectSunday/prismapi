@@ -1,14 +1,8 @@
-export * from './category'
-export * from './context'
-export * from './requestedclass'
-
-
+import { randomBytes } from 'crypto'
 import { ObjectID } from 'mongodb'
 
 import DB from './db'
 import { Event, Member, MeetupOauth, OAuth } from './meetup'
-import { generateToken } from './utils'
-
 
 
 const MEETUP_ADMIN_EMAIL = process.env.MEETUP_ADMIN_EMAIL ||
@@ -16,7 +10,10 @@ const MEETUP_ADMIN_EMAIL = process.env.MEETUP_ADMIN_EMAIL ||
 const MEETUP_ADMIN_PASSWORD = process.env.MEETUP_ADMIN_PASSWORD ||
 	'thirstyscholar1'
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+function generateToken () {
+	return randomBytes(16).toString('hex');
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //Administrator
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,6 +77,102 @@ class AdministratorSingleton {
 	}
 }
 export const Administrator = new AdministratorSingleton()
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//Category
+////////////////////////////////////////////////////////////////////////////////////////////////////
+export class Category {
+	constructor(context) {
+		this.context = context
+		return this
+	}
+	get() {
+		var category = Object.assign({}, this)
+		delete category.context
+		return category
+	}
+
+	async create(category) {
+		return await DB.Create('categories', category)
+	}
+	async read(filter) {
+		var category = await DB.Read('categories', filter)
+		if (!category) throw 'Unable to fetch category with filter: ' + JSON.stringify(filter)
+		Object.assign(this, category)
+	}
+	async delete(filter) {
+		return await DB.Delete('categories', filter)
+	}
+
+	async readAll() {
+		return await DB.ReadMany('categories')
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//Context
+////////////////////////////////////////////////////////////////////////////////////////////////////
+export class Context {
+	constructor() {
+		this.category = new Category(this)
+		this.requestedClass = new RequestedClass(this)
+		this.user = new User(this)
+		this.upcomingClass = new UpcomingClass(this)
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//RequestedClass
+////////////////////////////////////////////////////////////////////////////////////////////////////
+export class RequestedClass {
+	constructor(context) {
+		this.context = context
+		return this
+	}
+	async create (newClass) {
+		newClass.interested = [ this.context.user.get() ]
+		newClass.category = this.context.category.get()
+		var requested = await DB.Create('requestedclasses', newClass)
+		Object.assign(this, requested)
+	}
+	async read(filter) {
+		var requested = await DB.Read('requestedclasses', filter)
+		Object.assign(this, requested)
+	}
+	async update(filter) {
+		var requested = Object.assign({}, this)
+		delete requested.context
+		requested = await DB.Update('requestedclasses', filter, requested)
+		Object.assign(this, requested)
+	}
+	async delete(filter) {
+		await this.read(filter)
+		var requested = await DB.Delete('requestedclasses', filter)
+		Object.assign(this, requested)
+	}
+
+
+	async readAll() {
+		this.context.requestedClasses = await DB.ReadMany('requestedclasses')
+	}
+
+	async addInterestedUser(args) {
+		await this.read({ _id: args._id })
+
+		var u = this.context.user
+		this.interested.push( this.context.user.get() )
+
+		this.update({ _id: args._id })
+	}
+
+	async removeInterestedUser(args) {
+		await this.read({ _id: args._id })
+
+		var removeIndex = this.interested.findIndex(u => u._id.equals(this.context.user._id))
+		if (removeIndex === -1) throw `Unable to find interested user (_id: ${this.context.user._id}) to remove from requested class (_id: ${this._id}).`
+		this.interested.splice(removeIndex, 1)
+
+		this.update({ _id: args._id })
+	}
+
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //Testing
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -6,10 +6,6 @@ import '../debug'
 import { sendQuery, sendMutation, TestServer } from './test-server'
 import { getCategoryByName, getTestUserAlpha, createTestUserBeta, deleteTestUserBeta, getLocalLearnersTestUser } from './mocks'
 
-import Category 	from './category-tests'
-import Requested 	from './requested-tests'
-
-
 describe('Prism API Mocha Testing', () => {
 
 	before(async (done) => {
@@ -17,7 +13,12 @@ describe('Prism API Mocha Testing', () => {
 		global.LOCAL_LEARNERS_TEST_USER = await getLocalLearnersTestUser()
 		global.TEST_USER_ALPHA = await getTestUserAlpha()
 		global.TEST_USER_BETA = await createTestUserBeta()
-		global.CATEGORY_TECHNOLOGY = await getCategoryByName('Technology')
+		try {
+
+			global.CATEGORY_TECHNOLOGY = await getCategoryByName('Technology')
+		} catch (er) {
+			console.log(er)
+		}
 		done()
 	})
 
@@ -25,11 +26,11 @@ describe('Prism API Mocha Testing', () => {
 
 	UserTests()
 
-	// Category()
+	// CategoryTests()
 	
-	// Requested()
+	// RequestedClassTests()
 
-	UpcomingTests()
+	UpcomingClassTests()
 
 
 	after(async (done) => {
@@ -41,9 +42,213 @@ describe('Prism API Mocha Testing', () => {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//CategoryTests
+////////////////////////////////////////////////////////////////////////////////////////////////////
+function CategoryTests() {
+	describe('Category -', () => {
+
+		it('should return all categories', done => {
+			sendQuery(`
+				categories {
+					_id,
+					name
+				}
+			`, data => {
+				// log(data, 'data')
+				var { categories } = data
+				assert(Array.isArray(categories), 'categories should be an array')
+				assert(categories.length, 'categories should not be empty')
+
+				done()
+			})
+		})
+
+		// it('should return all categories', (done) => {
+		// 	sendQuery(`
+		// 		categories {
+		// 			_id,
+		// 			name
+		// 		}
+		// 	`, data => {
+		// 		console.log('data', data)
+		// 		// done()
+		// 	})
+		// })
+
+		// it('should create a category', done => {
+		// 	sendGraph(`
+		// 		mutation {
+		// 			createCategory (name: "testtesttest") {
+		// 				_id,
+		// 				name
+		// 			}
+		// 		}
+		// 	`)
+		// 	.end((err, res) => {
+		// 		// log(res.body)
+		// 		var { name, _id } = res.body.data.createCategory
+		// 		assert(name === 'testtesttest', 'name is not testtesttest')
+		// 		assert(_id !== undefined, '_id is undefined')
+		// 		CATEGORY_ID_TO_DELETE = _id
+		// 		done()
+		// 	})
+		// })
+
+		// it('should delete a category', done => {
+		// 	sendGraph(`
+		// 		mutation {
+		// 			deleteCategory(_id: "${CATEGORY_ID_TO_DELETE}") {
+		// 				status
+		// 			}
+		// 		}
+		// 	`)
+		// 	.end((err, res) => {
+		// 		// log(res.body)
+		// 		var { status } = res.body.data.deleteCategory
+		// 		assert(status === 'DELETE_SUCCESS', 'status not DELETE_SUCCESS')
+		// 		done()
+		// 	})
+		// })
+
+	})
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//RequestedClassTests
+////////////////////////////////////////////////////////////////////////////////////////////////////
+function RequestedClassTests() {
+
+	var REQUESTED_CLASS_ID
+	describe('Requested Classes -', () => {
+
+		it('should create a requested class', done => {
+			sendMutation(`
+				createRequestedClass ( 
+					token: "${LOCAL_LEARNERS_TEST_USER.token}", 
+					name: "testrequestedclass",
+					categoryId: "${CATEGORY_TECHNOLOGY._id}" 
+				) {
+					_id,
+					name,
+					category {
+						_id,
+						name,
+						imageName
+					}
+				}
+			`, data => {
+				var { createRequestedClass } = data
+				assert(createRequestedClass, 'createRequestedClass should contain data')
+
+				var { _id, name, category } = createRequestedClass
+				assert(_id !== undefined, '_id should be defined')
+				REQUESTED_CLASS_ID = _id
+				assert(name === 'testrequestedclass', 'name should be testrequestedclass')
+				assert(category, 'category should have data')
+
+				var { _id, name, imageName } = category
+				assert(_id !== undefined, '_id should exist')
+				assert(name === CATEGORY_TECHNOLOGY.name, 'name should be ' + CATEGORY_TECHNOLOGY.name)
+				assert(imageName === CATEGORY_TECHNOLOGY.imageName, 'name should be ' + CATEGORY_TECHNOLOGY.imageName)
+
+				done()
+			})
+		})
+
+		it('should return all requested classes', done => {
+			sendQuery(`
+				requestedClasses {
+					_id,
+				}
+			`, data => {
+				var { requestedClasses } = data
+				assert(requestedClasses, 'requestedClasses should exist')
+				assert(requestedClasses[0]._id, 'first requestedClasses _id should exist')
+
+				done()
+			})
+		})
+
+		it('should add an interested user', done => {
+			sendMutation(`
+				addInterestedUser ( token: "${TEST_USER_ALPHA.token}", _id: "${REQUESTED_CLASS_ID}" ) {
+					_id,
+					name,
+					interested {
+						_id,
+						meetup {
+							member {
+								name
+							}
+						}
+					}
+				}
+			`, data => {
+				var { addInterestedUser } = data
+				assert(addInterestedUser, 'addInterestedUser should contain data')
+
+				var { _id, name, interested } = addInterestedUser
+				assert(_id === REQUESTED_CLASS_ID, '_id should be ' + REQUESTED_CLASS_ID)
+				assert(name === 'testrequestedclass', 'class name should be testrequestedclass')
+				assert(Array.isArray(interested), 'interested list should be array')
+				assert(interested.length === 2, 'there should be two people interested now')
+
+				done()
+			})
+		})
+
+		it('should remove an interested user to a requested class', done => {
+			sendMutation(`
+				removeInterestedUser ( token: "${TEST_USER_ALPHA.token}", _id: "${REQUESTED_CLASS_ID}" ) {
+					_id,
+					name,
+					interested {
+						_id,
+						meetup {
+							member {
+								id,
+								name
+							}
+						}
+					}
+				}
+			`, data => {
+				var { removeInterestedUser } = data
+				assert(removeInterestedUser, 'removeInterestedUser should contain data')
+
+				var { _id, name, interested } = removeInterestedUser
+				assert(_id === REQUESTED_CLASS_ID, '_id should be ' + REQUESTED_CLASS_ID)
+				assert(name === 'testrequestedclass', 'class name should be testrequestedclass')
+				assert(Array.isArray(interested), 'interested list should be an array')
+				assert(interested.length === 1, 'interested list should be just one person')
+
+				done()
+			})
+		})
+
+
+		it('should delete a requested class', done => {
+			sendMutation(`
+				deleteRequestedClass(_id: "${REQUESTED_CLASS_ID}") {
+					_id,
+					status
+				}
+			`, data => {
+				var { deleteRequestedClass } = data
+				assert(deleteRequestedClass, 'deleteRequestedClass should contain data')
+
+				var { _id, status } = deleteRequestedClass
+				assert(_id === REQUESTED_CLASS_ID, '_id should be ' + REQUESTED_CLASS_ID)
+				assert(status === 'DELETE_SUCCESS', 'status should be DELETE_SUCCESS')
+				done()
+			})
+		})
+
+
+	})
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 //TestingTests
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function TestingTests () {
 
 	describe('Testing/Debugging/Fucking around', () => {
@@ -61,12 +266,10 @@ function TestingTests () {
 
 	})
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//UpcomingTests
+//UpcomingClassTests
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function UpcomingTests () {
+function UpcomingClassTests () {
 	var UPCOMING_CLASS_ID
 
 	describe('Upcoming Classes -', () => {
@@ -176,11 +379,9 @@ function UpcomingTests () {
 
 	})
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //UserTests
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function UserTests () {
 
 	describe('User -', () => {

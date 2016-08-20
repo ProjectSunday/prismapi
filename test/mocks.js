@@ -61,7 +61,7 @@ export const deleteTestUserBeta = async (filter) => {
 
 export const getCategoryByName = async (name) => {
 	var category = new Category()
-	await category.fetch({ name })
+	await category.read({ name })
 	return category
 }
 
